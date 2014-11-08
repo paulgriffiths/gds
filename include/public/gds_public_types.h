@@ -1,0 +1,31 @@
+#ifndef PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPES_H
+#define PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPES_H
+
+#include <stdbool.h>
+#include <stddef.h>
+
+typedef int (*gds_cfunc)(const void *, const void *);
+
+enum gds_option {
+    GDS_RESIZABLE = 1,
+    GDS_FREE_ON_DESTROY = 2,
+    GDS_EXIT_ON_ERROR = 4
+};
+
+enum gds_datatype {
+    DATATYPE_CHAR,
+    DATATYPE_UNSIGNED_CHAR,
+    DATATYPE_SIGNED_CHAR,
+    DATATYPE_INT,
+    DATATYPE_UNSIGNED_INT,
+    DATATYPE_LONG,
+    DATATYPE_UNSIGNED_LONG,
+    DATATYPE_LONG_LONG,
+    DATATYPE_UNSIGNED_LONG_LONG,
+    DATATYPE_SIZE_T,
+    DATATYPE_DOUBLE,
+    DATATYPE_STRING,
+    DATATYPE_POINTER
+};
+
+#endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPES_H  */

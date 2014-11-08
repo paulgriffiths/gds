@@ -1,0 +1,16 @@
+# Doxygen configuration file for gds library
+
+PROJECT_NAME="gds"
+PROJECT_BRIEF="A C language generic data structures library"
+OUTPUT_LANGUAGE=English
+OPTIMIZE_OUTPUT_FOR_C=YES
+#EXTRACT_ALL=YES
+#EXTRACT_STATIC=YES
+INPUT=./
+FILE_PATTERNS=*.c *.h *.dox
+#EXCLUDE=
+GENERATE_HTML=YES
+REPEAT_BRIEF=YES
+HAVE_DOT=YES
+PREDEFINED="DEBUG"
+RECURSIVE="YES"

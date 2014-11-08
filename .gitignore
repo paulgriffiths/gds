@@ -1,0 +1,40 @@
+# Library and binary directors
+lib
+bin
+
+# Doxygen folders
+html
+latex
+docs/._refman.pdf
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Dependencies files
+*.d
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# gcov and gprof files
+*.gcno
+*.gcda
+gmon.out
+run_profile
+
+# Vim swap files
+*.swp
+
+# tags file
+tags
+
+# Backup files
+*~

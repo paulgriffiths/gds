@@ -1,0 +1,7 @@
+#ifndef PG_SAMPLES_AND_DEMOS_TEST_GENERIC_LIST_H
+#define PG_SAMPLES_AND_DEMOS_TEST_GENERIC_LIST_H
+
+void test_list(void);
+
+#endif      /*  PG_SAMPLES_AND_DEMOS_TEST_LIST_H  */
+

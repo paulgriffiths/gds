@@ -1,0 +1,7 @@
+#ifndef PG_SAMPLES_AND_DEMOS_TEST_GENERIC_VECTOR_H
+#define PG_SAMPLES_AND_DEMOS_TEST_GENERIC_VECTOR_H
+
+void test_vector(void);
+
+#endif      /*  PG_SAMPLES_AND_DEMOS_TEST_VECTOR_H  */
+
