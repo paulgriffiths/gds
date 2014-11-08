@@ -1,5 +1,13 @@
-#ifndef PG_SAMPLES_AND_DEMOS_GENERIC_VECTOR_H
-#define PG_SAMPLES_AND_DEMOS_GENERIC_VECTOR_H
+/*!
+ * \file            vector.h
+ * \brief           Interface to generic vector data structure.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
+#ifndef PG_GENERIC_DATA_STRUCTURES_GENERIC_VECTOR_H
+#define PG_GENERIC_DATA_STRUCTURES_GENERIC_VECTOR_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -33,4 +41,4 @@ size_t vector_length(Vector vector);
 size_t vector_capacity(Vector vector);
 size_t vector_free_space(Vector vector);
 
-#endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_VECTOR_H  */
+#endif      /*  PG_GENERIC_DATA_STRUCTURES_GENERIC_VECTOR_H  */

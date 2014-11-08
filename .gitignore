@@ -5,6 +5,8 @@ bin
 # Doxygen folders
 html
 latex
+.DS_Store
+._.DS_Store
 docs/._refman.pdf
 
 # Compiled Object files

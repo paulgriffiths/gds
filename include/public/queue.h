@@ -1,5 +1,13 @@
-#ifndef PG_SAMPLES_AND_DEMOS_GENERIC_QUEUE_H
-#define PG_SAMPLES_AND_DEMOS_GENERIC_QUEUE_H
+/*!
+ * \file            queue.h
+ * \brief           Interface to generic queue data structure.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
+#ifndef PG_GENERIC_DATA_STRUCTURES_GENERIC_QUEUE_H
+#define PG_GENERIC_DATA_STRUCTURES_GENERIC_QUEUE_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -21,4 +29,4 @@ size_t queue_capacity(Queue queue);
 size_t queue_free_space(Queue queue);
 size_t queue_size(Queue queue);
 
-#endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_QUEUE_H  */
+#endif      /*  PG_GENERIC_DATA_STRUCTURES_GENERIC_QUEUE_H  */

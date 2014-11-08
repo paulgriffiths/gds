@@ -1,5 +1,13 @@
-#ifndef PG_SAMPLES_AND_DEMOS_GENERIC_STACK_H
-#define PG_SAMPLES_AND_DEMOS_GENERIC_STACK_H
+/*!
+ * \file            stack.h
+ * \brief           Interface to generic stack data structure.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
+#ifndef PG_GENERIC_DATA_STRUCTURES_GENERIC_STACK_H
+#define PG_GENERIC_DATA_STRUCTURES_GENERIC_STACK_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -21,4 +29,4 @@ size_t stack_capacity(Stack stack);
 size_t stack_free_space(Stack stack);
 size_t stack_size(Stack stack);
 
-#endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_STACK_H  */
+#endif      /*  PG_GENERIC_DATA_STRUCTURES_GENERIC_STACK_H  */

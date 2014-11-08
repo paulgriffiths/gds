@@ -1,5 +1,13 @@
-#ifndef PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPE_H
-#define PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPE_H
+/*!
+ * \file            gdt.h
+ * \brief           Interface to generic data element functionality.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
+#ifndef PG_GENERIC_DATA_STRUCTURES_GENERIC_DATATYPE_H
+#define PG_GENERIC_DATA_STRUCTURES_GENERIC_DATATYPE_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -7,24 +15,27 @@
 
 #include "gds_public_types.h"
 
+/*!
+ * \brief           Generic datatype structure
+ */
 struct gdt_generic_datatype {
-    enum gds_datatype type;
-    gds_cfunc compfunc;
+    enum gds_datatype type;             /*!<  Data type                     */
+    gds_cfunc compfunc;                 /*!<  Comparison function pointer   */
     union {
-        char c;
-        unsigned char uc;
-        signed char sc;
-        int i;
-        unsigned int ui;
-        long l;
-        unsigned long ul;
-        long long int ll;
-        unsigned long long int ull;
-        size_t st;
-        double d;
-        char * pc;
-        void * p;
-    } data;
+        char c;                             /*!<  char                      */
+        unsigned char uc;                   /*!<  unsigned char             */
+        signed char sc;                     /*!<  signed char               */
+        int i;                              /*!<  int                       */
+        unsigned int ui;                    /*!<  unsigned int              */
+        long l;                             /*!<  long                      */
+        unsigned long ul;                   /*!<  unsigned long             */
+        long long int ll;                   /*!<  long long                 */
+        unsigned long long int ull;         /*!<  unsigned long long        */
+        size_t st;                          /*!<  size_t                    */
+        double d;                           /*!<  double                    */
+        char * pc;                          /*!<  char *, string            */
+        void * p;                           /*!<  void *                    */
+    } data;                             /*!<  Data union                */
 };
 
 void gdt_set_value(struct gdt_generic_datatype * data,
@@ -39,4 +50,4 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
 int gdt_compare_void(const void * p1, const void * p2);
 int gdt_reverse_compare_void(const void * p1, const void * p2);
 
-#endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPE_H  */
+#endif      /*  PG_GENERIC_DATA_STRUCTURES_GENERIC_DATATYPE_H  */
