@@ -100,10 +100,9 @@ void gdt_set_value(struct gdt_generic_datatype * data,
 
 /*  Sets a value in a generic datatype  */
 
-void gdt_get_value(const struct gdt_generic_datatype * data,
-                   const enum gds_datatype type, void * p)
+void gdt_get_value(const struct gdt_generic_datatype * data, void * p)
 {
-    switch ( type ) {
+    switch ( data->type ) {
         case DATATYPE_CHAR:
             *((char *) p) = data->data.c;
             break;
@@ -164,13 +163,13 @@ void gdt_get_value(const struct gdt_generic_datatype * data,
 
 /*  Frees the memory pointer to by a generic pointer datatype  */
 
-void gdt_free(struct gdt_generic_datatype * data, const enum gds_datatype type)
+void gdt_free(struct gdt_generic_datatype * data)
 {
-    if ( type == DATATYPE_POINTER ) {
+    if ( data->type == DATATYPE_POINTER ) {
         free(data->data.p);
         data->data.p = NULL;
     }
-    else if ( type == DATATYPE_STRING ) {
+    else if ( data->type == DATATYPE_STRING ) {
         free(data->data.pc);
         data->data.pc = NULL;
     }

@@ -62,7 +62,7 @@ void stack_destroy(struct stack * stack)
 {
     if ( stack->free_on_destroy ) {
         while ( stack->top ) {
-            gdt_free(&stack->elements[--stack->top], stack->type);
+            gdt_free(&stack->elements[--stack->top]);
         }
     }
 
@@ -123,7 +123,7 @@ bool stack_pop(struct stack * stack, void * p)
         }
     }
 
-    gdt_get_value(&stack->elements[--stack->top], stack->type, p);
+    gdt_get_value(&stack->elements[--stack->top], p);
 
     return true;
 }
@@ -141,7 +141,7 @@ bool stack_peek(struct stack * stack, void * p)
         }
     }
 
-    gdt_get_value(&stack->elements[stack->top - 1], stack->type, p);
+    gdt_get_value(&stack->elements[stack->top - 1], p);
 
     return true;
 }

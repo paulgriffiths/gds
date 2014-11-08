@@ -41,10 +41,8 @@ struct gdt_generic_datatype {
 void gdt_set_value(struct gdt_generic_datatype * data,
                    const enum gds_datatype,
                    gds_cfunc cfunc, va_list ap);
-void gdt_get_value(const struct gdt_generic_datatype * data,
-                   const enum gds_datatype type, void * p);
-void gdt_free(struct gdt_generic_datatype * data,
-              const enum gds_datatype type);
+void gdt_get_value(const struct gdt_generic_datatype * data, void * p);
+void gdt_free(struct gdt_generic_datatype * data);
 int gdt_compare(const struct gdt_generic_datatype * d1,
                 const struct gdt_generic_datatype * d2);
 int gdt_compare_void(const void * p1, const void * p2);

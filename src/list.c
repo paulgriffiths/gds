@@ -175,7 +175,7 @@ bool list_element_at_index(struct list * list, const size_t index, void * p)
         return false;
     }
 
-    gdt_get_value(&node->element, list->type, p);
+    gdt_get_value(&node->element, p);
 
     return true;
 }
@@ -263,7 +263,7 @@ static struct list_node * list_node_create(struct list * list, va_list ap)
 static void list_node_destroy(struct list * list, struct list_node * node)
 {
     if ( list->free_on_destroy ) {
-        gdt_free(&node->element, list->type);
+        gdt_free(&node->element);
     }
 
     free(node);

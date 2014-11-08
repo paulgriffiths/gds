@@ -20,217 +20,217 @@ static void test_vector_basic(void)
     bool status;
         
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 3, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 3, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 0, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 0, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_element_at_index(vector, 4, &n);
-    tests_log_test(!status, "vector_element_at_index() didn't return false");
+    tests_log_test(!status, "vector_element_at_index() didn't return false(%d)", __LINE__);
 
     status = vector_delete_index(vector, 4);
-    tests_log_test(!status, "vector_delete_at_index() didn't return false");
+    tests_log_test(!status, "vector_delete_at_index() didn't return false(%d)", __LINE__);
 
     status = vector_set_element_at_index(vector, 0, 4);
-    tests_log_test(status, "vector_set_element_at_index() didn't return true");
+    tests_log_test(status, "vector_set_element_at_index() didn't return true(%d)", __LINE__);
 
     status = vector_set_element_at_index(vector, 1, 5);
-    tests_log_test(status, "vector_set_element_at_index() didn't return true");
+    tests_log_test(status, "vector_set_element_at_index() didn't return true(%d)", __LINE__);
 
     status = vector_set_element_at_index(vector, 2, 6);
-    tests_log_test(status, "vector_set_element_at_index() didn't return true");
+    tests_log_test(status, "vector_set_element_at_index() didn't return true(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 4, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 5, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 5, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 6, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 6, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
 
     status = vector_prepend(vector, 3);
-    tests_log_test(status, "vector_prepend() didn't return true");
+    tests_log_test(status, "vector_prepend() didn't return true(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 3, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 3, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 4, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 5, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 5, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 3, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 6, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 6, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 4, "vector_length() gave wrong value");
+    tests_log_test(sz == 4, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 6, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 6, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 2, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 2, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_insert(vector, 2, 7);
-    tests_log_test(status, "vector_insert_index() didn't return true");
+    tests_log_test(status, "vector_insert_index() didn't return true(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 3, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 3, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 4, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 7, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 7, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 3, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 5, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 5, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 4, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 6, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 6, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 5, "vector_length() gave wrong value");
+    tests_log_test(sz == 5, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 6, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 6, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 1, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 1, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_append(vector, 8);
-    tests_log_test(status, "vector_append() didn't return true");
+    tests_log_test(status, "vector_append() didn't return true(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 3, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 3, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 4, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 7, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 7, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 3, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 5, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 5, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 4, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 6, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 6, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 5, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 8, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 8, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 6, "vector_length() gave wrong value");
+    tests_log_test(sz == 6, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 6, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 6, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 0, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 0, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_delete_front(vector);
-    tests_log_test(status, "vector_delete_front() failed");
+    tests_log_test(status, "vector_delete_front() failed(%d)", __LINE__);
 
     status = vector_delete_back(vector);
-    tests_log_test(status, "vector_delete_back() failed");
+    tests_log_test(status, "vector_delete_back() failed(%d)", __LINE__);
 
     status = vector_delete_index(vector, 2);
-    tests_log_test(status, "vector_delete_back() failed");
+    tests_log_test(status, "vector_delete_back() failed(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 4, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 7, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 7, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 6, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 6, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 6, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 6, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 3, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 3, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_set_element_at_index(vector, 0, 11);
-    tests_log_test(status, "vector_set_element_at_index() didn't return true");
+    tests_log_test(status, "vector_set_element_at_index() didn't return true(%d)", __LINE__);
 
     status = vector_set_element_at_index(vector, 2, 9);
-    tests_log_test(status, "vector_set_element_at_index() didn't return true");
+    tests_log_test(status, "vector_set_element_at_index() didn't return true(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 0, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 11, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 11, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 7, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 7, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &n);
-    tests_log_test(status, "vector_element_at_index() didn't return true");
-    tests_log_test(n == 9, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 9, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 6, "vector_capacity() gave wrong value");
+    tests_log_test(sz == 6, "vector_capacity() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 3, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 3, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     vector_destroy(vector);
 }
@@ -247,83 +247,86 @@ static void test_vector_free_strings(void)
     size_t sz;
     char * pc;
 
+    status = vector_set_element_at_index(vector, 0, (void *) NULL);
+    tests_log_test(status, "vector_set_element_at_index() failed(%d)", __LINE__);
+
     sz = vector_length(vector);
-    tests_log_test(sz == 1, "vector_length() gave wrong value");
+    tests_log_test(sz == 1, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 1, "vector_length() gave wrong value");
+    tests_log_test(sz == 1, "vector_length() gave wrong value(%d)", __LINE__);
 
     status = vector_append(vector, strdup("First string"));
-    tests_log_test(status, "vector_append() failed");
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 2, "vector_length() gave wrong value");
+    tests_log_test(sz == 2, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 2, "vector_length() gave wrong value");
+    tests_log_test(sz == 2, "vector_length() gave wrong value(%d)", __LINE__);
 
     status = vector_append(vector, strdup("Second string"));
-    tests_log_test(status, "vector_append() failed");
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 4, "vector_length() gave wrong value");
+    tests_log_test(sz == 4, "vector_length() gave wrong value(%d)", __LINE__);
 
     status = vector_append(vector, strdup("Third string"));
-    tests_log_test(status, "vector_append() failed");
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 4, "vector_length() gave wrong value");
+    tests_log_test(sz == 4, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 4, "vector_length() gave wrong value");
+    tests_log_test(sz == 4, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 0, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 0, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     status = vector_element_at_index(vector, 0, &pc);
-    tests_log_test(status, "vector_element_index() failed");
-    tests_log_test(pc == NULL, "vector_element_at_index() gave wrong value");
+    tests_log_test(status, "vector_element_index() failed(%d)", __LINE__);
+    tests_log_test(pc == NULL, "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 1, &pc);
-    tests_log_test(status, "vector_element_index() failed");
+    tests_log_test(status, "vector_element_index() failed(%d)", __LINE__);
     tests_log_test(!strcmp(pc, "First string"),
-                   "vector_element_at_index() gave wrong value");
+                   "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &pc);
-    tests_log_test(status, "vector_element_index() failed");
+    tests_log_test(status, "vector_element_index() failed(%d)", __LINE__);
     tests_log_test(!strcmp(pc, "Second string"),
-                   "vector_element_at_index() gave wrong value");
+                   "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 3, &pc);
-    tests_log_test(status, "vector_element_index() failed");
+    tests_log_test(status, "vector_element_index() failed(%d)", __LINE__);
     tests_log_test(!strcmp(pc, "Third string"),
-                   "vector_element_at_index() gave wrong value");
+                   "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     status = vector_delete_index(vector, 2);
-    tests_log_test(status, "vector_delete_index() failed");
+    tests_log_test(status, "vector_delete_index() failed(%d)", __LINE__);
 
     status = vector_element_at_index(vector, 2, &pc);
-    tests_log_test(status, "vector_element_index() failed");
+    tests_log_test(status, "vector_element_index() failed(%d)", __LINE__);
     tests_log_test(!strcmp(pc, "Third string"),
-                   "vector_element_at_index() gave wrong value");
+                   "vector_element_at_index() gave wrong value(%d)", __LINE__);
 
     sz = vector_length(vector);
-    tests_log_test(sz == 3, "vector_length() gave wrong value");
+    tests_log_test(sz == 3, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_capacity(vector);
-    tests_log_test(sz == 4, "vector_length() gave wrong value");
+    tests_log_test(sz == 4, "vector_length() gave wrong value(%d)", __LINE__);
 
     sz = vector_free_space(vector);
-    tests_log_test(sz == 1, "vector_free_space() gave wrong value");
+    tests_log_test(sz == 1, "vector_free_space() gave wrong value(%d)", __LINE__);
 
     status = vector_is_empty(vector);
-    tests_log_test(!status, "vector_is_empty() gave wrong value");
+    tests_log_test(!status, "vector_is_empty() gave wrong value(%d)", __LINE__);
     
     vector_destroy(vector);
 }
@@ -346,23 +349,23 @@ static void test_vector_find(void)
     size_t index;
 
     status = vector_find(vector, &index, 10ULL);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 20ULL);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 40ULL);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 30ULL);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 50ULL);
-    tests_log_test(!status, "vector_find() incorrectly found element");
+    tests_log_test(!status, "vector_find() incorrectly found element(%d)", __LINE__);
 
     vector_destroy(vector);
 }
@@ -449,23 +452,23 @@ void test_vector_find_struct(void)
     size_t index;
 
     status = vector_find(vector, &index, (void *) &h1);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h2);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h3);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h4);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h5);
-    tests_log_test(!status, "vector_find() incorrectly found element");
+    tests_log_test(!status, "vector_find() incorrectly found element(%d)", __LINE__);
 
     vector_destroy(vector);
 }
@@ -487,41 +490,41 @@ static void test_vector_sort_strings(void)
     size_t index;
 
     status = vector_find(vector, &index, "Elephant");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Dog");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Giraffe");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Aardvark");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Pelican");
-    tests_log_test(!status, "vector_find() incorrectly found element");
+    tests_log_test(!status, "vector_find() incorrectly found element(%d)", __LINE__);
 
     vector_sort(vector);
 
     status = vector_find(vector, &index, "Aardvark");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Dog");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Elephant");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, "Giraffe");
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     vector_destroy(vector);
 }
@@ -543,41 +546,41 @@ static void test_vector_sort_sizet(void)
     size_t index;
 
     status = vector_find(vector, &index, (size_t) 100);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 400);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 200);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 300);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 500);
-    tests_log_test(!status, "vector_find() incorrectly found element");
+    tests_log_test(!status, "vector_find() incorrectly found element(%d)", __LINE__);
 
     vector_sort(vector);
 
     status = vector_find(vector, &index, (size_t) 100);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 200);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 300);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (size_t) 400);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     vector_destroy(vector);
 }
@@ -605,41 +608,41 @@ static void test_vector_sort_struct(void)
     size_t index;
 
     status = vector_find(vector, &index, (void *) &h3);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h2);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h1);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h4);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h5);
-    tests_log_test(!status, "vector_find() incorrectly found element");
+    tests_log_test(!status, "vector_find() incorrectly found element(%d)", __LINE__);
 
     vector_sort(vector);
 
     status = vector_find(vector, &index, (void *) &h1);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h2);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h3);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, (void *) &h4);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     vector_destroy(vector);
 }
@@ -661,38 +664,38 @@ void test_vector_reverse_sort(void)
     size_t index;
 
     status = vector_find(vector, &index, 100L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 400L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 200L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 300L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     vector_reverse_sort(vector);
 
     status = vector_find(vector, &index, 400L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 0, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 300L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 1, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 200L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 2, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "vector_find() gave wrong index(%d)", __LINE__);
 
     status = vector_find(vector, &index, 100L);
-    tests_log_test(status, "vector_find() failed to find element");
-    tests_log_test(index == 3, "vector_find() gave wrong index");
+    tests_log_test(status, "vector_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "vector_find() gave wrong index(%d)", __LINE__);
 
     vector_destroy(vector);
 }

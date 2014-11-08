@@ -75,7 +75,7 @@ void vector_destroy(struct vector * vector)
 {
     if ( vector->free_on_destroy ) {
         for ( size_t i = 0; i < vector->length; ++i ) {
-            gdt_free(&vector->elements[i], vector->type);
+            gdt_free(&vector->elements[i]);
         }
     }
 
@@ -133,7 +133,7 @@ bool vector_delete_index(struct vector * vector, const size_t index)
         }
     }
 
-    gdt_free(&vector->elements[index], vector->type);
+    gdt_free(&vector->elements[index]);
 
     if ( index != vector->length - 1 ) {
         struct gdt_generic_datatype * src = vector->elements + index + 1;
@@ -176,7 +176,7 @@ bool vector_element_at_index(struct vector * vector,
         }
     }
 
-    gdt_get_value(&vector->elements[index], vector->type, p);
+    gdt_get_value(&vector->elements[index], p);
 
     return true;
 }

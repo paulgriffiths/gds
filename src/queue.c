@@ -69,7 +69,7 @@ void queue_destroy(struct queue * queue)
 {
     if ( queue->free_on_destroy ) {
         while ( queue->size ) {
-            gdt_free(&queue->elements[queue->front++], queue->type);
+            gdt_free(&queue->elements[queue->front++]);
             if ( queue->front == queue->capacity ) {
                 queue->front = 0;
             }
@@ -153,7 +153,7 @@ bool queue_pop(struct queue * queue, void * p)
         }
     }
 
-    gdt_get_value(&queue->elements[queue->front++], queue->type, p);
+    gdt_get_value(&queue->elements[queue->front++], p);
 
     if ( queue->front == queue->capacity ) {
         queue->front = 0;
@@ -177,7 +177,7 @@ bool queue_peek(struct queue * queue, void * p)
         }
     }
 
-    gdt_get_value(&queue->elements[queue->front], queue->type, p);
+    gdt_get_value(&queue->elements[queue->front], p);
 
     return true;
 }
