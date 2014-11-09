@@ -5,17 +5,20 @@
 #include "test_queue.h"
 #include "test_list.h"
 #include "test_vector.h"
+#include "test_dict.h"
 #include "test_logging.h"
 
 int main(int argc, char ** argv)
 {
     bool stack = false, queue = false, list = false, vector = false;
+    bool dict = false;
 
     if ( argc < 2 ) {
         stack = true;
         queue = true;
         list = true;
         vector = true;
+        dict = true;
     }
     else {
         size_t i = 0;
@@ -32,6 +35,9 @@ int main(int argc, char ** argv)
             }
             else if ( !strcmp(argv[i], "vector") ) {
                 vector = true;
+            }
+            else if ( !strcmp(argv[i], "dict") ) {
+                dict = true;
             }
         }
     }
@@ -54,6 +60,11 @@ int main(int argc, char ** argv)
     if ( vector ) {
         printf("Running unit tests for generic vector...\n");
         test_vector();
+    }
+
+    if ( dict ) {
+        printf("Running unit tests for generic dictionary...\n");
+        test_dict();
     }
 
     printf("%d successes and %d failures from %d tests.\n",
