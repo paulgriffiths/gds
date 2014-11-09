@@ -42,8 +42,6 @@ struct vector {
 static bool vector_insert_internal(Vector vector,
                                    const size_t index, va_list ap);
 
-/*  Creates and returns a new vector of specified type  */
-
 Vector vector_create(const size_t capacity, const enum gds_datatype type,
                      const int opts, ...)
 {
@@ -67,6 +65,9 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
     va_list ap;
     va_start(ap, opts);
     if ( type == DATATYPE_POINTER ) {
+
+        /*  Custom comparison function only needed for void * members  */
+
         new_vector->compfunc = va_arg(ap, int (*)(const void *, const void *));
     }
     else {
@@ -89,8 +90,6 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
     return new_vector;
 }
 
-/*  Destroys a previously created vector  */
-
 void vector_destroy(Vector vector)
 {
     if ( vector->free_on_destroy ) {
@@ -103,8 +102,6 @@ void vector_destroy(Vector vector)
     free(vector);
 }
 
-/*  Appends a value to the end of a vector  */
-
 bool vector_append(Vector vector, ...)
 {
     va_list ap;
@@ -114,8 +111,6 @@ bool vector_append(Vector vector, ...)
 
     return status;
 }
-
-/*  Prepends a value to the front of a vector  */
 
 bool vector_prepend(Vector vector, ...)
 {
@@ -127,8 +122,6 @@ bool vector_prepend(Vector vector, ...)
     return status;
 }
 
-/*  Inserts a value into a vector at a specified index  */
-
 bool vector_insert(Vector vector, const size_t index, ...)
 {
     va_list ap;
@@ -138,8 +131,6 @@ bool vector_insert(Vector vector, const size_t index, ...)
 
     return status;
 }
-
-/*  Deletes a value from a vector at a specified index  */
 
 bool vector_delete_index(Vector vector, const size_t index)
 {
@@ -156,6 +147,9 @@ bool vector_delete_index(Vector vector, const size_t index)
     gdt_free(&vector->elements[index]);
 
     if ( index != vector->length - 1 ) {
+
+        /*  Move later elements back if we're not deleting the last one  */
+
         struct gdt_generic_datatype * src = vector->elements + index + 1;
         struct gdt_generic_datatype * dst = src - 1;
         const size_t numcopy = vector->length - index - 1;
@@ -167,21 +161,21 @@ bool vector_delete_index(Vector vector, const size_t index)
     return true;
 }
 
-/*  Deletes the first element in a vector  */
-
 bool vector_delete_front(Vector vector)
 {
     return vector_delete_index(vector, 0);
 }
 
-/*  Deletes the last element in a vector  */
-
 bool vector_delete_back(Vector vector)
 {
+    /*  This can "underflow" if list is empty, but
+     *  that's defined behavior for unsigned types.
+     *  If list is empty, the index will underflow to
+     *  a very large amount, and still be obviously
+     *  out of range.                                  */
+
     return vector_delete_index(vector, vector->length - 1);
 }
-
-/*  Gets the data at a specified index  */
 
 bool vector_element_at_index(Vector vector, const size_t index, void * p)
 {
@@ -199,8 +193,6 @@ bool vector_element_at_index(Vector vector, const size_t index, void * p)
 
     return true;
 }
-
-/*  Sets the data at a specified index  */
 
 bool vector_set_element_at_index(Vector vector, const size_t index, ...)
 {
@@ -222,8 +214,6 @@ bool vector_set_element_at_index(Vector vector, const size_t index, ...)
     return true;
 }
 
-/*  Finds an element in a vector  */
-
 bool vector_find(Vector vector, size_t * index, ...)
 {
     struct gdt_generic_datatype needle;
@@ -242,15 +232,11 @@ bool vector_find(Vector vector, size_t * index, ...)
     return false;
 }
 
-/*  Sorts the elements in a vector  */
-
 void vector_sort(Vector vector)
 {
     qsort(vector->elements, vector->length, sizeof *vector->elements,
           gdt_compare_void);
 }
-
-/*  Sorts the elements in a vector in reverse order  */
 
 void vector_reverse_sort(Vector vector)
 {
@@ -258,35 +244,25 @@ void vector_reverse_sort(Vector vector)
           gdt_reverse_compare_void);
 }
 
-/*  Checks if a vector is empty  */
-
 bool vector_is_empty(Vector vector)
 {
     return vector->length == 0;
 }
-
-/*  Returns the length of a vector  */
 
 size_t vector_length(Vector vector)
 {
     return vector->length;
 }
 
-/*  Returns the capacity of a vector  */
-
 size_t vector_capacity(Vector vector)
 {
     return vector->capacity;
 }
 
-/*  Returns the free space in a vector  */
-
 size_t vector_free_space(Vector vector)
 {
     return vector->capacity - vector->length;
 }
-
-/*  Inserts a node at a specified index  */
 
 static bool vector_insert_internal(Vector vector,
                                    const size_t index, va_list ap)
@@ -314,6 +290,9 @@ static bool vector_insert_internal(Vector vector,
     }
 
     if ( index != vector->length ) {
+
+        /*  Move later elements forward if we're not inserting at the back  */
+
         struct gdt_generic_datatype * src = vector->elements + index;
         struct gdt_generic_datatype * dst = src + 1;
         const size_t numcopy = vector->length - index;

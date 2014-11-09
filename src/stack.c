@@ -26,8 +26,6 @@ struct stack {
     bool exit_on_error;     /*!<  Exit on error if true                     */
 };
 
-/*  Creates and returns a new stack of specified type and capacity  */
-
 Stack stack_create(const size_t capacity, const enum gds_datatype type,
                    const int opts)
 {
@@ -45,7 +43,6 @@ Stack stack_create(const size_t capacity, const enum gds_datatype type,
     new_stack->capacity = capacity;
     new_stack->top = 0;
     new_stack->type = type;
-
     new_stack->resizable = (opts & GDS_RESIZABLE) ? true : false;
     new_stack->free_on_destroy = (opts & GDS_FREE_ON_DESTROY) ? true : false;
     new_stack->exit_on_error = (opts & GDS_EXIT_ON_ERROR) ? true : false;
@@ -65,11 +62,16 @@ Stack stack_create(const size_t capacity, const enum gds_datatype type,
     return new_stack;
 }
 
-/*  Destroys a previously created stack  */
-
 void stack_destroy(Stack stack)
 {
     if ( stack->free_on_destroy ) {
+
+        /*  We can't use stack_pop() to get each element in
+         *  turn, here, since that would require knowing
+         *  their type and break encapsulation, so we have
+         *  to do it manually and tolerate a little code
+         *  duplication for the greater good.                */
+
         while ( stack->top ) {
             gdt_free(&stack->elements[--stack->top]);
         }
@@ -78,8 +80,6 @@ void stack_destroy(Stack stack)
     free(stack->elements);
     free(stack);
 }
-
-/*  Pushes an element onto the stack  */
 
 bool stack_push(Stack stack, ...)
 {
@@ -119,8 +119,6 @@ bool stack_push(Stack stack, ...)
     return true;
 }
 
-/*  Pops an element from the stack  */
-
 bool stack_pop(Stack stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
@@ -136,8 +134,6 @@ bool stack_pop(Stack stack, void * p)
 
     return true;
 }
-
-/*  Peeks at the top element of the stack without popping it  */
 
 bool stack_peek(Stack stack, void * p)
 {
@@ -155,35 +151,25 @@ bool stack_peek(Stack stack, void * p)
     return true;
 }
 
-/*  Returns true if the stack is full  */
-
 bool stack_is_full(Stack stack)
 {
     return stack->top == stack->capacity;
 }
-
-/*  Returns true if the stack is empty  */
 
 bool stack_is_empty(Stack stack)
 {
     return stack->top == 0;
 }
 
-/*  Returns the capacity of a stack  */
-
 size_t stack_capacity(Stack stack)
 {
     return stack->capacity;
 }
 
-/*  Returns the number of free elements on the stack  */
-
 size_t stack_free_space(Stack stack)
 {
     return stack->capacity - stack->top;
 }
-
-/*  Returns the number of elements currently on the stack  */
 
 size_t stack_size(Stack stack)
 {

@@ -208,7 +208,7 @@ bool list_delete_front(List list)
 
 bool list_delete_back(List list)
 {
-    /*  This can underflow if list is empty, but
+    /*  This can "underflow" if list is empty, but
      *  that's defined behavior for unsigned types.
      *  If list is empty, the index will underflow to
      *  a very large amount, and still be obviously

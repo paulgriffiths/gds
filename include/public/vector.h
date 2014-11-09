@@ -26,9 +26,12 @@ typedef struct vector * Vector;
  * \param capacity  The initial capacity for the vector.
  * \param type      The datatype for the vector.
  * \param opts      The following options can be OR'd together:
- * `GDS_FREE_ON_DESTROY` to automatically `free()` pointer members
- * when they are deleted or when the vector is destroyed;
- * `GDS_EXIT_ON_ERROR` to print a message to the standard error stream
+ *
+ * * `GDS_FREE_ON_DESTROY` to automatically `free()` pointer members
+ * when they are deleted or when the vector is destroyed. If this option
+ * is specified, then the caller should ensure that all the elements of
+ * the vector have been initialized prior to destruction.
+ * * `GDS_EXIT_ON_ERROR` to print a message to the standard error stream
  * and `exit()`, rather than returning a failure status.
  * \param ...       If `type` is `DATATYPE_POINTER`, this argument should
  * be a pointer to a comparison function. In all other cases, this argument
