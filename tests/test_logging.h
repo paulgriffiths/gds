@@ -38,4 +38,3 @@ int tests_get_successes(void);
 int tests_get_failures(void);
 
 #endif      /*  PG_TEST_LOGGING_H  */
-
