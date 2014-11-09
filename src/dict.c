@@ -100,7 +100,7 @@ void dict_destroy(Dict dict)
     free(dict);
 }
 
-int dict_has_key(Dict dict, const char * key)
+bool dict_has_key(Dict dict, const char * key)
 {
     return dict_has_key_internal(dict, key, NULL);
 }
@@ -134,6 +134,18 @@ bool dict_insert(Dict dict, const char * key, ...)
             return false;
         }
     }
+
+    return true;
+}
+
+bool dict_value_for_key(Dict dict, const char * key, void * p)
+{
+    struct kvpair * pair;
+    if ( !dict_has_key_internal(dict, key, &pair) ) {
+        return false;
+    }
+
+    gdt_get_value(&pair->value, p);
 
     return true;
 }
@@ -192,8 +204,7 @@ static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
     }
 }
 
-static KVPair kvpair_create(const char * key, 
-                            const enum gds_datatype type,
+static KVPair kvpair_create(const char * key, const enum gds_datatype type,
                             va_list ap)
 {
     struct kvpair * new_pair = kvpair_create_novalue(key);

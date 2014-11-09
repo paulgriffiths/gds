@@ -46,6 +46,7 @@ Dict dict_create(const enum gds_datatype type,
 void dict_destroy(Dict dict);
 
 bool dict_insert(Dict dict, const char * key, ...);
-int dict_has_key(Dict dict, const char * key);
+bool dict_has_key(Dict dict, const char * key);
+bool dict_value_for_key(Dict dict, const char * key, void * p);
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GENERIC_DICTIONARY_H  */
