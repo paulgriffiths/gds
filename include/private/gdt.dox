@@ -1,3 +1,7 @@
 /**
  *  \defgroup gdt Private functionality for manipulating generic datatypes
+ *  \details This module implements the mechanism for allowing generic
+ *  datatypes. Each datatype implements a C `union` containing all the
+ *  allowable fundamental types. Functions are provided for getting,
+ *  setting, `free()`ing, and comparing values.
  */

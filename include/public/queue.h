@@ -26,6 +26,7 @@ typedef struct queue * Queue;
  * \param capacity  The initial capacity of the queue.
  * \param type      The datatype for the queue.
  * \param opts      The following options can be OR'd together:
+ * `GDS_RESIZABLE` to dynamically resize the queue on-demand;
  * `GDS_FREE_ON_DESTROY` to automatically `free()` pointer members
  * when they are deleted or when the queue is destroyed;
  * `GDS_EXIT_ON_ERROR` to print a message to the standard error stream
@@ -43,14 +44,14 @@ Queue queue_create(const size_t capacity,
  * when creating the queue, any pointer values still in the queue will
  * be `free()`d prior to destruction.
  * \ingroup         queue
- * \param stack     A pointer to the queue.
+ * \param queue     A pointer to the queue.
  */
 void queue_destroy(Queue queue);
 
 /*!
  * \brief           Pushes a value onto the queue.
  * \ingroup         queue
- * \param list      A pointer to the queue.
+ * \param queue     A pointer to the queue.
  * \param ...       The value to push onto the queue. This should
  * be of a type appropriate to the type set when creating the queue.
  * \retval true     Success
@@ -63,7 +64,7 @@ bool queue_push(Queue queue, ...);
 /*!
  * \brief           Pops a value from the queue.
  * \ingroup         queue
- * \param list      A pointer to the queue.
+ * \param queue     A pointer to the queue.
  * \param p         A pointer to an object of a type appropriate to the
  * type set when creating the queue. The object at this address will be
  * modified to contain the value popped from the queue.
@@ -77,7 +78,7 @@ bool queue_pop(Queue queue, void * p);
  * \details         This function retrieves the value which would be
  * popped from the queue, without actually popping it. 
  * \ingroup         queue
- * \param list      A pointer to the queue.
+ * \param queue     A pointer to the queue.
  * \param p         A pointer to an object of a type appropriate to the
  * type set when creating the queue. The object at this address will be
  * modified to contain the value at the top of the queue.

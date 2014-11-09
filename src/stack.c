@@ -1,26 +1,35 @@
+/*!
+ * \file            stack.c
+ * \brief           Implementation of generic stack data structure.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "gds_common.h"
 #include "stack.h"
 
+/*!  Growth factor for dynamic memory allocation  */
 static const size_t GROWTH = 2;
 
+/*!  Stack structure  */
 struct stack {
-    size_t top;
-    size_t capacity;
-    enum gds_datatype type;
-    struct gdt_generic_datatype * elements;
-    bool resizable;
-    bool free_on_destroy;
-    bool exit_on_error;
+    size_t top;                                 /*!<  Top of stack          */
+    size_t capacity;                            /*!<  Stack capacity        */
+    enum gds_datatype type;                     /*!<  Stack datatype        */
+    struct gdt_generic_datatype * elements;     /*!<  Pointer to elements   */
+    bool resizable;         /*!<  Dynamically resizabe if true              */
+    bool free_on_destroy;   /*!<  Free pointer elements on destroy if true  */
+    bool exit_on_error;     /*!<  Exit on error if true                     */
 };
 
 /*  Creates and returns a new stack of specified type and capacity  */
 
-struct stack * stack_create(const size_t capacity,
-                            const enum gds_datatype type,
-                            const int opts)
+Stack stack_create(const size_t capacity, const enum gds_datatype type,
+                   const int opts)
 {
     struct stack * new_stack = malloc(sizeof *new_stack);
     if ( !new_stack ) {
@@ -58,7 +67,7 @@ struct stack * stack_create(const size_t capacity,
 
 /*  Destroys a previously created stack  */
 
-void stack_destroy(struct stack * stack)
+void stack_destroy(Stack stack)
 {
     if ( stack->free_on_destroy ) {
         while ( stack->top ) {
@@ -72,7 +81,7 @@ void stack_destroy(struct stack * stack)
 
 /*  Pushes an element onto the stack  */
 
-bool stack_push(struct stack * stack, ...)
+bool stack_push(Stack stack, ...)
 {
     if ( stack_is_full(stack) ) {
         if ( stack->resizable ) {
@@ -112,7 +121,7 @@ bool stack_push(struct stack * stack, ...)
 
 /*  Pops an element from the stack  */
 
-bool stack_pop(struct stack * stack, void * p)
+bool stack_pop(Stack stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
         if ( stack->exit_on_error ) {
@@ -130,7 +139,7 @@ bool stack_pop(struct stack * stack, void * p)
 
 /*  Peeks at the top element of the stack without popping it  */
 
-bool stack_peek(struct stack * stack, void * p)
+bool stack_peek(Stack stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
         if ( stack->exit_on_error ) {
@@ -148,35 +157,35 @@ bool stack_peek(struct stack * stack, void * p)
 
 /*  Returns true if the stack is full  */
 
-bool stack_is_full(struct stack * stack)
+bool stack_is_full(Stack stack)
 {
     return stack->top == stack->capacity;
 }
 
 /*  Returns true if the stack is empty  */
 
-bool stack_is_empty(struct stack * stack)
+bool stack_is_empty(Stack stack)
 {
     return stack->top == 0;
 }
 
 /*  Returns the capacity of a stack  */
 
-size_t stack_capacity(struct stack * stack)
+size_t stack_capacity(Stack stack)
 {
     return stack->capacity;
 }
 
 /*  Returns the number of free elements on the stack  */
 
-size_t stack_free_space(struct stack * stack)
+size_t stack_free_space(Stack stack)
 {
     return stack->capacity - stack->top;
 }
 
 /*  Returns the number of elements currently on the stack  */
 
-size_t stack_size(struct stack * stack)
+size_t stack_size(Stack stack)
 {
     return stack->top;
 }

@@ -1,3 +1,11 @@
+/*!
+ * \file            queue.c
+ * \brief           Implementation of generic queue data structure.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,27 +13,28 @@
 #include "gds_common.h"
 #include "queue.h"
 
+/*!  Growth factor for dynamic memory allocation  */
 static const size_t GROWTH = 2;
 
+/*!  Queue structure  */
 struct queue {
-    size_t front;
-    size_t back;
-    size_t capacity;
-    size_t size;
+    size_t front;                               /*!<  Front of queue        */
+    size_t back;                                /*!<  Back of queue         */
+    size_t capacity;                            /*!<  Capacity of queue     */
+    size_t size;                                /*!<  Size of queue         */
 
-    enum gds_datatype type;
-    struct gdt_generic_datatype * elements;
+    enum gds_datatype type;                     /*!<  Queue datatype        */
+    struct gdt_generic_datatype * elements;     /*!<  Pointer to elements   */
 
-    bool resizable;
-    bool free_on_destroy;
-    bool exit_on_error;
+    bool resizable;         /*!<  Dynamically resizable if true             */
+    bool free_on_destroy;   /*!<  Free pointer elements on destroy if true  */
+    bool exit_on_error;     /*!<  Exit on error if true                     */
 };
 
 /*  Creates and returns a new queue of specified type and capacity  */
 
-struct queue * queue_create(const size_t capacity,
-                            const enum gds_datatype type,
-                            const int opts)
+Queue queue_create(const size_t capacity, const enum gds_datatype type,
+                   const int opts)
 {
     struct queue * new_queue = malloc(sizeof *new_queue);
     if ( !new_queue ) {
@@ -65,7 +74,7 @@ struct queue * queue_create(const size_t capacity,
 
 /*  Destroys a previously created queue  */
 
-void queue_destroy(struct queue * queue)
+void queue_destroy(Queue queue)
 {
     if ( queue->free_on_destroy ) {
         while ( queue->size ) {
@@ -83,7 +92,7 @@ void queue_destroy(struct queue * queue)
 
 /*  Pushes an element onto the queue  */
 
-bool queue_push(struct queue * queue, ...)
+bool queue_push(Queue queue, ...)
 {
     if ( queue_is_full(queue) ) {
         if ( queue->resizable ) {
@@ -142,7 +151,7 @@ bool queue_push(struct queue * queue, ...)
 
 /*  Pops an element from the queue  */
 
-bool queue_pop(struct queue * queue, void * p)
+bool queue_pop(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
         if ( queue->exit_on_error ) {
@@ -166,7 +175,7 @@ bool queue_pop(struct queue * queue, void * p)
 
 /*  Peeks at the front element of the queue without popping it  */
 
-bool queue_peek(struct queue * queue, void * p)
+bool queue_peek(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
         if ( queue->exit_on_error ) {
@@ -184,35 +193,35 @@ bool queue_peek(struct queue * queue, void * p)
 
 /*  Returns true if the queue is full  */
 
-bool queue_is_full(struct queue * queue)
+bool queue_is_full(Queue queue)
 {
     return queue->size == queue->capacity;
 }
 
 /*  Returns true if the queue is empty  */
 
-bool queue_is_empty(struct queue * queue)
+bool queue_is_empty(Queue queue)
 {
     return queue->size == 0;
 }
 
 /*  Returns the capacity of a queue  */
 
-size_t queue_capacity(struct queue * queue)
+size_t queue_capacity(Queue queue)
 {
     return queue->capacity;
 }
 
 /*  Returns the number of free elements on the queue  */
 
-size_t queue_free_space(struct queue * queue)
+size_t queue_free_space(Queue queue)
 {
     return queue->capacity - queue->size;
 }
 
 /*  Returns the number of elements on the queue  */
 
-size_t queue_size(struct queue * queue)
+size_t queue_size(Queue queue)
 {
     return queue->size;
 }

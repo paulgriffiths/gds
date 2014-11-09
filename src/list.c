@@ -1,40 +1,81 @@
+/*!
+ * \file            list.c
+ * \brief           Implementation of generic list data structure.
+ * \details         The list is implemented as a double-ended, double-linked
+ * list.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "gds_common.h"
 #include "list.h"
 
-static const size_t GROWTH = 2;
+/*!  List node structure  */
+typedef struct list_node {
+    struct gdt_generic_datatype element;    /*!<  Data element              */
+    struct list_node * prev;                /*!<  Pointer to previous node  */
+    struct list_node * next;                /*!<  Pointer to next node      */
+} * ListNode;
 
-struct list_node {
-    struct gdt_generic_datatype element;
-    struct list_node * prev;
-    struct list_node * next;
-};
-
+/*!  List structure  */
 struct list {
-    size_t length;
-    enum gds_datatype type;
-    gds_cfunc compfunc;
-    struct list_node * head;
-    struct list_node * tail;
+    size_t length;              /*!<  Length of list                        */
+    enum gds_datatype type;     /*!<  List datatype                         */
+    gds_cfunc compfunc;         /*!<  Element comparison function           */
+    struct list_node * head;    /*!<  Pointer to head of list               */
+    struct list_node * tail;    /*!<  Pointer to tail of list               */
 
-    bool free_on_destroy;
-    bool exit_on_error;
+    bool free_on_destroy;   /*!<  Free pointer elements on destroy if true  */
+    bool exit_on_error;     /*!<  Exit on error if true                     */
 };
 
-static struct list_node * list_node_create(struct list * list, va_list ap);
-static void list_node_destroy(struct list * list, struct list_node * node);
+/*!
+ * \brief           Private function to create list node.
+ * \param list      A pointer to the list.
+ * \param ap        A `va_list` containing the data value for the node.
+ * This should be of a type appropriate to the type set when creating
+ * the list.
+ * \retval NULL     Failure, dynamic memory allocation failed
+ * \retval non-NULL A pointer to the new node
+ */
+static ListNode list_node_create(List list, va_list ap);
 
-static struct list_node * list_node_at_index(struct list * list,
-                                             const size_t index);
-static bool list_insert_internal(struct list * list,
-                                 struct list_node * node,
-                                 const size_t index);
+/*!
+ * \brief           Destroys a list node.
+ * \details         If the `GDS_FREE_ON_DESTROY` option was specified
+ * when creating the list, any pointer values still in the list will
+ * be `free()`d prior to destruction.
+ * \param list      A pointer to the list.
+ * \param node      A pointer to the node.
+ */
+static void list_node_destroy(List list, ListNode node);
+
+/*!
+ * \brief           Private function to return the node at a specified index.
+ * \param list      A pointer to the list.
+ * \param index     The index of the requested node.
+ * \retval NULL     Failure, index out of range
+ * \retval non-NULL A pointer to the node at the specified index
+ */
+static ListNode list_node_at_index(List list, const size_t index);
+
+/*!
+ * \brief           Private function to insert a node into a list.
+ * \param list      A pointer to the list.
+ * \param node      A pointer to the node to insert.
+ * \param index     The index at which to insert.
+ * \retval true     Success
+ * \retval false    Failure, index out of range
+ */
+static bool list_insert_internal(List list, ListNode node, const size_t index);
 
 /*  Creates and returns a new list of specified type  */
 
-struct list * list_create(const enum gds_datatype type,
+List list_create(const enum gds_datatype type,
                           const int opts, ...)
 {
     struct list * new_list = malloc(sizeof *new_list);
@@ -71,7 +112,7 @@ struct list * list_create(const enum gds_datatype type,
 
 /*  Destroys a previously created list  */
 
-void list_destroy(struct list * list)
+void list_destroy(List list)
 {
     while ( !list_is_empty(list) ) {
         list_delete_front(list);
@@ -82,7 +123,7 @@ void list_destroy(struct list * list)
 
 /*  Appends a value to the end of a list  */
 
-bool list_append(struct list * list, ...)
+bool list_append(List list, ...)
 {
     va_list ap;
     va_start(ap, list);
@@ -94,7 +135,7 @@ bool list_append(struct list * list, ...)
 
 /*  Prepends a value to the front of a list  */
 
-bool list_prepend(struct list * list, ...)
+bool list_prepend(List list, ...)
 {
     va_list ap;
     va_start(ap, list);
@@ -106,7 +147,7 @@ bool list_prepend(struct list * list, ...)
 
 /*  Inserts a value into a list at a specified index  */
 
-bool list_insert(struct list * list, const size_t index, ...)
+bool list_insert(List list, const size_t index, ...)
 {
     va_list ap;
     va_start(ap, index);
@@ -118,7 +159,7 @@ bool list_insert(struct list * list, const size_t index, ...)
 
 /*  Deletes a value from a list at a specified index  */
 
-bool list_delete_index(struct list * list, const size_t index)
+bool list_delete_index(List list, const size_t index)
 {
     struct list_node * dead = list_node_at_index(list, index);
     if ( !dead ) {
@@ -154,21 +195,21 @@ bool list_delete_index(struct list * list, const size_t index)
 
 /*  Deletes the first element in a list  */
 
-bool list_delete_front(struct list * list)
+bool list_delete_front(List list)
 {
     return list_delete_index(list, 0);
 }
 
 /*  Deletes the last element in a list  */
 
-bool list_delete_back(struct list * list)
+bool list_delete_back(List list)
 {
     return list_delete_index(list, list->length - 1);
 }
 
 /*  Gets the data at a specified index  */
 
-bool list_element_at_index(struct list * list, const size_t index, void * p)
+bool list_element_at_index(List list, const size_t index, void * p)
 {
     struct list_node * node = list_node_at_index(list, index);
     if ( !node ) {
@@ -182,7 +223,7 @@ bool list_element_at_index(struct list * list, const size_t index, void * p)
 
 /*  Sets the data at a specified index  */
 
-bool list_set_element_at_index(struct list * list, const size_t index, ...)
+bool list_set_element_at_index(List list, const size_t index, ...)
 {
     struct list_node * node = list_node_at_index(list, index);
     if ( !node ) {
@@ -199,7 +240,7 @@ bool list_set_element_at_index(struct list * list, const size_t index, ...)
 
 /*  Finds an element in a list  */
 
-bool list_find(struct list * list, size_t * index, ...)
+bool list_find(List list, size_t * index, ...)
 {
     struct gdt_generic_datatype needle;
     va_list ap;
@@ -224,21 +265,21 @@ bool list_find(struct list * list, size_t * index, ...)
 
 /*  Checks if a list is empty  */
 
-bool list_is_empty(struct list * list)
+bool list_is_empty(List list)
 {
     return list->length == 0;
 }
 
 /*  Returns the length of a list  */
 
-size_t list_length(struct list * list)
+size_t list_length(List list)
 {
     return list->length;
 }
 
 /*  Creates a new list node  */
 
-static struct list_node * list_node_create(struct list * list, va_list ap)
+static ListNode list_node_create(List list, va_list ap)
 {
     struct list_node * new_node = malloc(sizeof *new_node);
     if ( !new_node ) {
@@ -260,7 +301,7 @@ static struct list_node * list_node_create(struct list * list, va_list ap)
 
 /*  Destroys a list node  */
 
-static void list_node_destroy(struct list * list, struct list_node * node)
+static void list_node_destroy(List list, ListNode node)
 {
     if ( list->free_on_destroy ) {
         gdt_free(&node->element);
@@ -271,7 +312,7 @@ static void list_node_destroy(struct list * list, struct list_node * node)
 
 /*  Returns the node at the specified index  */
 
-static struct list_node * list_node_at_index(struct list * list,
+static ListNode list_node_at_index(List list,
                                              const size_t index)
 {
     if ( index >= list->length ) {
@@ -311,8 +352,8 @@ static struct list_node * list_node_at_index(struct list * list,
 
 /*  Inserts a node at a specified index  */
 
-static bool list_insert_internal(struct list * list,
-                                 struct list_node * node,
+static bool list_insert_internal(List list,
+                                 ListNode node,
                                  const size_t index)
 {
     if ( !node ) {

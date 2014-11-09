@@ -1,3 +1,6 @@
 /**
  *  \defgroup list Public interface to generic list data structure
+ *  \details A list is data structure containing a finite ordered collection
+ *  of values which allows sequential access (compared to a vector, or array,
+ *  which allows random access).
  */

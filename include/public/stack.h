@@ -26,6 +26,7 @@ typedef struct stack * Stack;
  * \param capacity  The initial capacity of the stack.
  * \param type      The datatype for the stack.
  * \param opts      The following options can be OR'd together:
+ * `GDS_RESIZABLE` to dynamically resize the stack on-demand;
  * `GDS_FREE_ON_DESTROY` to automatically `free()` pointer members
  * when they are deleted or when the stack is destroyed;
  * `GDS_EXIT_ON_ERROR` to print a message to the standard error stream
@@ -50,7 +51,7 @@ void stack_destroy(Stack stack);
 /*!
  * \brief           Pushes a value onto the stack.
  * \ingroup         stack
- * \param list      A pointer to the stack.
+ * \param stack     A pointer to the stack.
  * \param ...       The value to push onto the stack. This should
  * be of a type appropriate to the type set when creating the stack.
  * \retval true     Success
@@ -63,7 +64,7 @@ bool stack_push(Stack stack, ...);
 /*!
  * \brief           Pops a value from the stack.
  * \ingroup         stack
- * \param list      A pointer to the stack.
+ * \param stack     A pointer to the stack.
  * \param p         A pointer to an object of a type appropriate to the
  * type set when creating the stack. The object at this address will be
  * modified to contain the value popped from the stack.
@@ -77,7 +78,7 @@ bool stack_pop(Stack stack, void * p);
  * \details         This function retrieves the value which would be
  * popped from the stack, without actually popping it. 
  * \ingroup         stack
- * \param list      A pointer to the stack.
+ * \param stack     A pointer to the stack.
  * \param p         A pointer to an object of a type appropriate to the
  * type set when creating the stack. The object at this address will be
  * modified to contain the value at the top of the stack.

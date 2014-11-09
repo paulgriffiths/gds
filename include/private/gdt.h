@@ -99,8 +99,8 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
  * \brief           Compares two generic datatypes via `void` pointers.
  * \ingroup         gdt
  * \details         This function is suitable for passing to `qsort()`.
- * \param d1        A pointer to the first generic datatype.
- * \param d2        A pointer to the second generic datatype.
+ * \param p1        A pointer to the first generic datatype.
+ * \param p2        A pointer to the second generic datatype.
  * \retval 0        The two datatypes are equal.
  * \retval -1       The first datatype is less than the second datatype.
  * \retval 1        The first datatype is greater than the second datatype.
@@ -112,8 +112,8 @@ int gdt_compare_void(const void * p1, const void * p2);
  * \ingroup         gdt
  * \details         This function is suitable for passing to `qsort()`
  * when the desired behavior is to sort in reverse order.
- * \param d1        A pointer to the first generic datatype.
- * \param d2        A pointer to the second generic datatype.
+ * \param p1        A pointer to the first generic datatype.
+ * \param p2        A pointer to the second generic datatype.
  * \retval 0        The two datatypes are equal.
  * \retval -1       The first datatype is greater than the second datatype.
  * \retval 1        The first datatype is less than the second datatype.

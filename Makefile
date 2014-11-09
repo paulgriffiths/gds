@@ -54,7 +54,7 @@ clean:
 
 .PHONY: tags
 tags:
-	@$(CTAGS) *.c
+	@$(CTAGS) $(SOURCES)
 
 # docs - makes Doxygen documentation:
 .PHONY: docs

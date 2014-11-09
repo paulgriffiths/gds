@@ -1,3 +1,6 @@
 /**
  *  \defgroup vector Public interface to generic vector data structure.
+ *  \details A vector (or array) is a data structure containing a finite
+ *  ordered collection of values which allows random access (compared to
+ *  a list, which only allows sequential access).
  */

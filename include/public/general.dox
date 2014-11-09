@@ -1,3 +1,6 @@
 /**
  *  \defgroup general Public general generic data structures functionality
+ *  \details This module contains general functionality used with or by
+ *  the other data structures, including common creation options, and
+ *  functions for outputting error messages.
  */
