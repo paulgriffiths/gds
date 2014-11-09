@@ -160,6 +160,18 @@ bool list_set_element_at_index(List list, const size_t index, ...);
 bool list_find(List list, size_t * index, ...);
 
 /*!
+ * \brief           Tests if a value is contained in a list.
+ * \ingroup         list
+ * \param list      A pointer to the list.
+ * \param ...       The value for which to search. This should be of a
+ * type appropriate to the type set when creating the list.
+ * \retval NULL     The value was not found in the list
+ * \retval non-NULL A list iterator pointing to the first occurrence of
+ * the vaue in the list.
+ */
+ListItr list_find_itr(List list, ...);
+
+/*!
  * \brief           Sorts a list in-place, in ascending order.
  * \ingroup         list
  * \param list      A pointer to the list.

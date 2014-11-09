@@ -229,38 +229,34 @@ static void dict_buckets_destroy(Dict dict)
      *  comes first.                                              */
 
     for ( size_t i = 0; i < dict->num_buckets && dict->buckets[i]; ++i ) {
-        struct kvpair * pair;
-        while ( list_element_at_index(dict->buckets[i], 0, (void *) &pair) ) {
-            
-            /** \todo Implement with iterators once available  */
-
-            list_delete_front(dict->buckets[i]);
+        ListItr itr = list_itr_first(dict->buckets[i]);
+        while ( itr ) {
+            struct kvpair * pair;
+            list_value_at_itr(itr, &pair);
             kvpair_destroy(pair, dict->free_on_destroy);
+            itr = list_itr_next(itr);
         }
         list_destroy(dict->buckets[i]);
     }
 }
-
 
 static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
 {
     struct kvpair needle = { .key = (char *) key };
     const size_t hash = djb2hash(key) % dict->num_buckets;
     List list = dict->buckets[hash];
-    size_t index;
+    ListItr itr;
 
-    if ( list_find(list, &index, (void *) &needle) ) {
+    if ( (itr = list_find_itr(list, (void *) &needle)) ) {
         if ( pair ) {
-            list_element_at_index(list, index, (void *) pair);
+            list_value_at_itr(itr, (void *) pair);
         }
-
         return true;
     }
     else {
         if ( pair ) {
             *pair = NULL;
         }
-
         return false;
     }
 }

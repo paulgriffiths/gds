@@ -711,6 +711,54 @@ static void test_list_itr_reverse(void)
     list_destroy(list);
 }
 
+static void test_list_itr_find(void)
+{
+    List list = list_create(DATATYPE_INT, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+    
+    list_append(list, 10);
+    list_append(list, 11);
+    list_append(list, 12);
+    list_append(list, 13);
+
+    int n;
+
+    ListItr itr = list_find_itr(list, 10);
+    tests_log_test(itr, "list_find_itr() failed");
+
+    list_value_at_itr(itr, &n);
+    tests_log_test(n == 10, "list_value_at_itr() gave wrong value");
+
+    itr = list_find_itr(list, 11);
+    tests_log_test(itr, "list_find_itr() failed");
+
+    list_value_at_itr(itr, &n);
+    tests_log_test(n == 11, "list_value_at_itr() gave wrong value");
+
+    itr = list_find_itr(list, 12);
+    tests_log_test(itr, "list_find_itr() failed");
+
+    list_value_at_itr(itr, &n);
+    tests_log_test(n == 12, "list_value_at_itr() gave wrong value");
+
+    itr = list_find_itr(list, 13);
+    tests_log_test(itr, "list_find_itr() failed");
+
+    list_value_at_itr(itr, &n);
+    tests_log_test(n == 13, "list_value_at_itr() gave wrong value");
+
+    itr = list_find_itr(list, 9);
+    tests_log_test(!itr, "list_find_itr() incorrectly succeeded");
+
+    itr = list_find_itr(list, 14);
+    tests_log_test(!itr, "list_find_itr() incorrectly succeeded");
+
+    list_destroy(list);
+}
+
 void test_list(void)
 {
     test_list_basic();
@@ -724,4 +772,5 @@ void test_list(void)
     test_list_reverse_sort();
     test_list_itr();
     test_list_itr_reverse();
+    test_list_itr_find();
 }

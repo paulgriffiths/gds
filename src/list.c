@@ -274,6 +274,25 @@ bool list_find(List list, size_t * index, ...)
     return false;
 }
 
+ListItr list_find_itr(List list, ...)
+{
+    struct gdt_generic_datatype needle;
+    va_list ap;
+    va_start(ap, list);
+    gdt_set_value(&needle, list->type, list->compfunc, ap);
+    va_end(ap);
+
+    struct list_node * node = list->head;
+    while ( node ) {
+        if ( !gdt_compare(&needle, &node->element) ) {
+            return node;
+        }
+        node = node->next;
+    }
+
+    return NULL;
+}
+
 bool list_sort(List list)
 {
     if ( list->length < 2 ) {
