@@ -41,6 +41,8 @@ static void kvpair_destroy(KVPair kvpair, const bool free_value);
 static int kvpair_compare(const void * p1, const void * p2);
 
 static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair);
+static bool dict_buckets_create(Dict dict);
+static void dict_buckets_destroy(Dict dict);
 
 /*!
  * \brief           Calculates a hash of a string.
@@ -81,31 +83,8 @@ Dict dict_create(const enum gds_datatype type, const int opts)
         }
     }
 
-    size_t i = 0;
-    for ( i = 0; i < new_dict->num_buckets; ++i ) {
-        new_dict->buckets[i] = list_create(DATATYPE_POINTER,
-                                           0,
-                                           kvpair_compare);
-        if ( !new_dict->buckets[i] ) {
-            if ( new_dict->exit_on_error ) {
-                gds_strerror_quit("memory allocation failed "
-                                  "(%s, line %d)", __FILE__, __LINE__);
-            }
-            else {
-                break;
-            }
-        }
-    }
-
-    if ( i < new_dict->num_buckets ) {
-
-        /*  Not all buckets were successfully created, so
-         *  free the ones we did make, and return with error  */
-
-        for ( size_t j = 0; j < i; ++j ) {
-            list_destroy(new_dict->buckets[j]);
-        }
-
+    if ( !dict_buckets_create(new_dict) ) {
+        dict_buckets_destroy(new_dict);
         free(new_dict->buckets);
         free(new_dict);
         return NULL;
@@ -116,15 +95,7 @@ Dict dict_create(const enum gds_datatype type, const int opts)
 
 void dict_destroy(Dict dict)
 {
-    for ( size_t i = 0; i < dict->num_buckets; ++i ) {
-        struct kvpair * pair;
-        List list = dict->buckets[i];
-        while ( list_element_at_index(list, 0, (void *) &pair) ) {
-            list_delete_front(list);
-            kvpair_destroy(pair, dict->free_on_destroy);
-        }
-        list_destroy(dict->buckets[i]);
-    }
+    dict_buckets_destroy(dict);
     free(dict->buckets);
     free(dict);
 }
@@ -137,11 +108,11 @@ int dict_has_key(Dict dict, const char * key)
 bool dict_insert(Dict dict, const char * key, ...)
 {
     struct kvpair * pair;
-    int status = dict_has_key_internal(dict, key, &pair);
-    if ( status == -1 ) {
-        return false;
-    }
-    else if ( status ) {
+    if ( dict_has_key_internal(dict, key, &pair) ) {
+        if ( dict->free_on_destroy ) {
+            gdt_free(&pair->value);
+        }
+
         va_list ap;
         va_start(ap, key);
         gdt_set_value(&pair->value, dict->type, NULL, ap);
@@ -158,8 +129,7 @@ bool dict_insert(Dict dict, const char * key, ...)
         }
 
         const size_t hash = djb2hash(key) % dict->num_buckets;
-        List list = dict->buckets[hash];
-        if ( !list_append(list, (void *) new_pair) ) {
+        if ( !list_append(dict->buckets[hash], (void *) new_pair) ) {
             kvpair_destroy(new_pair, dict->free_on_destroy);
             return false;
         }
@@ -167,6 +137,37 @@ bool dict_insert(Dict dict, const char * key, ...)
 
     return true;
 }
+
+static bool dict_buckets_create(Dict dict)
+{
+    for ( size_t i = 0; i < dict->num_buckets; ++i ) {
+        dict->buckets[i] = list_create(DATATYPE_POINTER, 0, kvpair_compare);
+        if ( !dict->buckets[i] ) {
+            if ( dict->exit_on_error ) {
+                gds_strerror_quit("memory allocation failed "
+                                  "(%s, line %d)", __FILE__, __LINE__);
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+static void dict_buckets_destroy(Dict dict)
+{
+    for ( size_t i = 0; i < dict->num_buckets && dict->buckets[i]; ++i ) {
+        struct kvpair * pair;
+        while ( list_element_at_index(dict->buckets[i], 0, (void *) &pair) ) {
+            list_delete_front(dict->buckets[i]);
+            kvpair_destroy(pair, dict->free_on_destroy);
+        }
+        list_destroy(dict->buckets[i]);
+    }
+}
+
 
 static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
 {
