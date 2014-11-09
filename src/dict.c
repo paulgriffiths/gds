@@ -33,15 +33,65 @@ struct dict {
     bool exit_on_error;     /*!<  Exit on error if true                     */
 };
 
-static KVPair kvpair_create(const char * key, 
-                            const enum gds_datatype type,
+/*!
+ * \brief           Creates a new key-value pair.
+ * \param key       The key for the new pair.
+ * \param type      The datatype for the new pair
+ * \param ap        A `va_list` containing the data value for the pair.
+ * This should be of a type appropriate to the type set when creating
+ * the list.
+ * \retval NULL     Failure, dynamic memory allocation failed
+ * \retval non-NULL Success
+ */
+static KVPair kvpair_create(const char * key, const enum gds_datatype type,
                             va_list ap);
-static KVPair kvpair_create_novalue(const char * key);
-static void kvpair_destroy(KVPair kvpair, const bool free_value);
+
+/*!
+ * \brief               Destroys a key-value pair.
+ * \param pair          A pointer to the pair to destroy.
+ * \param free_value    If true, the data will be passed to gdt_free()
+ */ 
+static void kvpair_destroy(KVPair pair, const bool free_value);
+
+/*!
+ * \brief               Compares two key-value pairs by key.
+ * \details             This function is suitable for passing to qsort().
+ * \param p1            A pointer to the first pair.
+ * \param p2            A pointer to the second pair.
+ * \retval 0            The keys of the two pairs are equal
+ * \retval -1           The key of the first pair is less than the key
+ * of the second pair
+ * \retval 1            The key of the first pair is greater than the key
+ * of the second pair
+ */
 static int kvpair_compare(const void * p1, const void * p2);
 
+/*!
+ * \brief               Internal function to check for the existence of a key.
+ * \details             If the key is present, `pair` will be modified to
+ * contain the address of the key-value pair containing it.
+ * \param dict          A pointer to the dictionary.
+ * \param key           The key for which to search.
+ * \param pair          A pointer to a key-value pair pointer. If the key
+ * is found, the pointer at this address will be modified to contain the
+ * address of the pair containing the key.
+ * \retval true         Key was found
+ * \retval false        Key was not found
+ */
 static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair);
+
+/*!
+ * \brief               Helper function to create the dictionary buckets.
+ * \param dict          A pointer to the dictionary.
+ * \retval true         Success
+ * \retval false        Failure, dynamic memory allocation failed.
+ */
 static bool dict_buckets_create(Dict dict);
+
+/*!
+ * \brief               Helper function to destroy the dictionary buckets.
+ * \param dict          A pointer to the dictionary.
+ */
 static void dict_buckets_destroy(Dict dict);
 
 /*!
@@ -207,18 +257,6 @@ static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
 static KVPair kvpair_create(const char * key, const enum gds_datatype type,
                             va_list ap)
 {
-    struct kvpair * new_pair = kvpair_create_novalue(key);
-    if ( !new_pair ) {
-        return NULL;
-    }
-
-    gdt_set_value(&new_pair->value, type, NULL, ap);
-
-    return new_pair;
-}
-
-static KVPair kvpair_create_novalue(const char * key)
-{
     struct kvpair * new_pair = malloc(sizeof *new_pair);
     if ( !new_pair ) {
         return NULL;
@@ -230,6 +268,8 @@ static KVPair kvpair_create_novalue(const char * key)
         return NULL;
     }
 
+    gdt_set_value(&new_pair->value, type, NULL, ap);
+
     return new_pair;
 }
 
@@ -240,13 +280,13 @@ static int kvpair_compare(const void * p1, const void * p2)
     return strcmp(kv1->key, kv2->key);
 }
 
-static void kvpair_destroy(KVPair kvpair, const bool free_value)
+static void kvpair_destroy(KVPair pair, const bool free_value)
 {
-    free(kvpair->key);
+    free(pair->key);
     if ( free_value ) {
-        gdt_free(&kvpair->value);
+        gdt_free(&pair->value);
     }
-    free(kvpair);
+    free(pair);
 }
 
 static size_t djb2hash(const char * str)
