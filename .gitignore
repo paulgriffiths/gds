@@ -1,6 +1,8 @@
 # Library and binary directors
-lib
-bin
+lib/*
+!lib/README.md
+bin/*
+!bin/README.md
 
 # Doxygen folders
 html
