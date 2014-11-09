@@ -233,7 +233,7 @@ ListItr list_itr_previous(ListItr itr);
  * type set when creating the list. The object at this address will be
  * modified to contain the value at the given iterator.
  */
-void list_value_at_itr(ListItr itr, void * p);
+void list_get_value_itr(ListItr itr, void * p);
 
 /*!
  * \brief           Tests if a list is empty.

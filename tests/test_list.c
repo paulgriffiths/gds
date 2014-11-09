@@ -675,9 +675,9 @@ static void test_list_itr(void)
     size_t j = 0;
     while ( itr ) {
         int n;
-        list_value_at_itr(itr, &n);
+        list_get_value_itr(itr, &n);
         tests_log_test(n == some_ints[j++],
-                       "list_value_at_itr() got wrong value");
+                       "list_get_value_itr() got wrong value");
         itr = list_itr_next(itr);
     }
 
@@ -702,9 +702,9 @@ static void test_list_itr_reverse(void)
     size_t j = 0;
     while ( itr ) {
         int n;
-        list_value_at_itr(itr, &n);
+        list_get_value_itr(itr, &n);
         tests_log_test(n == some_ints[j++],
-                       "list_value_at_itr() got wrong value");
+                       "list_get_value_itr() got wrong value");
         itr = list_itr_previous(itr);
     }
 
@@ -729,26 +729,26 @@ static void test_list_itr_find(void)
     ListItr itr = list_find_itr(list, 10);
     tests_log_test(itr, "list_find_itr() failed");
 
-    list_value_at_itr(itr, &n);
-    tests_log_test(n == 10, "list_value_at_itr() gave wrong value");
+    list_get_value_itr(itr, &n);
+    tests_log_test(n == 10, "list_get_value_itr() gave wrong value");
 
     itr = list_find_itr(list, 11);
     tests_log_test(itr, "list_find_itr() failed");
 
-    list_value_at_itr(itr, &n);
-    tests_log_test(n == 11, "list_value_at_itr() gave wrong value");
+    list_get_value_itr(itr, &n);
+    tests_log_test(n == 11, "list_get_value_itr() gave wrong value");
 
     itr = list_find_itr(list, 12);
     tests_log_test(itr, "list_find_itr() failed");
 
-    list_value_at_itr(itr, &n);
-    tests_log_test(n == 12, "list_value_at_itr() gave wrong value");
+    list_get_value_itr(itr, &n);
+    tests_log_test(n == 12, "list_get_value_itr() gave wrong value");
 
     itr = list_find_itr(list, 13);
     tests_log_test(itr, "list_find_itr() failed");
 
-    list_value_at_itr(itr, &n);
-    tests_log_test(n == 13, "list_value_at_itr() gave wrong value");
+    list_get_value_itr(itr, &n);
+    tests_log_test(n == 13, "list_get_value_itr() gave wrong value");
 
     itr = list_find_itr(list, 9);
     tests_log_test(!itr, "list_find_itr() incorrectly succeeded");

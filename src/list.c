@@ -417,7 +417,7 @@ ListItr list_itr_previous(ListItr itr)
     return itr->prev;
 }
 
-void list_value_at_itr(ListItr itr, void * p)
+void list_get_value_itr(ListItr itr, void * p)
 {
     gdt_get_value(&itr->element, p);
 }

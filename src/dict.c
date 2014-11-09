@@ -232,7 +232,7 @@ static void dict_buckets_destroy(Dict dict)
         ListItr itr = list_itr_first(dict->buckets[i]);
         while ( itr ) {
             struct kvpair * pair;
-            list_value_at_itr(itr, &pair);
+            list_get_value_itr(itr, &pair);
             kvpair_destroy(pair, dict->free_on_destroy);
             itr = list_itr_next(itr);
         }
@@ -249,7 +249,7 @@ static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
 
     if ( (itr = list_find_itr(list, (void *) &needle)) ) {
         if ( pair ) {
-            list_value_at_itr(itr, (void *) pair);
+            list_get_value_itr(itr, (void *) pair);
         }
         return true;
     }
