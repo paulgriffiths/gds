@@ -430,6 +430,233 @@ void test_list_find_struct(void)
     list_destroy(list);
 }
 
+static void test_list_sort_sizet(void)
+{
+    List list = list_create(DATATYPE_SIZE_T, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    list_append(list, (size_t) 100);
+    list_append(list, (size_t) 400);
+    list_append(list, (size_t) 200);
+    list_append(list, (size_t) 300);
+
+    bool status;
+    size_t index;
+
+    status = list_find(list, &index, (size_t) 100);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 400);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 200);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 300);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 500);
+    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+
+    list_sort(list);
+
+    status = list_find(list, &index, (size_t) 100);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 200);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 300);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (size_t) 400);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    list_destroy(list);
+}
+
+static void test_list_sort_strings(void)
+{
+    List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    list_append(list, strdup("Elephant"));
+    list_append(list, strdup("Dog"));
+    list_append(list, strdup("Giraffe"));
+    list_append(list, strdup("Aardvark"));
+
+    bool status;
+    size_t index;
+
+    status = list_find(list, &index, "Elephant");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Dog");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Giraffe");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Aardvark");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Pelican");
+    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+
+    list_sort(list);
+
+    status = list_find(list, &index, "Aardvark");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Dog");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Elephant");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, "Giraffe");
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    list_destroy(list);
+}
+
+static void test_list_sort_struct(void)
+{
+    struct hms h1 = {1, 2, 3};
+    struct hms h2 = {1, 2, 4};
+    struct hms h3 = {2, 2, 3};
+    struct hms h4 = {4, 1, 1};
+    struct hms h5 = {5, 2, 4};
+
+    List list = list_create(DATATYPE_POINTER, 0, compare_hms);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    list_append(list, (void *) &h3);
+    list_append(list, (void *) &h2);
+    list_append(list, (void *) &h1);
+    list_append(list, (void *) &h4);
+
+    bool status;
+    size_t index;
+
+    status = list_find(list, &index, (void *) &h3);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h2);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h1);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h4);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h5);
+    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+
+    list_sort(list);
+
+    status = list_find(list, &index, (void *) &h1);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h2);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h3);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, (void *) &h4);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    list_destroy(list);
+}
+
+void test_list_reverse_sort(void)
+{
+    List list = list_create(DATATYPE_LONG, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    list_append(list, 100L);
+    list_append(list, 400L);
+    list_append(list, 200L);
+    list_append(list, 300L);
+
+    bool status;
+    size_t index;
+
+    status = list_find(list, &index, 100L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 400L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 200L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 300L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    list_reverse_sort(list);
+
+    status = list_find(list, &index, 400L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 300L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 200L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+
+    status = list_find(list, &index, 100L);
+    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
+    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+
+    list_destroy(list);
+}
+
 void test_list(void)
 {
     test_list_basic();
@@ -437,4 +664,8 @@ void test_list(void)
     test_list_set_element();
     test_list_find();
     test_list_find_struct();
+    test_list_sort_sizet();
+    test_list_sort_strings();
+    test_list_sort_struct();
+    test_list_reverse_sort();
 }

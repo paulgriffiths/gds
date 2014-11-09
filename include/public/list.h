@@ -154,6 +154,24 @@ bool list_set_element_at_index(List list, const size_t index, ...);
 bool list_find(List list, size_t * index, ...);
 
 /*!
+ * \brief           Sorts a list in-place, in ascending order.
+ * \ingroup         list
+ * \param list      A pointer to the list.
+ * \retval true     Success
+ * \retval false    Failure, dynamic memory allocation failed.
+ */
+bool list_sort(List list);
+
+/*!
+ * \brief           Sorts a list in-place, in descending order.
+ * \ingroup         list
+ * \param list      A pointer to the list.
+ * \retval true     Success
+ * \retval false    Failure, dynamic memory allocation failed.
+ */
+bool list_reverse_sort(List list);
+
+/*!
  * \brief           Tests if a list is empty.
  * \ingroup         list
  * \param list      A pointer to the list.

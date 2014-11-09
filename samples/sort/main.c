@@ -1,33 +1,128 @@
+/*
+ * sort
+ * ====
+ *
+ * Demonstration program for generic list data structure.
+ *
+ * Sorts lines from a file, or from standard input.
+ */
+
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "vector.h"
+#include <stdbool.h>
+#include <errno.h>
+#include "list.h"
 
-int main(void)
+#define BUFFER_SIZE 1024
+
+void print_help_message(void)
 {
-    Vector vector = vector_create(1, DATATYPE_STRING,
-                                  GDS_FREE_ON_DESTROY | GDS_EXIT_ON_ERROR, 0);
+    printf("Usage: sort [FILE]\n\n");
+    printf("Options:\n");
+    printf("  -r, --reverse    sort in reverse\n");
+    printf("  -h, --help       show this help message.\n\n");
+    printf("With no FILE, read standard input.\n");
+}
 
-    vector_set_element_at_index(vector, 0, strdup("Dog"));
-    vector_append(vector, strdup("Aardvark"));
-    vector_append(vector, strdup("Monkey"));
-    vector_append(vector, strdup("Giraffe"));
-    vector_append(vector, strdup("Pelican"));
-    vector_append(vector, strdup("Dolphin"));
-    vector_append(vector, strdup("Zebra"));
+int main(int argc, char ** argv)
+{
+    bool reverse = false;
+    bool fromfile = false;
+    FILE * fp = NULL;
 
-    vector_sort(vector);
+    /*  Read command line options, if any  */
 
-    printf("Sorted list is:\n");
+    if ( argc > 1 ) {
+        size_t index = 0;
+        while ( argv[++index] ) {
+            if ( !strcmp(argv[index], "-h") ||
+                 !strcmp(argv[index], "--help") ) {
+                print_help_message();
 
-    for ( size_t i = 0; i < vector_length(vector); ++i ) {
-        char * str;
-        vector_element_at_index(vector, i, &str);
-        printf("%s\n", str);
+                if ( fp ) {
+
+                    /*  In case a filename was specified
+                     *  before -h on the command line.    */
+
+                    fclose(fp);
+                }
+
+                return EXIT_SUCCESS;
+            }
+            else if ( !strcmp(argv[index], "-r") ||
+                      !strcmp(argv[index], "--reverse") ) {
+                reverse = true;
+            }
+            else {
+                if ( !(fp = fopen(argv[index], "r")) ) {
+                    fprintf(stderr, "Couldn't open file %s for reading - "
+                            "%s (%d)\n", argv[index], strerror(errno),
+                            errno);
+                    return EXIT_FAILURE;
+                }
+                fromfile = true;
+            }
+        }
     }
 
-    vector_destroy(vector);
+    /*  Set input to standard input if no file was specified  */
+
+    if ( !fp ) {
+        fp = stdin;
+    }
+
+    /*  Read all available lines and store them in the list  */
+
+    List list = list_create(DATATYPE_STRING,
+                            GDS_FREE_ON_DESTROY | GDS_EXIT_ON_ERROR, 0);
+
+    char buffer[BUFFER_SIZE];
+    while ( fgets(buffer, sizeof buffer, fp) ) {
+        const size_t len = strlen(buffer);
+        if ( buffer[len - 1] == '\n' ) {
+
+            /*  Remove trailing newline  */
+
+            buffer[len - 1] = 0;
+        }
+
+        char * pc = strdup(buffer);
+        if ( !pc ) {
+            fprintf(stderr, "Couldn't allocate memory - %s (%d)\n",
+                    strerror(errno), errno);
+            return EXIT_FAILURE;
+        }
+
+        list_append(list, pc);
+    }
+
+    /*  Sort list  */
+
+    if ( reverse ) {
+        list_reverse_sort(list);
+    }
+    else {
+        list_sort(list);
+    }
+
+    /*  Output sorted lines  */
+
+    for ( size_t i = 0; i < list_length(list); ++i ) {
+        char * str;
+        list_element_at_index(list, i, &str);
+        printf("%3zu: %s\n", i + 1, str);
+    }
+
+    /*  Clean up and exit  */
+
+    list_destroy(list);
+
+    if ( fromfile ) {
+        fclose(fp);
+    }
 
     return 0;
 }

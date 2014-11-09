@@ -3,7 +3,6 @@
  * \brief           Implementation of generic list data structure.
  * \details         The list is implemented as a double-ended, double-linked
  * list.
- * \todo            Implement sorting.
  * \todo            Implement iterators.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
@@ -12,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 #include "gds_common.h"
 #include "list.h"
@@ -273,6 +273,110 @@ bool list_find(List list, size_t * index, ...)
     }
 
     return false;
+}
+
+bool list_sort(List list)
+{
+    if ( list->length < 2 ) {
+
+        /*  No point sorting an empty or one-element list.  */
+
+        return true;
+    }
+
+    /*  Create temporary array  */
+
+    struct gdt_generic_datatype * tempelem;
+    tempelem = malloc(list->length * sizeof *tempelem);
+    if ( !tempelem ) {
+        if ( list->exit_on_error ) {
+            gds_strerror_quit("memory allocation failed "
+                              "(%s, line %d)", __FILE__, __LINE__);
+        }
+        else {
+            return false;
+        }
+    }
+
+    /*  Copy list elements to array  */
+
+    struct list_node * node = list->head;
+    size_t index = 0;
+    while ( node ) {
+        memcpy(tempelem + index, &node->element, sizeof *tempelem);
+        node = node->next;
+        ++index;
+    }
+
+    /*  Sort array  */
+
+    qsort(tempelem, list->length, sizeof *tempelem, gdt_compare_void);
+
+    /*  Copy array elements back to list  */
+
+    index = 0;
+    node = list->head;
+    while ( node ) {
+        memcpy(&node->element, tempelem + index, sizeof *tempelem);
+        node = node->next;
+        ++index;
+    }
+
+    free(tempelem);
+
+    return true;
+}
+
+bool list_reverse_sort(List list)
+{
+    if ( list->length < 2 ) {
+
+        /*  No point sorting an empty or one-element list.  */
+
+        return true;
+    }
+
+    /*  Create temporary array  */
+
+    struct gdt_generic_datatype * tempelem;
+    tempelem = malloc(list->length * sizeof *tempelem);
+    if ( !tempelem ) {
+        if ( list->exit_on_error ) {
+            gds_strerror_quit("memory allocation failed "
+                              "(%s, line %d)", __FILE__, __LINE__);
+        }
+        else {
+            return false;
+        }
+    }
+
+    /*  Copy list elements to array  */
+
+    struct list_node * node = list->head;
+    size_t index = 0;
+    while ( node ) {
+        memcpy(tempelem + index, &node->element, sizeof *tempelem);
+        node = node->next;
+        ++index;
+    }
+
+    /*  Sort array  */
+
+    qsort(tempelem, list->length, sizeof *tempelem, gdt_reverse_compare_void);
+
+    /*  Copy array elements back to list  */
+
+    index = 0;
+    node = list->head;
+    while ( node ) {
+        memcpy(&node->element, tempelem + index, sizeof *tempelem);
+        node = node->next;
+        ++index;
+    }
+
+    free(tempelem);
+
+    return true;
 }
 
 bool list_is_empty(List list)
