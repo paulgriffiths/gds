@@ -1,3 +1,11 @@
+/*!
+ * \file            gds_util.c
+ * \brief           Implementation of general utility functions.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

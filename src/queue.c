@@ -13,7 +13,10 @@
 #include "gds_common.h"
 #include "queue.h"
 
-/*!  Growth factor for dynamic memory allocation  */
+/*!
+ * \brief           Growth factor for dynamic memory allocation
+ * \attention       queue_push() relies on this being at least 2.
+ */
 static const size_t GROWTH = 2;
 
 /*!  Queue structure  */
@@ -30,8 +33,6 @@ struct queue {
     bool free_on_destroy;   /*!<  Free pointer elements on destroy if true  */
     bool exit_on_error;     /*!<  Exit on error if true                     */
 };
-
-/*  Creates and returns a new queue of specified type and capacity  */
 
 Queue queue_create(const size_t capacity, const enum gds_datatype type,
                    const int opts)
@@ -77,6 +78,13 @@ Queue queue_create(const size_t capacity, const enum gds_datatype type,
 void queue_destroy(Queue queue)
 {
     if ( queue->free_on_destroy ) {
+
+        /*  We can't use queue_pop() to get each element in
+         *  turn, here, since that would require knowing
+         *  their type and break encapsulation, so we have
+         *  to do it manually and tolerate a little code
+         *  duplication for the greater good.                */
+
         while ( queue->size ) {
             gdt_free(&queue->elements[queue->front++]);
             if ( queue->front == queue->capacity ) {
@@ -115,6 +123,23 @@ bool queue_push(Queue queue, ...)
 
             if ( queue->back < queue->front ||
                  queue->size == queue->capacity ) {
+
+                /*  If we get here, then the back of the queue
+                 *  is at a lower index than the front of it
+                 *  (or the queue is full and both the back and
+                 *  front are zero). Conceptually the queue is
+                 *  wrapping around the back of the array, and if
+                 *  we resize it, there'll be a gap unless we move
+                 *  those wrapped elements back into the new space.
+                 *  Note that because we always grow by a factor of
+                 *  at least two, there'll always be enough space to
+                 *  move all the wrapped elements. In fact, we here
+                 *  move the entire array from the start through to
+                 *  the front element, including any "empty" ones,
+                 *  which is not really necessary.                    */
+
+                /**  \todo Rewrite to move only the required elements  */
+
                 const size_t excess = new_capacity - queue->capacity;
                 const size_t nfelem = queue->capacity - queue->front;
                 struct gdt_generic_datatype * old_front, * new_front;
@@ -149,8 +174,6 @@ bool queue_push(Queue queue, ...)
     return true;
 }
 
-/*  Pops an element from the queue  */
-
 bool queue_pop(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
@@ -173,8 +196,6 @@ bool queue_pop(Queue queue, void * p)
     return true;
 }
 
-/*  Peeks at the front element of the queue without popping it  */
-
 bool queue_peek(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
@@ -191,35 +212,25 @@ bool queue_peek(Queue queue, void * p)
     return true;
 }
 
-/*  Returns true if the queue is full  */
-
 bool queue_is_full(Queue queue)
 {
     return queue->size == queue->capacity;
 }
-
-/*  Returns true if the queue is empty  */
 
 bool queue_is_empty(Queue queue)
 {
     return queue->size == 0;
 }
 
-/*  Returns the capacity of a queue  */
-
 size_t queue_capacity(Queue queue)
 {
     return queue->capacity;
 }
 
-/*  Returns the number of free elements on the queue  */
-
 size_t queue_free_space(Queue queue)
 {
     return queue->capacity - queue->size;
 }
-
-/*  Returns the number of elements on the queue  */
 
 size_t queue_size(Queue queue)
 {

@@ -1,3 +1,11 @@
+/*!
+ * \file            gdt.c
+ * \brief           Implementation of generic data element functionality.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -5,24 +13,128 @@
 #include <stdarg.h>
 #include "gds_common.h"
 
+/*!
+ * \brief           Compare function for char
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_char(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for unsigned char
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_uchar(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for signed char
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_schar(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for int
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_int(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for unsigned int
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_uint(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for long
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_long(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for unsigned long
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_ulong(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for long long
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_longlong(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for unsigned long long
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_ulonglong(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for size_t
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_sizet(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for double
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_double(const void * p1, const void * p2);
+
+/*!
+ * \brief           Compare function for string
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
 static int gdt_compare_string(const void * p1, const void * p2);
 
-/*  Gets a value from a generic datatype  */
-
 void gdt_set_value(struct gdt_generic_datatype * data,
-                   const enum gds_datatype type,
-                   gds_cfunc cfunc, va_list ap)
+                   const enum gds_datatype type, gds_cfunc cfunc, va_list ap)
 {
     data->type = type;
 
@@ -93,12 +205,11 @@ void gdt_set_value(struct gdt_generic_datatype * data,
             break;
 
         default:
-            assert(false);
+            gds_assert_quit("unrecognized type (%s, line %d)",
+                            __FILE__, __LINE__);
             break;
     }
 }
-
-/*  Sets a value in a generic datatype  */
 
 void gdt_get_value(const struct gdt_generic_datatype * data, void * p)
 {
@@ -156,15 +267,19 @@ void gdt_get_value(const struct gdt_generic_datatype * data, void * p)
             break;
 
         default:
-            assert(false);
+            gds_assert_quit("unrecognized type (%s, line %d)",
+                            __FILE__, __LINE__);
             break;
     }
 }
 
-/*  Frees the memory pointer to by a generic pointer datatype  */
-
 void gdt_free(struct gdt_generic_datatype * data)
 {
+    /*  There's no functional reason to NULL the pointers after
+     *  freeing them, but it may help cause a segfault if a
+     *  later attempt is made to access them, so go ahead and
+     *  NULL them for debugging purposes.                        */
+
     if ( data->type == DATATYPE_POINTER ) {
         free(data->data.p);
         data->data.p = NULL;
@@ -175,14 +290,16 @@ void gdt_free(struct gdt_generic_datatype * data)
     }
 }
 
-/*  Compares two generic datatypes  */
-
 int gdt_compare(const struct gdt_generic_datatype * d1,
                 const struct gdt_generic_datatype * d2)
 {
     if ( d1->type != d2->type ) {
+
+        /*  Disallow comparing different types, for simplicity,
+         *  and because each data structure contains a single type.  */
+
         gds_assert_quit("types are not compatible (%s, line %d)",
-                   __FILE__, __LINE__);
+                         __FILE__, __LINE__);
     }
 
     gds_cfunc cfunc = d1->compfunc;
@@ -227,32 +344,29 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
         return cfunc(&d1->data.p, &d2->data.p);
     }
     else {
-        gds_assert_quit("unrecognized type (%s, line %d)", __FILE__, __LINE__);
+        gds_assert_quit("unrecognized type (%s, line %d)",
+                        __FILE__, __LINE__);
     }
 
     return 0;
 }
-
-/*  Compare function with void * arguments, suitable for qsort()  */
 
 int gdt_compare_void(const void * p1, const void * p2)
 {
     return gdt_compare(p1, p2);
 }
 
-/*  Reverse compare function with void * arguments, suitable for qsort()  */
-
 int gdt_reverse_compare_void(const void * p1, const void * p2)
 {
+    /*  Just switch the order of the pointers  */
+
     return gdt_compare(p2, p1);
 }
 
-/*  Element compare functions  */
-
 static int gdt_compare_char(const void * p1, const void * p2)
 {
-    char c1 = *((char *) p1);
-    char c2 = *((char *) p2);
+    const char c1 = *((const char *) p1);
+    const char c2 = *((const char *) p2);
     
     if ( c1 < c2 ) {
         return -1;
@@ -267,8 +381,8 @@ static int gdt_compare_char(const void * p1, const void * p2)
 
 static int gdt_compare_uchar(const void * p1, const void * p2)
 {
-    unsigned char c1 = *((unsigned char *) p1);
-    unsigned char c2 = *((unsigned char *) p2);
+    const unsigned char c1 = *((const unsigned char *) p1);
+    const unsigned char c2 = *((const unsigned char *) p2);
     
     if ( c1 < c2 ) {
         return -1;
@@ -283,8 +397,8 @@ static int gdt_compare_uchar(const void * p1, const void * p2)
 
 static int gdt_compare_schar(const void * p1, const void * p2)
 {
-    signed char c1 = *((signed char *) p1);
-    signed char c2 = *((signed char *) p2);
+    const signed char c1 = *((const signed char *) p1);
+    const signed char c2 = *((const signed char *) p2);
     
     if ( c1 < c2 ) {
         return -1;
@@ -299,8 +413,8 @@ static int gdt_compare_schar(const void * p1, const void * p2)
 
 static int gdt_compare_int(const void * p1, const void * p2)
 {
-    int n1 = *((int *) p1);
-    int n2 = *((int *) p2);
+    const int n1 = *((const int *) p1);
+    const int n2 = *((const int *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -315,8 +429,8 @@ static int gdt_compare_int(const void * p1, const void * p2)
 
 static int gdt_compare_uint(const void * p1, const void * p2)
 {
-    unsigned int n1 = *((unsigned int *) p1);
-    unsigned int n2 = *((unsigned int *) p2);
+    const unsigned int n1 = *((const unsigned int *) p1);
+    const unsigned int n2 = *((const unsigned int *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -331,8 +445,8 @@ static int gdt_compare_uint(const void * p1, const void * p2)
 
 static int gdt_compare_long(const void * p1, const void * p2)
 {
-    long n1 = *((long *) p1);
-    long n2 = *((long *) p2);
+    const long n1 = *((const long *) p1);
+    const long n2 = *((const long *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -347,8 +461,8 @@ static int gdt_compare_long(const void * p1, const void * p2)
 
 static int gdt_compare_ulong(const void * p1, const void * p2)
 {
-    unsigned long n1 = *((unsigned long *) p1);
-    unsigned long n2 = *((unsigned long *) p2);
+    const unsigned long n1 = *((const unsigned long *) p1);
+    const unsigned long n2 = *((const unsigned long *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -363,8 +477,8 @@ static int gdt_compare_ulong(const void * p1, const void * p2)
 
 static int gdt_compare_longlong(const void * p1, const void * p2)
 {
-    long long n1 = *((long long *) p1);
-    long long n2 = *((long long *) p2);
+    const long long n1 = *((const long long *) p1);
+    const long long n2 = *((const long long *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -379,8 +493,8 @@ static int gdt_compare_longlong(const void * p1, const void * p2)
 
 static int gdt_compare_ulonglong(const void * p1, const void * p2)
 {
-    unsigned long long n1 = *((unsigned long long *) p1);
-    unsigned long long n2 = *((unsigned long long *) p2);
+    const unsigned long long n1 = *((const unsigned long long *) p1);
+    const unsigned long long n2 = *((const unsigned long long *) p2);
     
     if ( n1 < n2 ) {
         return -1;
@@ -395,8 +509,8 @@ static int gdt_compare_ulonglong(const void * p1, const void * p2)
 
 static int gdt_compare_sizet(const void * p1, const void * p2)
 {
-    size_t s1 = *((size_t *) p1);
-    size_t s2 = *((size_t *) p2);
+    const size_t s1 = *((const size_t *) p1);
+    const size_t s2 = *((const size_t *) p2);
     
     if ( s1 < s2 ) {
         return -1;
@@ -411,8 +525,8 @@ static int gdt_compare_sizet(const void * p1, const void * p2)
 
 static int gdt_compare_double(const void * p1, const void * p2)
 {
-    double d1 = *((double *) p1);
-    double d2 = *((double *) p2);
+    const double d1 = *((const double *) p1);
+    const double d2 = *((const double *) p2);
     
     if ( d1 < d2 ) {
         return -1;
@@ -427,8 +541,8 @@ static int gdt_compare_double(const void * p1, const void * p2)
 
 static int gdt_compare_string(const void * p1, const void * p2)
 {
-    char * s1 = *((char **) p1);
-    char * s2 = *((char **) p2);
+    const char * s1 = *((const char **) p1);
+    const char * s2 = *((const char **) p2);
 
     return strcmp(s1, s2);
 }

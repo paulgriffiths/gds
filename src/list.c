@@ -73,10 +73,7 @@ static ListNode list_node_at_index(List list, const size_t index);
  */
 static bool list_insert_internal(List list, ListNode node, const size_t index);
 
-/*  Creates and returns a new list of specified type  */
-
-List list_create(const enum gds_datatype type,
-                          const int opts, ...)
+List list_create(const enum gds_datatype type, const int opts, ...)
 {
     struct list * new_list = malloc(sizeof *new_list);
     if ( !new_list ) {
@@ -93,13 +90,15 @@ List list_create(const enum gds_datatype type,
     new_list->type = type;
     new_list->head = NULL;
     new_list->tail = NULL;
-
     new_list->free_on_destroy = (opts & GDS_FREE_ON_DESTROY) ? true : false;
     new_list->exit_on_error = (opts & GDS_EXIT_ON_ERROR) ? true : false;
 
     va_list ap;
     va_start(ap, opts);
     if ( type == DATATYPE_POINTER ) {
+
+        /*  Custom comparison function only needed for void * members  */
+
         new_list->compfunc = va_arg(ap, int (*)(const void *, const void *));
     }
     else {
@@ -110,8 +109,6 @@ List list_create(const enum gds_datatype type,
     return new_list;
 }
 
-/*  Destroys a previously created list  */
-
 void list_destroy(List list)
 {
     while ( !list_is_empty(list) ) {
@@ -120,8 +117,6 @@ void list_destroy(List list)
 
     free(list);
 }
-
-/*  Appends a value to the end of a list  */
 
 bool list_append(List list, ...)
 {
@@ -133,8 +128,6 @@ bool list_append(List list, ...)
     return list_insert_internal(list, new_node, list->length);
 }
 
-/*  Prepends a value to the front of a list  */
-
 bool list_prepend(List list, ...)
 {
     va_list ap;
@@ -144,8 +137,6 @@ bool list_prepend(List list, ...)
 
     return list_insert_internal(list, new_node, 0);
 }
-
-/*  Inserts a value into a list at a specified index  */
 
 bool list_insert(List list, const size_t index, ...)
 {
@@ -157,30 +148,47 @@ bool list_insert(List list, const size_t index, ...)
     return list_insert_internal(list, new_node, index);
 }
 
-/*  Deletes a value from a list at a specified index  */
-
 bool list_delete_index(List list, const size_t index)
 {
     struct list_node * dead = list_node_at_index(list, index);
     if ( !dead ) {
+
+        /*  Index out of range, list possibly empty.  */
+
         return false;
     }
 
     if ( list->length == 1 ) {
+
+        /*  List will be empty after this deletion  */
+
         list->head = NULL;
         list->tail = NULL;
     }
     else if ( index == 0 ) {
+
+        /*  Delete head, we know there's a next node
+         *  since the list will not be empty after this.  */
+
         struct list_node * new_head = list->head->next;
         new_head->prev = NULL;
         list->head = new_head;
     }
     else if ( index == list->length - 1 ) {
+
+        /*  Delete tail, we know there's a previous node
+         *  since the list will not be empty after this.   */
+
         struct list_node * new_tail = list->tail->prev;
         new_tail->next = NULL;
         list->tail = new_tail;
     }
     else {
+
+        /*  Delete inner node, we know there's a next and
+         *  previous node since this is neither the head
+         *  nor the tail.                                  */
+
         struct list_node * before = dead->prev;
         struct list_node * after = dead->next;
         before->next = after;
@@ -193,26 +201,29 @@ bool list_delete_index(List list, const size_t index)
     return true;
 }
 
-/*  Deletes the first element in a list  */
-
 bool list_delete_front(List list)
 {
     return list_delete_index(list, 0);
 }
 
-/*  Deletes the last element in a list  */
-
 bool list_delete_back(List list)
 {
+    /*  This can underflow if list is empty, but
+     *  that's defined behavior for unsigned types.
+     *  If list is empty, the index will underflow to
+     *  a very large amount, and still be obviously
+     *  out of range.                                  */
+
     return list_delete_index(list, list->length - 1);
 }
-
-/*  Gets the data at a specified index  */
 
 bool list_element_at_index(List list, const size_t index, void * p)
 {
     struct list_node * node = list_node_at_index(list, index);
     if ( !node ) {
+
+        /*  Index out of range, list possible empty  */
+
         return false;
     }
 
@@ -221,12 +232,13 @@ bool list_element_at_index(List list, const size_t index, void * p)
     return true;
 }
 
-/*  Sets the data at a specified index  */
-
 bool list_set_element_at_index(List list, const size_t index, ...)
 {
     struct list_node * node = list_node_at_index(list, index);
     if ( !node ) {
+
+        /*  Index out of range, list possibly empty  */
+
         return false;
     }
 
@@ -237,8 +249,6 @@ bool list_set_element_at_index(List list, const size_t index, ...)
 
     return true;
 }
-
-/*  Finds an element in a list  */
 
 bool list_find(List list, size_t * index, ...)
 {
@@ -263,21 +273,15 @@ bool list_find(List list, size_t * index, ...)
     return false;
 }
 
-/*  Checks if a list is empty  */
-
 bool list_is_empty(List list)
 {
     return list->length == 0;
 }
 
-/*  Returns the length of a list  */
-
 size_t list_length(List list)
 {
     return list->length;
 }
-
-/*  Creates a new list node  */
 
 static ListNode list_node_create(List list, va_list ap)
 {
@@ -299,8 +303,6 @@ static ListNode list_node_create(List list, va_list ap)
     return new_node;
 }
 
-/*  Destroys a list node  */
-
 static void list_node_destroy(List list, ListNode node)
 {
     if ( list->free_on_destroy ) {
@@ -310,10 +312,7 @@ static void list_node_destroy(List list, ListNode node)
     free(node);
 }
 
-/*  Returns the node at the specified index  */
-
-static ListNode list_node_at_index(List list,
-                                             const size_t index)
+static ListNode list_node_at_index(List list, const size_t index)
 {
     if ( index >= list->length ) {
         if ( list->exit_on_error ) {
@@ -334,12 +333,19 @@ static ListNode list_node_at_index(List list,
     }
     else {
         if ( index < list->length / 2 ) {
+            
+            /*  For efficiency, search forward from the head if the
+             *  specified index is closer to the head than the tail...  */
+
             node = list->head;
             for ( size_t i = 0; i < index; ++i ) {
                 node = node->next;
             }
         }
         else {
+
+            /*  ...and search backward from the tail if it's not.  */
+
             node = list->tail;
             for ( size_t i = list->length - 1; i > index; --i ) {
                 node = node->prev;
@@ -350,13 +356,14 @@ static ListNode list_node_at_index(List list,
     return node;
 }
 
-/*  Inserts a node at a specified index  */
-
-static bool list_insert_internal(List list,
-                                 ListNode node,
-                                 const size_t index)
+static bool list_insert_internal(List list, ListNode node, const size_t index)
 {
     if ( !node ) {
+
+        /*  The return from list_node_create() can be passed
+         *  to this function without checking for NULL, so
+         *  we must check it here.                            */
+
         return false;
     }
     else if ( index > list->length ) {
@@ -371,22 +378,38 @@ static bool list_insert_internal(List list,
     }
 
     if ( !list->head ) {
+
+        /*  List is empty  */
+
         list->head = node;
         list->tail = node;
     }
     else if ( index == 0 ) {
+
+        /*  Insert new head, we know there's an
+         *  existing one since the list is not empty  */
+
         struct list_node * old_head = list->head;
         node->next = old_head;
         old_head->prev = node;
         list->head = node;
     }
     else if ( index == list->length ) {
+
+        /*  Insert new tail, we know there's an
+         *  existing one since the list is not empty  */
+
         struct list_node * old_tail = list->tail;
         node->prev = old_tail;
         old_tail->next = node;
         list->tail = node;
     }
     else {
+        
+        /*  Insert inner node, we know there are next and
+         *  previous nodes since the list is not empty, and
+         *  the selected node is neither the head nor the tail.  */
+
         struct list_node * after = list_node_at_index(list, index);
         struct list_node * before = after->prev;
         node->prev = before;
