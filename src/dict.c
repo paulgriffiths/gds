@@ -1,7 +1,6 @@
 /*!
  * \file            dict.c
  * \brief           Implementation of generic dictionary data structure.
- * \todo            Finish implementing dictionary.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -160,6 +159,9 @@ bool dict_insert(Dict dict, const char * key, ...)
     struct kvpair * pair;
     if ( dict_has_key_internal(dict, key, &pair) ) {
         if ( dict->free_on_destroy ) {
+
+            /*  Free existing item if necessary  */
+
             gdt_free(&pair->value);
         }
 
@@ -220,9 +222,18 @@ static bool dict_buckets_create(Dict dict)
 
 static void dict_buckets_destroy(Dict dict)
 {
+    /*  If dict_buckets_create() failed, then the first pointer
+     *  in dict->buckets[] corresponding to a failed list
+     *  creation is set to NULL. Therefore loop over the total
+     *  number of buckets, or until we encounter NULL, whichever
+     *  comes first.                                              */
+
     for ( size_t i = 0; i < dict->num_buckets && dict->buckets[i]; ++i ) {
         struct kvpair * pair;
         while ( list_element_at_index(dict->buckets[i], 0, (void *) &pair) ) {
+            
+            /** \todo Implement with iterators once available  */
+
             list_delete_front(dict->buckets[i]);
             kvpair_destroy(pair, dict->free_on_destroy);
         }
