@@ -3,6 +3,8 @@
  * \brief           Implementation of generic list data structure.
  * \details         The list is implemented as a double-ended, double-linked
  * list.
+ * \todo            Implement sorting.
+ * \todo            Implement iterators.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
