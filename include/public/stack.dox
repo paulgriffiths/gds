@@ -1,0 +1,10 @@
+/**
+ *  \defgroup stack Public interface to generic stack data structure
+ *  \details A stack is a last-in-first-out (LIFO) data structure. Two
+ *  fundamental operations are possible. A value can be *pushed* onto
+ *  the stack, and a value can be *popped* from the stack. By virtue
+ *  of being a LIFO data structure, pushing and popping happen at the
+ *  same end of the stack. In other words, the value popped will be
+ *  the last item pushed onto the stack that has not already been
+ *  popped from it.
+ */

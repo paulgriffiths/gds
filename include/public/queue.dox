@@ -1,0 +1,10 @@
+/**
+ *  \defgroup queue Public interface to generic queue data structure
+ *  \details A queue is a first-in-first-out (FIFO) data structure. Two
+ *  fundamental operations are possible. A value can be *pushed* onto
+ *  the queue, and a value can be *popped* from the queue. By virtue
+ *  of being a FIFO data structure, pushing and popping happen at
+ *  opposite ends of the queue. In other words, the value popped will be
+ *  the first item pushed onto the queue that has not already been
+ *  popped from it.
+ */

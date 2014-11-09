@@ -1,0 +1,3 @@
+/**
+ *  \defgroup vector Public interface to generic vector data structure.
+ */

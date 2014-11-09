@@ -14,11 +14,13 @@
 
 /*!
  *  \brief          Type definition for comparison function pointer.
+ *  \ingroup        gdt
  */
 typedef int (*gds_cfunc)(const void *, const void *);
 
 /*!
  *  \brief          Enumeration type for data structure options.
+ *  \ingroup        general
  */
 enum gds_option {
     GDS_RESIZABLE = 1,          /*!<  Dynamically resizes on demand        */
@@ -28,6 +30,7 @@ enum gds_option {
 
 /*!
  *  \brief          Enumeration type for data element type.
+ *  \ingroup        gdt
  */
 enum gds_datatype {
     DATATYPE_CHAR,                  /*!<  char                */
