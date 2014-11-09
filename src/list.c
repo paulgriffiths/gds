@@ -3,7 +3,6 @@
  * \brief           Implementation of generic list data structure.
  * \details         The list is implemented as a double-ended, double-linked
  * list.
- * \todo            Implement iterators.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -377,6 +376,31 @@ bool list_reverse_sort(List list)
     free(tempelem);
 
     return true;
+}
+
+ListItr list_itr_first(List list)
+{
+    return list->head;
+}
+
+ListItr list_itr_last(List list)
+{
+    return list->tail;
+}
+
+ListItr list_itr_next(ListItr itr)
+{
+    return itr->next;
+}
+
+ListItr list_itr_previous(ListItr itr)
+{
+    return itr->prev;
+}
+
+void list_value_at_itr(ListItr itr, void * p)
+{
+    gdt_get_value(&itr->element, p);
 }
 
 bool list_is_empty(List list)

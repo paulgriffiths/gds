@@ -23,6 +23,12 @@
 typedef struct list * List;
 
 /*!
+ * \brief           Opaque list iterator type definition
+ * \ingroup         list
+ */
+typedef struct list_node * ListItr;
+
+/*!
  * \brief           Creates a new list.
  * \ingroup         list
  * \param type      The datatype for the list.
@@ -170,6 +176,52 @@ bool list_sort(List list);
  * \retval false    Failure, dynamic memory allocation failed.
  */
 bool list_reverse_sort(List list);
+
+/*!
+ * \brief           Returns an iterator to the first element of the list.
+ * \ingroup         list
+ * \param list      A pointer to the list
+ * \retval NULL     Failure, list is empty
+ * \retval non-NULL An iterator to the first element of the list
+ */
+ListItr list_itr_first(List list);
+
+/*!
+ * \brief           Returns an iterator to the last element of the list.
+ * \ingroup         list
+ * \param list      A pointer to the list
+ * \retval NULL     Failure, list is empty
+ * \retval non-NULL An iterator to the last element of the list
+ */
+ListItr list_itr_last(List list);
+
+/*!
+ * \brief           Increments a list iterator.
+ * \ingroup         list
+ * \param itr       A pointer to the iterator.
+ * \retval NULL     End of list, no next iterator
+ * \retval non-NULL An iterator to the next element of the list
+ */
+ListItr list_itr_next(ListItr itr);
+
+/*!
+ * \brief           Decrements a list iterator.
+ * \ingroup         list
+ * \param itr       A pointer to the iterator.
+ * \retval NULL     Start of list, no previous iterator
+ * \retval non-NULL An iterator to the previous element of the list
+ */
+ListItr list_itr_previous(ListItr itr);
+
+/*!
+ * \brief           Retrieves a value from an iterator.
+ * \ingroup         list
+ * \param itr       A pointer to the iterator.
+ * \param p         A pointer to an object of a type appropriate to the
+ * type set when creating the list. The object at this address will be
+ * modified to contain the value at the given iterator.
+ */
+void list_value_at_itr(ListItr itr, void * p);
 
 /*!
  * \brief           Tests if a list is empty.

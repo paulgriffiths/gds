@@ -657,6 +657,60 @@ void test_list_reverse_sort(void)
     list_destroy(list);
 }
 
+static void test_list_itr(void)
+{
+    List list = list_create(DATATYPE_INT, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    int some_ints[6] = {100, 400, 200, 300, 50, 22};
+
+    for ( size_t i = 0; i < 6; ++i ) {
+        list_append(list, some_ints[i]);
+    }
+
+    ListItr itr = list_itr_first(list);
+    size_t j = 0;
+    while ( itr ) {
+        int n;
+        list_value_at_itr(itr, &n);
+        tests_log_test(n == some_ints[j++],
+                       "list_value_at_itr() got wrong value");
+        itr = list_itr_next(itr);
+    }
+
+    list_destroy(list);
+}
+
+static void test_list_itr_reverse(void)
+{
+    List list = list_create(DATATYPE_INT, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    int some_ints[6] = {100, 400, 200, 300, 50, 22};
+
+    for ( size_t i = 0; i < 6; ++i ) {
+        list_prepend(list, some_ints[i]);
+    }
+
+    ListItr itr = list_itr_last(list);
+    size_t j = 0;
+    while ( itr ) {
+        int n;
+        list_value_at_itr(itr, &n);
+        tests_log_test(n == some_ints[j++],
+                       "list_value_at_itr() got wrong value");
+        itr = list_itr_previous(itr);
+    }
+
+    list_destroy(list);
+}
+
 void test_list(void)
 {
     test_list_basic();
@@ -668,4 +722,6 @@ void test_list(void)
     test_list_sort_strings();
     test_list_sort_struct();
     test_list_reverse_sort();
+    test_list_itr();
+    test_list_itr_reverse();
 }
