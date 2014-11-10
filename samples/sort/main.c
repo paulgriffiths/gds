@@ -110,10 +110,13 @@ int main(int argc, char ** argv)
 
     /*  Output sorted lines  */
 
-    for ( size_t i = 0; i < list_length(list); ++i ) {
+    ListItr itr = list_itr_first(list);
+    size_t i = 1;
+    while ( itr ) {
         char * str;
-        list_element_at_index(list, i, &str);
-        printf("%3zu: %s\n", i + 1, str);
+        list_get_value_itr(itr, &str);
+        printf("%3zu: %s\n", i++, str);
+        itr = list_itr_next(itr);
     }
 
     /*  Clean up and exit  */
