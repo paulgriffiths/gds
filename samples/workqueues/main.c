@@ -243,7 +243,11 @@ int main(void)
          *  loop will end.                                        */
 
         while ( queue_is_empty(done_queue->queue) ) {
-            pthread_cond_wait(&done_queue->cond, &done_queue->mutex);
+            if ( pthread_cond_wait(&done_queue->cond,
+                                   &done_queue->mutex) != 0 ) {
+                perror("couldn't wait on condition variable");
+                exit(EXIT_FAILURE);
+            }
         }
 
         /*  Process any job reports on the queue  */
@@ -257,7 +261,11 @@ int main(void)
                 /*  Join thread and decrement live thread
                  *  counter if the thread has finished.    */
 
-                pthread_join(tid[report->worker_id - 1], NULL);
+                if ( pthread_join(tid[report->worker_id - 1], NULL) != 0 ) {
+                    perror("couldn't join thread");
+                    exit(EXIT_FAILURE);
+                }
+
                 --live_threads;
             }
             else {
