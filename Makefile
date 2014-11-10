@@ -22,8 +22,9 @@ TESTS		:=
 
 CC          := gcc
 CFLAGS      := -std=c99 -pedantic -Wall -Wextra -ggdb -DDEBUG -DDEBUG_ALL
+CFLAGS		+= -pthread
 CPPFLAGS	:= -I$(INCLDIRPUB) -I$(INCLDIRPRI)
-LDFLAGS     :=
+LDFLAGS     := -pthread
 RM          := rm -f
 SED         := sed
 CTAGS       := ctags

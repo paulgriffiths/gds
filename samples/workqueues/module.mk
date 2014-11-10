@@ -7,4 +7,4 @@ SOURCES   += $(LOCAL_SRC)
 SAMPLES   += $(LOCAL_PROG)
 
 $(LOCAL_PROG): $(LOCAL_OBJ)
-	$(CC) -o $@ $^ -L$(LIBDIR) -pthreads -lpggds -lpthread
+	$(CC) -o $@ $^ -L$(LIBDIR) -pthread -lpggds -lpthread
