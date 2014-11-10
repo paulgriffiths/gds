@@ -74,12 +74,12 @@ void job_queue_destroy(struct job_queue * queue)
     queue_destroy(queue->queue);
 
     if ( pthread_mutex_destroy(&queue->mutex) != 0 ) {
-        fprintf(stderr, "couldn't destroy mutex");
+        fprintf(stderr, "couldn't destroy mutex\n");
         exit(EXIT_FAILURE);
     }
 
     if ( pthread_cond_destroy(&queue->cond) != 0 ) {
-        fprintf(stderr, "couldn't destroy condition variable");
+        fprintf(stderr, "couldn't destroy condition variable\n");
         exit(EXIT_FAILURE);
     }
 
@@ -144,7 +144,7 @@ void * thread_func(void * arg)
         /*  Get next job from in queue  */
 
         if ( pthread_mutex_lock(&in_queue->mutex) != 0 ) {
-            fprintf(stderr, "couldn't lock mutex");
+            fprintf(stderr, "couldn't lock mutex\n");
             exit(EXIT_FAILURE);
         }
 
@@ -162,7 +162,7 @@ void * thread_func(void * arg)
         }
 
         if ( pthread_mutex_unlock(&in_queue->mutex) != 0 ) {
-            fprintf(stderr, "couldn't unlock mutex");
+            fprintf(stderr, "couldn't unlock mutex\n");
             exit(EXIT_FAILURE);
         }
         
@@ -175,7 +175,7 @@ void * thread_func(void * arg)
         /*  Report the job or done status to the out queue  */
 
         if ( pthread_mutex_lock(&out_queue->mutex) != 0 ) {
-            fprintf(stderr, "couldn't lock mutex");
+            fprintf(stderr, "couldn't lock mutex\n");
             exit(EXIT_FAILURE);
         }
 
@@ -183,12 +183,12 @@ void * thread_func(void * arg)
         queue_push(out_queue->queue, report);
 
         if ( pthread_cond_signal(&out_queue->cond) != 0 ) {
-            fprintf(stderr, "couldn't signal condition variable");
+            fprintf(stderr, "couldn't signal condition variable\n");
             exit(EXIT_FAILURE);
         }
 
         if ( pthread_mutex_unlock(&out_queue->mutex) != 0 ) {
-            fprintf(stderr, "couldn't unlock mutex");
+            fprintf(stderr, "couldn't unlock mutex\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -221,7 +221,7 @@ int main(void)
                                                         out_queue,
                                                         done_queue);
         if ( pthread_create(&tid[i], NULL, thread_func, tinfo) != 0 ) {
-            fprintf(stderr, "couldn't create thread");
+            fprintf(stderr, "couldn't create thread\n");
             exit(EXIT_FAILURE);
         }
         ++live_threads;
@@ -230,7 +230,7 @@ int main(void)
     /*  Main event loop  */
 
     if ( pthread_mutex_lock(&done_queue->mutex) != 0 ) {
-        fprintf(stderr, "couldn't lock mutex");
+        fprintf(stderr, "couldn't lock mutex\n");
         exit(EXIT_FAILURE);
     }
 
@@ -245,7 +245,7 @@ int main(void)
         while ( queue_is_empty(done_queue->queue) ) {
             if ( pthread_cond_wait(&done_queue->cond,
                                    &done_queue->mutex) != 0 ) {
-                fprintf(stderr, "couldn't wait on condition variable");
+                fprintf(stderr, "couldn't wait on condition variable\n");
                 exit(EXIT_FAILURE);
             }
         }
@@ -262,7 +262,7 @@ int main(void)
                  *  counter if the thread has finished.    */
 
                 if ( pthread_join(tid[report->worker_id - 1], NULL) != 0 ) {
-                    fprintf(stderr, "couldn't join thread");
+                    fprintf(stderr, "couldn't join thread\n");
                     exit(EXIT_FAILURE);
                 }
 
@@ -281,7 +281,7 @@ int main(void)
     }
 
     if ( pthread_mutex_unlock(&done_queue->mutex) != 0 ) {
-        fprintf(stderr, "couldn't unlock mutex");
+        fprintf(stderr, "couldn't unlock mutex\n");
         exit(EXIT_FAILURE);
     }
 
