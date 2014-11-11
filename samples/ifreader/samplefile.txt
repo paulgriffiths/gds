@@ -1,0 +1,11 @@
+# This is a comment, followed by a blank line
+
+name=jeff
+position = manager
+   department    =    engineering
+
+# Another comment
+
+phone =
+active
+
