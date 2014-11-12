@@ -1,5 +1,5 @@
 /*!
- * \file            string_utils.c
+ * \file            string_util.c
  * \brief           Implementation of string utility functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "string_utils.h"
+#include "string_util.h"
 
 char * trim_line_ending(char * str)
 {

@@ -1,0 +1,5 @@
+/**
+ *  \defgroup string_util General purpose string manipulation functions
+ *  \details This module contains general purpose functions for working
+ *  with and manipulating C-style strings.
+ */

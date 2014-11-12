@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "string_utils.h"
+#include "string_util.h"
 #include "dict.h"
 
 #define BUFFER_LEN 1024
