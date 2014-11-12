@@ -18,6 +18,14 @@ struct pair_string {
 };
 
 /*!
+ * \brief           Structure to hold a list of strings.
+ */
+struct list_string {
+    size_t size;            /*!<  Number of strings in the list  */
+    char ** list;           /*!<  Pointer to the list            */
+};
+
+/*!
  * \brief           Trims CR and LF characters from the end of a string.
  * \ingroup         string_util
  * \param str       The string to trim.
@@ -79,10 +87,45 @@ char * gds_strndup(const char * str, const size_t n);
 struct pair_string * pair_string_create(const char * str, const char delim);
 
 /*!
+ * \brief           Copies a string pair.
+ * \ingroup         string_util
+ * \param pair      The string pair to copy.
+ * \retval NULL     Failure, dynamic memory allocation failed
+ * \retval non-NULL A pointer to the new string pair
+ */
+struct pair_string * pair_string_copy(const struct pair_string * pair);
+
+/*!
  * \brief           Destroys a string pair.
  * \ingroup         string_util
  * \param pair      The pair to destroy.
  */
 void pair_string_destroy(struct pair_string * pair);
+
+/*!
+ * \brief           Creates a string list.
+ * \ingroup         string_util
+ * \param n         The capacity of the string list.
+ * \retval NULL     Failure, dynamic memory allocation failed
+ * \retval non-NULL A pointer to the new string list
+ */
+struct list_string * list_string_create(const size_t n);
+
+/*!
+ * \brief           Splits a string into a string list.
+ * \ingroup         string_util
+ * \param str       The string to split.
+ * \param delim     The delimiter character.
+ * \retval NULL     Failure, dynamic memory allocation failed
+ * \retval non-NULL A pointer to the new string pair
+ */
+struct list_string * split_string(const char * str, const char delim);
+
+/*!
+ * \brief           Destroys a string list.
+ * \ingroup         string_util
+ * \param list      The string list to destroy.
+ */
+void list_string_destroy(struct list_string * list);
 
 #endif      /*  PGUTILS_GENERIC_DATA_STRUCTURES_STRING_UTIL_H  */
