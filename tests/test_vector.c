@@ -57,6 +57,17 @@ static void test_vector_zero(void)
     vector_destroy(vector);
 }
 
+static void test_vector_zero_destroy(void)
+{
+    Vector vector = vector_create(0, DATATYPE_INT, 0);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_destroy(vector);
+}
+
 static void test_vector_basic(void)
 {
     Vector vector = vector_create(3, DATATYPE_INT, 0);
@@ -753,6 +764,7 @@ void test_vector_reverse_sort(void)
 void test_vector(void)
 {
     test_vector_zero();
+    test_vector_zero_destroy();
     test_vector_basic();
     test_vector_free_strings();
     test_vector_find();
