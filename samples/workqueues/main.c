@@ -8,10 +8,10 @@
 #include "queue.h"
 
 /*  Total number of worker threads  */
-static const int num_threads = 4;
+static const size_t num_threads = 4;
 
 /*  Total number of jobs  */
-static const int num_jobs = 20;
+static const size_t num_jobs = 20;
 
 /*  Struct sent by a thread for a completed job  */
 struct job_report {

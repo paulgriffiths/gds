@@ -44,7 +44,6 @@ int main(int argc, char ** argv)
             trim(pair->second);
 
             dict_insert(keys, pair->first, pg_strdup(pair->second));
-            pair->second = NULL;
             pair_string_destroy(pair);
         }
     }
