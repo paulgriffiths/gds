@@ -75,16 +75,21 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
     }
     va_end(ap);
 
-    new_vector->elements = calloc(capacity, sizeof *new_vector->elements);
-    if ( !new_vector->elements ) {
-        if ( new_vector->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+    if ( capacity ) {
+        new_vector->elements = calloc(capacity, sizeof *new_vector->elements);
+        if ( !new_vector->elements ) {
+            if ( new_vector->exit_on_error ) {
+                gds_strerror_quit("memory allocation failed "
+                                  "(%s, line %d)", __FILE__, __LINE__);
+            }
+            else {
+                free(new_vector);
+                return NULL;
+            }
         }
-        else {
-            free(new_vector);
-            return NULL;
-        }
+    }
+    else {
+        new_vector->elements = NULL;
     }
 
     return new_vector;
@@ -278,7 +283,9 @@ static bool vector_insert_internal(Vector vector,
     }
 
     if ( vector->length == vector->capacity ) {
-        const size_t new_capacity = vector->capacity * GROWTH;
+        const size_t new_capacity = vector->capacity ?
+                                    vector->capacity * GROWTH :
+                                    1;
         struct gdt_generic_datatype * new_elements;
         new_elements = realloc(vector->elements,
                                new_capacity * sizeof *new_elements);

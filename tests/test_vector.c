@@ -7,6 +7,56 @@
 #include "test_vector.h"
 #include "test_logging.h"
 
+static void test_vector_zero(void)
+{
+    Vector vector = vector_create(0, DATATYPE_INT, 0);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    int n;
+    size_t sz;
+    bool status;
+        
+    sz = vector_length(vector);
+    tests_log_test(sz == 0, "vector_length() gave wrong value(%d)", __LINE__);
+
+    sz = vector_capacity(vector);
+    tests_log_test(sz == 0, "vector_capacity() gave wrong value(%d)", __LINE__);
+
+    sz = vector_free_space(vector);
+    tests_log_test(sz == 0, "vector_free_space() gave wrong value(%d)", __LINE__);
+
+    status = vector_is_empty(vector);
+    tests_log_test(status, "vector_is_empty() gave wrong value(%d)", __LINE__);
+    
+    status = vector_append(vector, 3);
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
+
+    status = vector_append(vector, 4);
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
+
+    status = vector_append(vector, 5);
+    tests_log_test(status, "vector_append() failed(%d)", __LINE__);
+
+    status = vector_element_at_index(vector, 0, &n);
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 3, "vector_element_at_index() gave wrong value(%d)", __LINE__);
+
+    status = vector_element_at_index(vector, 1, &n);
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 4, "vector_element_at_index() gave wrong value(%d)", __LINE__);
+
+    status = vector_element_at_index(vector, 2, &n);
+    tests_log_test(status, "vector_element_at_index() didn't return true(%d)", __LINE__);
+    tests_log_test(n == 5, "vector_element_at_index() gave wrong value(%d)", __LINE__);
+
+    status = vector_element_at_index(vector, 3, &n);
+    tests_log_test(!status, "vector_element_at_index() incorrectly returned true(%d)", __LINE__);
+    vector_destroy(vector);
+}
+
 static void test_vector_basic(void)
 {
     Vector vector = vector_create(3, DATATYPE_INT, 0);
@@ -702,6 +752,7 @@ void test_vector_reverse_sort(void)
 
 void test_vector(void)
 {
+    test_vector_zero();
     test_vector_basic();
     test_vector_free_strings();
     test_vector_find();
