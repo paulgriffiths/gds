@@ -11,6 +11,7 @@
 
 /*!
  * \brief           Structure to hold a string pair.
+ * \ingroup         string_util
  */
 struct pair_string {
     char * first;           /*!<  First string of pair      */
@@ -19,6 +20,7 @@ struct pair_string {
 
 /*!
  * \brief           Structure to hold a list of strings.
+ * \ingroup         string_util
  */
 struct list_string {
     size_t size;            /*!<  Number of strings in the list  */
