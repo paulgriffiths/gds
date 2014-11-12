@@ -23,7 +23,7 @@ struct pair_string {
  * \param str       The string to trim.
  * \returns         A pointer to the passed string.
  */
-char * trim_line_ending(char * str);
+char * gds_trim_line_ending(char * str);
 
 /*!
  * \brief           Trims trailing whitespace from a string.
@@ -31,7 +31,7 @@ char * trim_line_ending(char * str);
  * \param str       The string to trim.
  * \returns         A pointer to the passed string.
  */
-char * trim_right(char * str);
+char * gds_trim_right(char * str);
 
 /*!
  * \brief           Trims leading whitespace from a string.
@@ -39,7 +39,7 @@ char * trim_right(char * str);
  * \param str       The string to trim.
  * \returns         A pointer to the passed string.
  */
-char * trim_left(char * str);
+char * gds_trim_left(char * str);
 
 /*!
  * \brief           Trims leading and trailing whitespace from a string
@@ -47,7 +47,7 @@ char * trim_left(char * str);
  * \param str       The string to trim.
  * \returns         A pointer to the passed string.
  */
-char * trim(char * str);
+char * gds_trim(char * str);
 
 /*!
  * \brief           Duplicates a string.
@@ -56,7 +56,7 @@ char * trim(char * str);
  * \retval NULL     Failure, dynamic memory allocation failed
  * \retval non-NULL A pointer to the duplicated string
  */
-char * pg_strdup(const char * str);
+char * gds_strdup(const char * str);
 
 /*!
  * \brief           Duplicates at most n characters of a string.
@@ -66,7 +66,7 @@ char * pg_strdup(const char * str);
  * \retval NULL     Failure, dynamic memory allocation failed
  * \retval non-NULL A pointer to the duplicated string
  */
-char * pg_strndup(const char * str, const size_t n);
+char * gds_strndup(const char * str, const size_t n);
 
 /*!
  * \brief           Splits a string into a string pair.

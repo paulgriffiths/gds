@@ -68,14 +68,3 @@ void gds_assert_quit(const char * msg, ...)
 
     assert(false);
 }
-
-char * gds_strdup(const char * str)
-{
-    const size_t len = strlen(str);
-    char * new_str = malloc(len + 1);
-    if ( !new_str ) {
-        return NULL;
-    }
-    strcpy(new_str, str);
-    return new_str;
-}

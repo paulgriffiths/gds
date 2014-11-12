@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include "string_util.h"
 
-char * trim_line_ending(char * str)
+char * gds_trim_line_ending(char * str)
 {
     if ( *str != '\0' ) {
         for ( int last = (int) strlen(str) - 1;
@@ -25,7 +25,7 @@ char * trim_line_ending(char * str)
     return str;
 }
 
-char * trim_right(char * str)
+char * gds_trim_right(char * str)
 {
     if ( *str != '\0' ) {
         for ( int last = (int) strlen(str) - 1;
@@ -38,7 +38,7 @@ char * trim_right(char * str)
     return str;
 }
 
-char * trim_left(char * str)
+char * gds_trim_left(char * str)
 {
     char * leading = str;
     char * orig_head = str;
@@ -54,19 +54,19 @@ char * trim_left(char * str)
     return str;
 }
 
-char * trim(char * str)
+char * gds_trim(char * str)
 {
-    trim_left(str);
-    trim_right(str);
+    gds_trim_left(str);
+    gds_trim_right(str);
     return str;
 }
 
-char * pg_strdup(const char * str)
+char * gds_strdup(const char * str)
 {
-    return pg_strndup(str, strlen(str));
+    return gds_strndup(str, strlen(str));
 }
 
-char * pg_strndup(const char * str, const size_t n)
+char * gds_strndup(const char * str, const size_t n)
 {
     const size_t len = strlen(str);
     const size_t ncopy = len > n ? n : len;
@@ -91,12 +91,12 @@ struct pair_string * pair_string_create(const char * str, const char delim)
 
     const char * needle = strchr(str, delim);
     if ( !needle || delim == 0 ) {
-        if ( !(new_pair->first = pg_strdup(str)) ) {
+        if ( !(new_pair->first = gds_strdup(str)) ) {
             free(new_pair);
             return NULL;
         }
 
-        if ( !(new_pair->second = pg_strdup("")) ) {
+        if ( !(new_pair->second = gds_strdup("")) ) {
             free(new_pair->first);
             return NULL;
         }
@@ -105,12 +105,12 @@ struct pair_string * pair_string_create(const char * str, const char delim)
         const size_t len_first = needle - str;
         const size_t len_second = strlen(str) - len_first - 1;
 
-        if ( !(new_pair->first = pg_strndup(str, len_first)) ) {
+        if ( !(new_pair->first = gds_strndup(str, len_first)) ) {
             free(new_pair);
             return NULL;
         }
 
-        if ( !(new_pair->second = pg_strndup(needle + 1, len_second)) ) {
+        if ( !(new_pair->second = gds_strndup(needle + 1, len_second)) ) {
             free(new_pair->first);
             free(new_pair);
             return NULL;

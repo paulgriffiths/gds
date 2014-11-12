@@ -6,12 +6,13 @@
 #include "test_list.h"
 #include "test_vector.h"
 #include "test_dict.h"
+#include "test_string_util.h"
 #include "test_logging.h"
 
 int main(int argc, char ** argv)
 {
     bool stack = false, queue = false, list = false, vector = false;
-    bool dict = false;
+    bool dict = false, string_util = false;
 
     if ( argc < 2 ) {
         stack = true;
@@ -19,6 +20,7 @@ int main(int argc, char ** argv)
         list = true;
         vector = true;
         dict = true;
+        string_util = true;
     }
     else {
         size_t i = 0;
@@ -38,6 +40,9 @@ int main(int argc, char ** argv)
             }
             else if ( !strcmp(argv[i], "dict") ) {
                 dict = true;
+            }
+            else if ( !strcmp(argv[i], "string_util") ) {
+                string_util = true;
             }
         }
     }
@@ -65,6 +70,11 @@ int main(int argc, char ** argv)
     if ( dict ) {
         printf("Running unit tests for generic dictionary...\n");
         test_dict();
+    }
+
+    if ( string_util ) {
+        printf("Running unit tests for string utilities...\n");
+        test_string_util();
     }
 
     printf("%d successes and %d failures from %d tests.\n",
