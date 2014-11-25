@@ -7,113 +7,99 @@
 #include "test_queue.h"
 #include "test_logging.h"
 
-static void test_queue_one(void)
+TEST_SUITE(test_queue);
+
+/*  Test basic queue operations  */
+
+TEST_CASE(test_queue_basic_ops)
 {
     Queue que = queue_create(3, DATATYPE_INT, 0);
+    if ( !que ) {
+        perror("couldn't allocate memory for queue");
+        exit(EXIT_FAILURE);
+    }
 
     int n;
-    size_t sz;
-    bool status;
         
-    sz = queue_capacity(que);
-    tests_log_test(sz == 3, "queue_capacity() gave wrong value");
+    /*  Test queue attributes after creation  */
 
-    sz = queue_size(que);
-    tests_log_test(sz == 0, "queue_size() gave wrong value");
+    TEST_ASSERT_EQUAL(queue_capacity(que), 3);
+    TEST_ASSERT_EQUAL(queue_size(que), 0);
+    TEST_ASSERT_EQUAL(queue_free_space(que), 3);
+    TEST_ASSERT_TRUE(queue_is_empty(que));
+    TEST_ASSERT_FALSE(queue_is_full(que));
 
-    sz = queue_free_space(que);
-    tests_log_test(sz == 3, "queue_free_space() gave wrong value");
+    /*  Test no pop from empty queue  */
 
-    status = queue_is_empty(que);
-    tests_log_test(status, "queue_is_empty() gave wrong value");
+    TEST_ASSERT_FALSE(queue_pop(que, &n));
 
-    status = queue_is_full(que);
-    tests_log_test(!status, "queue_is_full() gave wrong value");
+    /*  Test push elements  */
 
-    status = queue_pop(que, &n);
-    tests_log_test(!status, "queue_pop() improperly succeeded");
+    TEST_ASSERT_TRUE(queue_push(que, 1));
+    TEST_ASSERT_TRUE(queue_push(que, -2));
+    TEST_ASSERT_TRUE(queue_push(que, 5));
 
-    status = queue_push(que, 1);
-    tests_log_test(status, "queue_push() failed");
-    
-    status = queue_push(que, -2);
-    tests_log_test(status, "queue_push() failed");
+    /*  Test no push onto full queue  */
 
-    status = queue_push(que, 5);
-    tests_log_test(status, "queue_push() failed");
+    TEST_ASSERT_FALSE(queue_push(que, 7));
 
-    status = queue_push(que, 7);
-    tests_log_test(!status, "queue_push() improperly succeeded");
+    /*  Test peek at front element  */
 
-    status = queue_peek(que, &n);
-    tests_log_test(status, "queue_peek() failed");
-    tests_log_test(n == 1, "queue_peek() gave wrong value");
+    TEST_ASSERT_TRUE(queue_peek(que, &n));
+    TEST_ASSERT_EQUAL(n, 1);
 
-    sz = queue_capacity(que);
-    tests_log_test(sz == 3, "queue_capacity() gave wrong value");
+    /*  Test queue attributes when full  */
 
-    sz = queue_size(que);
-    tests_log_test(sz == 3, "queue_size() gave wrong value");
+    TEST_ASSERT_EQUAL(queue_capacity(que), 3);
+    TEST_ASSERT_EQUAL(queue_size(que), 3);
+    TEST_ASSERT_EQUAL(queue_free_space(que), 0);
+    TEST_ASSERT_FALSE(queue_is_empty(que));
+    TEST_ASSERT_TRUE(queue_is_full(que));
 
-    sz = queue_free_space(que);
-    tests_log_test(sz == 0, "queue_free_space() gave wrong value");
+    /*  Test two pops and a peek  */
 
-    status = queue_is_empty(que);
-    tests_log_test(!status, "queue_is_empty() gave wrong value");
+    TEST_ASSERT_TRUE(queue_pop(que, &n));
+    TEST_ASSERT_EQUAL(n, 1);
 
-    status = queue_is_full(que);
-    tests_log_test(status, "queue_is_full() gave wrong value");
+    TEST_ASSERT_TRUE(queue_pop(que, &n));
+    TEST_ASSERT_EQUAL(n, -2);
 
-    status = queue_pop(que, &n);
-    tests_log_test(status, "queue_pop() failed");
-    tests_log_test(n == 1, "queue_pop() gave wrong value");
+    TEST_ASSERT_TRUE(queue_peek(que, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    status = queue_pop(que, &n);
-    tests_log_test(status, "queue_pop() failed");
-    tests_log_test(n == -2, "queue_pop() gave wrong value");
+    /*  Test queue attributes when partially full  */
 
-    status = queue_peek(que, &n);
-    tests_log_test(status, "queue_peek() failed");
-    tests_log_test(n == 5, "queue_peek() gave wrong value");
+    TEST_ASSERT_EQUAL(queue_capacity(que), 3);
+    TEST_ASSERT_EQUAL(queue_size(que), 1);
+    TEST_ASSERT_EQUAL(queue_free_space(que), 2);
+    TEST_ASSERT_FALSE(queue_is_empty(que));
+    TEST_ASSERT_FALSE(queue_is_full(que));
 
-    sz = queue_capacity(que);
-    tests_log_test(sz == 3, "queue_capacity() gave wrong value");
+    /*  Test pop last element  */
 
-    sz = queue_size(que);
-    tests_log_test(sz == 1, "queue_size() gave wrong value");
+    TEST_ASSERT_TRUE(queue_pop(que, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    sz = queue_free_space(que);
-    tests_log_test(sz == 2, "queue_free_space() gave wrong value");
+    /*  Test no pop from emptied queue  */
 
-    status = queue_is_empty(que);
-    tests_log_test(!status, "queue_is_empty() gave wrong value");
+    TEST_ASSERT_FALSE(queue_pop(que, &n));
 
-    status = queue_is_full(que);
-    tests_log_test(!status, "queue_is_full() gave wrong value");
+    /*  Test attributes of emptied queue  */
 
-    status = queue_pop(que, &n);
-    tests_log_test(status, "queue_pop() failed");
-    tests_log_test(n == 5, "queue_pop() gave wrong value");
-
-    sz = queue_capacity(que);
-    tests_log_test(sz == 3, "queue_capacity() gave wrong value");
-
-    sz = queue_size(que);
-    tests_log_test(sz == 0, "queue_size() gave wrong value");
-
-    sz = queue_free_space(que);
-    tests_log_test(sz == 3, "queue_free_space() gave wrong value");
-
-    status = queue_is_empty(que);
-    tests_log_test(status, "queue_is_empty() gave wrong value");
-
-    status = queue_is_full(que);
-    tests_log_test(!status, "queue_is_full() gave wrong value");
+    TEST_ASSERT_EQUAL(queue_capacity(que), 3);
+    TEST_ASSERT_EQUAL(queue_size(que), 0);
+    TEST_ASSERT_EQUAL(queue_free_space(que), 3);
+    TEST_ASSERT_TRUE(queue_is_empty(que));
+    TEST_ASSERT_FALSE(queue_is_full(que));
 
     queue_destroy(que);
 }
 
-static void test_queue_free_strings(void)
+/*  Test that dynamically allocated strings are appropriately
+ *  freed when a queue is destroyed. Run this test case through
+ *  Valgrind or a similar tool to check no memory leaks.         */
+
+TEST_CASE(test_queue_free_strings)
 {
     Queue queue = queue_create(1, DATATYPE_STRING,
                                GDS_RESIZABLE | GDS_FREE_ON_DESTROY);
@@ -122,38 +108,26 @@ static void test_queue_free_strings(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
-    size_t sz;
+    TEST_ASSERT_TRUE(queue_push(queue, strdup("First string")));
+    TEST_ASSERT_TRUE(queue_push(queue, strdup("Second string")));
+    TEST_ASSERT_TRUE(queue_push(queue, strdup("Third string")));
+    TEST_ASSERT_TRUE(queue_push(queue, strdup("Fourth string")));
 
-    status = queue_push(queue, strdup("First string"));
-    tests_log_test(status, "queue_push() failed");
+    /*  Test attributes of emptied queue  */
 
-    status = queue_push(queue, strdup("Second string"));
-    tests_log_test(status, "queue_push() failed");
-
-    status = queue_push(queue, strdup("Third string"));
-    tests_log_test(status, "queue_push() failed");
-
-    status = queue_push(queue, strdup("Fourth string"));
-    tests_log_test(status, "queue_push() failed");
-
-    sz = queue_size(queue);
-    tests_log_test(sz == 4, "queue_length() gave wrong value");
-
-    sz = queue_capacity(queue);
-    tests_log_test(sz == 4, "queue_capacity() gave wrong value");
-
-    sz = queue_free_space(queue);
-    tests_log_test(sz == 0, "queue_free_space() gave wrong value");
-
-    status = queue_is_empty(queue);
-    tests_log_test(!status, "queue_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(queue_capacity(queue), 4);
+    TEST_ASSERT_EQUAL(queue_size(queue), 4);
+    TEST_ASSERT_EQUAL(queue_free_space(queue), 0);
+    TEST_ASSERT_FALSE(queue_is_empty(queue));
+    TEST_ASSERT_TRUE(queue_is_full(queue));
     
+    /*  Destroy queue while containing dynamically allocated elements  */
+
     queue_destroy(queue);
 }
 
 void test_queue(void)
 {
-    test_queue_one();
-    test_queue_free_strings();
+    RUN_CASE(test_queue_basic_ops);
+    RUN_CASE(test_queue_free_strings);
 }

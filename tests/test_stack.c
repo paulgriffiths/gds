@@ -96,7 +96,7 @@ TEST_CASE(test_stack_basic_ops)
 }
 
 /*  Test that dynamically allocated strings are appropriately
- *  freed when a stack is destroyed. Run this unit test through
+ *  freed when a stack is destroyed. Run this test case through
  *  Valgrind or a similar tool to check no memory leaks.         */
 
 TEST_CASE(test_stack_free_strings)
