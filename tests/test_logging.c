@@ -23,7 +23,12 @@ static int total_tests = 0;
 /*!  Control flag to display individual test failures  */
 static bool show_failures = true;
 
-void tests_log_test(const bool success, const char * fmt, ...) {
+/*!
+ * \brief           Logs the result of a single test.
+ * \param success   `true` if the test passed, `false` if it failed.
+ */
+static void tests_log_single_test(const bool success)
+{
     ++total_tests;
     if ( success ) {
         ++test_successes;
@@ -31,6 +36,23 @@ void tests_log_test(const bool success, const char * fmt, ...) {
     else {
         ++test_failures;
     }
+}
+
+void tests_assert_true(const bool success, const char * suitename,
+                       const char * casename, const char * failmessage,
+                       const char * filename, const int linenum)
+{
+    tests_log_single_test(success);
+
+    if ( show_failures && !success ) {
+        fprintf(stderr, "Test failed at %s line %d\n", filename, linenum);
+        fprintf(stderr, "Suite '%s', case '%s'\n", suitename, casename);
+        fprintf(stderr, "%s\n\n", failmessage);
+    }
+}
+
+void tests_log_test(const bool success, const char * fmt, ...) {
+    tests_log_single_test(success);
 
     if ( show_failures && !success ) {
         fprintf(stderr, "Failure (%d): ", total_tests);
@@ -40,6 +62,19 @@ void tests_log_test(const bool success, const char * fmt, ...) {
         va_end(ap);
         fprintf(stderr, "\n");
     }
+}
+
+void tests_initialize(void)
+{
+    total_tests = 0;
+    test_successes = 0;
+    test_failures = 0;
+}
+
+void tests_report(void)
+{
+    fprintf(stderr, "%d successes and %d failures from %d tests.\n",
+            test_successes, test_failures, total_tests);
 }
 
 int tests_get_total_tests(void) {
@@ -53,4 +88,3 @@ int tests_get_successes(void) {
 int tests_get_failures(void) {
     return test_failures;
 }
-

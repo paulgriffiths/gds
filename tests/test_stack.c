@@ -7,113 +7,99 @@
 #include "test_stack.h"
 #include "test_logging.h"
 
-static void test_stack_one(void)
+TEST_SUITE(test_stack);
+
+/*  Test basic stack operations  */
+
+TEST_CASE(test_stack_basic_ops)
 {
     Stack stk = stack_create(3, DATATYPE_INT, 0);
+    if ( !stk ) {
+        perror("couldn't create stack");
+        exit(EXIT_FAILURE);
+    }
 
     int n;
-    size_t sz;
-    bool status;
         
-    sz = stack_capacity(stk);
-    tests_log_test(sz == 3, "stack_capacity() gave wrong value");
+    /*  Check stack attributes when created and empty  */
 
-    sz = stack_size(stk);
-    tests_log_test(sz == 0, "stack_size() gave wrong value");
+    TEST_ASSERT_EQUAL(stack_capacity(stk), 3);
+    TEST_ASSERT_EQUAL(stack_size(stk), 0);
+    TEST_ASSERT_EQUAL(stack_free_space(stk), 3);
+    TEST_ASSERT_TRUE(stack_is_empty(stk));
+    TEST_ASSERT_FALSE(stack_is_full(stk));
 
-    sz = stack_free_space(stk);
-    tests_log_test(sz == 3, "stack_free_space() gave wrong value");
+    /*  Check no pop from an empty stack  */
 
-    status = stack_is_empty(stk);
-    tests_log_test(status, "stack_is_empty() gave wrong value");
+    TEST_ASSERT_FALSE(stack_pop(stk, &n));
 
-    status = stack_is_full(stk);
-    tests_log_test(!status, "stack_is_full() gave wrong value");
+    /*  Check pushing three items onto stack  */
 
-    status = stack_pop(stk, &n);
-    tests_log_test(!status, "stack_pop() improperly succeeded");
+    TEST_ASSERT_TRUE(stack_push(stk, 1));
+    TEST_ASSERT_TRUE(stack_push(stk, -2));
+    TEST_ASSERT_TRUE(stack_push(stk, 5));
 
-    status = stack_push(stk, 1);
-    tests_log_test(status, "stack_push() failed");
-    
-    status = stack_push(stk, -2);
-    tests_log_test(status, "stack_push() failed");
+    /*  Check no push onto a full stack  */
 
-    status = stack_push(stk, 5);
-    tests_log_test(status, "stack_push() failed");
+    TEST_ASSERT_FALSE(stack_push(stk, 7));
 
-    status = stack_push(stk, 7);
-    tests_log_test(!status, "stack_push() improperly succeeded");
+    /*  Check peek at top of stack  */
 
-    status = stack_peek(stk, &n);
-    tests_log_test(status, "stack_peek() failed");
-    tests_log_test(n == 5, "stack_peek() gave wrong value");
+    TEST_ASSERT_TRUE(stack_peek(stk, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    sz = stack_capacity(stk);
-    tests_log_test(sz == 3, "stack_capacity() gave wrong value");
+    /*  Check stack attributes when full  */
 
-    sz = stack_size(stk);
-    tests_log_test(sz == 3, "stack_size() gave wrong value");
+    TEST_ASSERT_EQUAL(stack_capacity(stk), 3);
+    TEST_ASSERT_EQUAL(stack_size(stk), 3);
+    TEST_ASSERT_EQUAL(stack_free_space(stk), 0);
+    TEST_ASSERT_FALSE(stack_is_empty(stk));
+    TEST_ASSERT_TRUE(stack_is_full(stk));
 
-    sz = stack_free_space(stk);
-    tests_log_test(sz == 0, "stack_free_space() gave wrong value");
+    /*  Check some pops and a peek  */
 
-    status = stack_is_empty(stk);
-    tests_log_test(!status, "stack_is_empty() gave wrong value");
+    TEST_ASSERT_TRUE(stack_pop(stk, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    status = stack_is_full(stk);
-    tests_log_test(status, "stack_is_full() gave wrong value");
+    TEST_ASSERT_TRUE(stack_pop(stk, &n));
+    TEST_ASSERT_EQUAL(n, -2);
 
-    status = stack_pop(stk, &n);
-    tests_log_test(status, "stack_pop() failed");
-    tests_log_test(n == 5, "stack_pop() gave wrong value");
+    TEST_ASSERT_TRUE(stack_peek(stk, &n));
+    TEST_ASSERT_EQUAL(n, 1);
 
-    status = stack_pop(stk, &n);
-    tests_log_test(status, "stack_pop() failed");
-    tests_log_test(n == -2, "stack_pop() gave wrong value");
+    /*  Check stack attributes when partially full  */
 
-    status = stack_peek(stk, &n);
-    tests_log_test(status, "stack_peek() failed");
-    tests_log_test(n == 1, "stack_peek() gave wrong value");
+    TEST_ASSERT_EQUAL(stack_capacity(stk), 3);
+    TEST_ASSERT_EQUAL(stack_size(stk), 1);
+    TEST_ASSERT_EQUAL(stack_free_space(stk), 2);
+    TEST_ASSERT_FALSE(stack_is_empty(stk));
+    TEST_ASSERT_FALSE(stack_is_full(stk));
 
-    sz = stack_capacity(stk);
-    tests_log_test(sz == 3, "stack_capacity() gave wrong value");
+    /*  Check pop last element  */
 
-    sz = stack_size(stk);
-    tests_log_test(sz == 1, "stack_size() gave wrong value");
+    TEST_ASSERT_TRUE(stack_pop(stk, &n));
+    TEST_ASSERT_EQUAL(n, 1);
 
-    sz = stack_free_space(stk);
-    tests_log_test(sz == 2, "stack_free_space() gave wrong value");
+    /*  Check no pop from an emptied stack  */
 
-    status = stack_is_empty(stk);
-    tests_log_test(!status, "stack_is_empty() gave wrong value");
+    TEST_ASSERT_FALSE(stack_pop(stk, &n));
 
-    status = stack_is_full(stk);
-    tests_log_test(!status, "stack_is_full() gave wrong value");
+    /*  Check stack attributes when empty again  */
 
-    status = stack_pop(stk, &n);
-    tests_log_test(status, "stack_pop() failed");
-    tests_log_test(n == 1, "stack_pop() gave wrong value");
-
-    sz = stack_capacity(stk);
-    tests_log_test(sz == 3, "stack_capacity() gave wrong value");
-
-    sz = stack_size(stk);
-    tests_log_test(sz == 0, "stack_size() gave wrong value");
-
-    sz = stack_free_space(stk);
-    tests_log_test(sz == 3, "stack_free_space() gave wrong value");
-
-    status = stack_is_empty(stk);
-    tests_log_test(status, "stack_is_empty() gave wrong value");
-
-    status = stack_is_full(stk);
-    tests_log_test(!status, "stack_is_full() gave wrong value");
+    TEST_ASSERT_EQUAL(stack_capacity(stk), 3);
+    TEST_ASSERT_EQUAL(stack_size(stk), 0);
+    TEST_ASSERT_EQUAL(stack_free_space(stk), 3);
+    TEST_ASSERT_TRUE(stack_is_empty(stk));
+    TEST_ASSERT_FALSE(stack_is_full(stk));
 
     stack_destroy(stk);
 }
 
-static void test_stack_free_strings(void)
+/*  Test that dynamically allocated strings are appropriately
+ *  freed when a stack is destroyed. Run this unit test through
+ *  Valgrind or a similar tool to check no memory leaks.         */
+
+TEST_CASE(test_stack_free_strings)
 {
     Stack stack = stack_create(1, DATATYPE_STRING,
                                GDS_RESIZABLE | GDS_FREE_ON_DESTROY);
@@ -122,35 +108,27 @@ static void test_stack_free_strings(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
-    size_t sz;
+    /*  Push strings  */
 
-    status = stack_push(stack, strdup("First string"));
-    tests_log_test(status, "stack_push() failed");
+    TEST_ASSERT_TRUE(stack_push(stack, strdup("First string")));
+    TEST_ASSERT_TRUE(stack_push(stack, strdup("Second string")));
+    TEST_ASSERT_TRUE(stack_push(stack, strdup("Third string")));
 
-    status = stack_push(stack, strdup("Second string"));
-    tests_log_test(status, "stack_push() failed");
+    /*  Test stack attributes  */
 
-    status = stack_push(stack, strdup("Third string"));
-    tests_log_test(status, "stack_push() failed");
-
-    sz = stack_size(stack);
-    tests_log_test(sz == 3, "stack_length() gave wrong value");
-
-    sz = stack_capacity(stack);
-    tests_log_test(sz == 4, "stack_capacity() gave wrong value");
-
-    sz = stack_free_space(stack);
-    tests_log_test(sz == 1, "stack_free_space() gave wrong value");
-
-    status = stack_is_empty(stack);
-    tests_log_test(!status, "stack_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(stack_size(stack), 3);
+    TEST_ASSERT_EQUAL(stack_capacity(stack), 4);
+    TEST_ASSERT_EQUAL(stack_free_space(stack), 1);
+    TEST_ASSERT_FALSE(stack_is_empty(stack));
+    TEST_ASSERT_FALSE(stack_is_full(stack));
     
+    /*  Destroy stack while it contains dynamically allocated elements  */
+
     stack_destroy(stack);
 }
 
 void test_stack(void)
 {
-    test_stack_one();
-    test_stack_free_strings();
+    RUN_CASE(test_stack_basic_ops);
+    RUN_CASE(test_stack_free_strings);
 }

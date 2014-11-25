@@ -47,6 +47,8 @@ int main(int argc, char ** argv)
         }
     }
 
+    tests_initialize();
+
     if ( stack ) {
         printf("Running unit tests for generic stack...\n");
         test_stack();
@@ -77,9 +79,7 @@ int main(int argc, char ** argv)
         test_string_util();
     }
 
-    printf("%d successes and %d failures from %d tests.\n",
-           tests_get_successes(), tests_get_failures(),
-           tests_get_total_tests());
+    tests_report();
 
     return 0;
 }
