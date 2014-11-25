@@ -9,6 +9,7 @@
 #ifndef PG_TEST_LOGGING_H
 #define PG_TEST_LOGGING_H
 
+#include <string.h>
 #include <stdbool.h>
 
 /*!
@@ -78,6 +79,30 @@
         izzywig_testsuitename, \
         izzywig_testcasename, \
         (#a " is equal to " #b), \
+        __FILE__, \
+        __LINE__)
+
+/*!
+ * \brief           Macro to test if two strings are equal.
+ * \param s1        The first string.
+ * \param s2        The second string.
+ */
+#define TEST_ASSERT_STR_EQUAL(s1,s2) tests_assert_true(!strcmp((s1),(s2)), \
+        izzywig_testsuitename, \
+        izzywig_testcasename, \
+        (#s1 " is not equal to " #s2), \
+        __FILE__, \
+        __LINE__)
+
+/*!
+ * \brief           Macro to test if two strings are not equal.
+ * \param s1        The first string.
+ * \param s2        The second string.
+ */
+#define TEST_ASSERT_STR_NOTEQUAL(s1,s2) tests_assert_true(strcmp((s1),(s2)), \
+        izzywig_testsuitename, \
+        izzywig_testcasename, \
+        (#s1 " is equal to " #s2), \
         __FILE__, \
         __LINE__)
 

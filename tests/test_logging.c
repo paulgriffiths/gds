@@ -46,8 +46,8 @@ void tests_assert_true(const bool success, const char * suitename,
 
     if ( show_failures && !success ) {
         fprintf(stderr, "Test failed at %s line %d\n", filename, linenum);
-        fprintf(stderr, "Suite '%s', case '%s'\n", suitename, casename);
-        fprintf(stderr, "%s\n\n", failmessage);
+        fprintf(stderr, "  Suite '%s', case '%s'\n", suitename, casename);
+        fprintf(stderr, "  %s\n\n", failmessage);
     }
 }
 

@@ -5,418 +5,329 @@
 #include "test_string_util.h"
 #include "test_logging.h"
 
-void test_trim_left(void)
+/*  Helper functions  */
+
+static struct pair_string * xpair_string_create(const char * str, const char d)
 {
-    char control[20];
-    
-    strcpy(control, "");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim_left() failed");
-
-    strcpy(control, "   ");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim_left() failed");
-
-    strcpy(control, "two words");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_left() failed");
-
-    strcpy(control, "   two words");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_left() failed");
-
-    strcpy(control, "two words  ");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words  "), "gds_trim_left() failed");
-
-    strcpy(control, "   two words  ");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words  "), "gds_trim_left() failed");
-    
-    strcpy(control, "\t   two words");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_left() failed");
-    
-    strcpy(control, "\n   two words");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_left() failed");
-    
-    strcpy(control, "\r   two words");
-    gds_trim_left(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_left() failed");
+    struct pair_string * ps = pair_string_create(str, d);
+    if ( !ps ) {
+        perror("couldn't allocate memory for pair string");
+        exit(EXIT_FAILURE);
+    }
+    return ps;
 }
 
-void test_trim_right(void)
+static struct pair_string * xpair_string_copy(struct pair_string * pair)
 {
-    char control[20];
-    
-    strcpy(control, "");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim_right() failed");
-
-    strcpy(control, "   ");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim_right() failed");
-
-    strcpy(control, "two words");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_right() failed");
-
-    strcpy(control, "   two words");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "   two words"), "gds_trim_right() failed");
-
-    strcpy(control, "two words  ");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_right() failed");
-
-    strcpy(control, "   two words  ");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "   two words"), "gds_trim_right() failed");
-    
-    strcpy(control, "two words  \t");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_right() failed");
-    
-    strcpy(control, "two words  \n");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_right() failed");
-    
-    strcpy(control, "two words  \r");
-    gds_trim_right(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim_right() failed");
+    struct pair_string * ps = pair_string_copy(pair);
+    if ( !ps ) {
+        perror("couldn't allocate memory for pair string");
+        exit(EXIT_FAILURE);
+    }
+    return ps;
 }
 
-void test_trim(void)
+static struct list_string * xsplit_string(const char * str, const char d)
+{
+    struct list_string * list = split_string(str, d);
+    if ( !list ) {
+        perror("couldn't allocate memory for string list");
+        exit(EXIT_FAILURE);
+    }
+    return list;
+}
+
+/*  Tests  */
+
+TEST_SUITE(test_string_util);
+
+TEST_CASE(test_trim_left)
 {
     char control[20];
     
     strcpy(control, "");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "");
 
     strcpy(control, "   ");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, ""), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "");
 
     strcpy(control, "two words");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words");
 
     strcpy(control, "   two words");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words");
 
     strcpy(control, "two words  ");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words  ");
 
     strcpy(control, "   two words  ");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words  ");
     
-    strcpy(control, "two words  \t");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
-    
-    strcpy(control, "two words  \n");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
-    
-    strcpy(control, "two words  \r");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
-
     strcpy(control, "\t   two words");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words");
     
     strcpy(control, "\n   two words");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words");
     
     strcpy(control, "\r   two words");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim_left(control), "two words");
+}
+
+TEST_CASE(test_trim_right)
+{
+    char control[20];
+    
+    strcpy(control, "");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "");
+
+    strcpy(control, "   ");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "");
+
+    strcpy(control, "two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "two words");
+
+    strcpy(control, "   two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "   two words");
+
+    strcpy(control, "two words  ");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "two words");
+
+    strcpy(control, "   two words  ");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "   two words");
+    
+    strcpy(control, "two words  \t");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "two words");
+    
+    strcpy(control, "two words  \n");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "two words");
+    
+    strcpy(control, "two words  \r");
+    TEST_ASSERT_STR_EQUAL(gds_trim_right(control), "two words");
+}
+
+TEST_CASE(test_trim)
+{
+    char control[20];
+    
+    strcpy(control, "");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "");
+
+    strcpy(control, "   ");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "");
+
+    strcpy(control, "two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+
+    strcpy(control, "   two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+
+    strcpy(control, "two words  ");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+
+    strcpy(control, "   two words  ");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+    
+    strcpy(control, "two words  \t");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+    
+    strcpy(control, "two words  \n");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+    
+    strcpy(control, "two words  \r");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+
+    strcpy(control, "\t   two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+    
+    strcpy(control, "\n   two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
+    
+    strcpy(control, "\r   two words");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
 
     strcpy(control, "\t   two words  \n");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
     
     strcpy(control, "\n   two words  \r");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
     
     strcpy(control, "\r   two words  \n");
-    gds_trim(control);
-    tests_log_test(!strcmp(control, "two words"), "gds_trim() failed");
+    TEST_ASSERT_STR_EQUAL(gds_trim(control), "two words");
 }
 
-void test_pair_string(void)
+TEST_CASE(test_pair_string)
 {
-    struct pair_string * ps = pair_string_create("key=value", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test basic functioning  */
 
-    tests_log_test(!strcmp(ps->first, "key"),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, "value"),
-                   "pair_string_create() failed");
+    struct pair_string * ps = xpair_string_create("key=value", '=');
+    TEST_ASSERT_STR_EQUAL(ps->first, "key");
+    TEST_ASSERT_STR_EQUAL(ps->second, "value");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("  chalk/cheese  ", '/');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for leading or trailing whitespace  */
 
-    tests_log_test(!strcmp(ps->first, "  chalk"),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, "cheese  "),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("  chalk/cheese  ", '/');
+    TEST_ASSERT_STR_EQUAL(ps->first, "  chalk");
+    TEST_ASSERT_STR_EQUAL(ps->second, "cheese  ");
     pair_string_destroy(ps);
 
-    ps = pair_string_create(" apples   &   pairs ", '&');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for leading and trailing whitespace  */
 
-    tests_log_test(!strcmp(ps->first, " apples   "),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, "   pairs "),
-                   "pair_string_create() failed");
+    ps = xpair_string_create(" apples   &   pairs ", '&');
+    TEST_ASSERT_STR_EQUAL(ps->first, " apples   ");
+    TEST_ASSERT_STR_EQUAL(ps->second, "   pairs ");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("one=two=three", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for repeated delimiter character  */
 
-    tests_log_test(!strcmp(ps->first, "one"),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, "two=three"),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("one=two=three", '=');
+    TEST_ASSERT_STR_EQUAL(ps->first, "one");
+    TEST_ASSERT_STR_EQUAL(ps->second, "two=three");
     pair_string_destroy(ps);
 
-    ps = pair_string_create(" spaces :   ", ':');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for only whitespace in value  */
 
-    tests_log_test(!strcmp(ps->first, " spaces "),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, "   "),
-                   "pair_string_create() failed");
+    ps = xpair_string_create(" spaces :   ", ':');
+    TEST_ASSERT_STR_EQUAL(ps->first, " spaces ");
+    TEST_ASSERT_STR_EQUAL(ps->second, "   ");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("empty-", '-');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for empty value with delimiter character  */
 
-    tests_log_test(!strcmp(ps->first, "empty"),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, ""),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("empty-", '-');
+    TEST_ASSERT_STR_EQUAL(ps->first, "empty");
+    TEST_ASSERT_STR_EQUAL(ps->second, "");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("reallyempty", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for no delimiter character  */
 
-    tests_log_test(!strcmp(ps->first, "reallyempty"),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, ""),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("reallyempty", '=');
+    TEST_ASSERT_STR_EQUAL(ps->first, "reallyempty");
+    TEST_ASSERT_STR_EQUAL(ps->second, "");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for empty string  */
 
-    tests_log_test(!strcmp(ps->first, ""),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, ""),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("", '=');
+    TEST_ASSERT_STR_EQUAL(ps->first, "");
+    TEST_ASSERT_STR_EQUAL(ps->second, "");
     pair_string_destroy(ps);
 
-    ps = pair_string_create("=", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test for only the delimiter character  */
 
-    tests_log_test(!strcmp(ps->first, ""),
-                   "pair_string_create() failed");
-    tests_log_test(!strcmp(ps->second, ""),
-                   "pair_string_create() failed");
+    ps = xpair_string_create("=", '=');
+    TEST_ASSERT_STR_EQUAL(ps->first, "");
+    TEST_ASSERT_STR_EQUAL(ps->second, "");
     pair_string_destroy(ps);
 }
 
-void test_pair_string_copy(void)
+TEST_CASE(test_pair_string_copy)
 {
-    struct pair_string * ps = pair_string_create("key=value", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test basic functioning  */
 
-    struct pair_string * psc = pair_string_copy(ps);
-    if ( !psc ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
-
+    struct pair_string * ps = xpair_string_create("key=value", '=');
+    struct pair_string * psc = xpair_string_copy(ps);
     pair_string_destroy(ps);
 
-    tests_log_test(!strcmp(psc->first, "key"),
-                   "pair_string_copy() failed");
-    tests_log_test(!strcmp(psc->second, "value"),
-                   "pair_string_copy() failed");
-
+    TEST_ASSERT_STR_EQUAL(psc->first, "key");
+    TEST_ASSERT_STR_EQUAL(psc->second, "value");
     pair_string_destroy(psc);
 
-    ps = pair_string_create("key=", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test with empty value  */
 
-    psc = pair_string_copy(ps);
-    if ( !psc ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
-
+    ps = xpair_string_create("key=", '=');
+    psc = xpair_string_copy(ps);
     pair_string_destroy(ps);
 
-    tests_log_test(!strcmp(psc->first, "key"),
-                   "pair_string_copy() failed");
-    tests_log_test(!strcmp(psc->second, ""),
-                   "pair_string_copy() failed");
-
+    TEST_ASSERT_STR_EQUAL(psc->first, "key");
+    TEST_ASSERT_STR_EQUAL(psc->second, "");
     pair_string_destroy(psc);
 
-    ps = pair_string_create("", '=');
-    if ( !ps ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test with empty string  */
 
-    psc = pair_string_copy(ps);
-    if ( !psc ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
-
+    ps = xpair_string_create("", '=');
+    psc = xpair_string_copy(ps);
     pair_string_destroy(ps);
 
-    tests_log_test(!strcmp(psc->first, ""),
-                   "pair_string_copy() failed");
-    tests_log_test(!strcmp(psc->second, ""),
-                   "pair_string_copy() failed");
-
+    TEST_ASSERT_STR_EQUAL(psc->first, "");
+    TEST_ASSERT_STR_EQUAL(psc->second, "");
     pair_string_destroy(psc);
-
 }
 
-void test_split_string(void)
+TEST_CASE(test_split_string)
 {
-    struct list_string * list = split_string("one,two,three,four", ',');
-    if ( !list ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test basic functionality  */
 
-    tests_log_test(list->size == 4, "split_string() gave wrong size");
-    tests_log_test(!strcmp(list->list[0], "one"),
-                   "split_string() gave wrong string");
-    tests_log_test(!strcmp(list->list[1], "two"),
-                   "split_string() gave wrong string");
-    tests_log_test(!strcmp(list->list[2], "three"),
-                   "split_string() gave wrong string");
-    tests_log_test(!strcmp(list->list[3], "four"),
-                   "split_string() gave wrong string");
-    tests_log_test(list->list[4] == NULL,
-                   "split_string() didn't NULL terminate");
-
+    struct list_string * list = xsplit_string("one,two,three,four", ',');
+    TEST_ASSERT_EQUAL(list->size, 4);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "one");
+    TEST_ASSERT_STR_EQUAL(list->list[1], "two");
+    TEST_ASSERT_STR_EQUAL(list->list[2], "three");
+    TEST_ASSERT_STR_EQUAL(list->list[3], "four");
+    TEST_ASSERT_EQUAL(list->list[4], NULL);
     list_string_destroy(list);
 
-    list = split_string("", ':');
-    if ( !list ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test with empty string  */
 
-    tests_log_test(list->size == 0, "split_string() gave wrong size");
-    tests_log_test(list->list[0] == NULL,
-                   "split_string() didn't NULL terminate");
-
+    list = xsplit_string("", ':');
+    TEST_ASSERT_EQUAL(list->size, 0);
+    TEST_ASSERT_EQUAL(list->list[0], NULL);
     list_string_destroy(list);
 
-    list = split_string("single", '/');
-    if ( !list ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test without delimiter character  */
 
-    tests_log_test(list->size == 1, "split_string() gave wrong size");
-    tests_log_test(!strcmp(list->list[0], "single"),
-                   "split_string() gave wrong string");
-    tests_log_test(list->list[1] == NULL,
-                   "split_string() didn't NULL terminate");
-
+    list = xsplit_string("single", '/');
+    TEST_ASSERT_EQUAL(list->size, 1);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "single");
+    TEST_ASSERT_EQUAL(list->list[1], NULL);
     list_string_destroy(list);
 
-    list = split_string("singlewithdelim&", '&');
-    if ( !list ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test with one trailing delimiter character  */
 
-    tests_log_test(list->size == 1, "split_string() gave wrong size");
-    tests_log_test(!strcmp(list->list[0], "singlewithdelim"),
-                   "split_string() gave wrong string");
-    tests_log_test(list->list[1] == NULL,
-                   "split_string() didn't NULL terminate");
-
+    list = xsplit_string("singlewithdelim&", '&');
+    TEST_ASSERT_EQUAL(list->size, 1);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "singlewithdelim");
+    TEST_ASSERT_EQUAL(list->list[1], NULL);
     list_string_destroy(list);
 
-    list = split_string("three&with&delim&", '&');
-    if ( !list ) {
-        perror("couldn't allocate memory");
-        exit(EXIT_FAILURE);
-    }
+    /*  Test with several delimiter characters, one trailing  */
 
-    tests_log_test(list->size == 3, "split_string() gave wrong size");
-    tests_log_test(!strcmp(list->list[0], "three"),
-                   "split_string() gave wrong string");
-    tests_log_test(!strcmp(list->list[1], "with"),
-                   "split_string() gave wrong string");
-    tests_log_test(!strcmp(list->list[2], "delim"),
-                   "split_string() gave wrong string");
-    tests_log_test(list->list[3] == NULL,
-                   "split_string() didn't NULL terminate");
+    list = xsplit_string("three&with&delim&", '&');
+    TEST_ASSERT_EQUAL(list->size, 3);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "three");
+    TEST_ASSERT_STR_EQUAL(list->list[1], "with");
+    TEST_ASSERT_STR_EQUAL(list->list[2], "delim");
+    TEST_ASSERT_EQUAL(list->list[3], NULL);
+    list_string_destroy(list);
+    
+    /*  Test with internal empty field  */
 
+    list = xsplit_string("missing&&field", '&');
+    TEST_ASSERT_EQUAL(list->size, 3);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "missing");
+    TEST_ASSERT_STR_EQUAL(list->list[1], "");
+    TEST_ASSERT_STR_EQUAL(list->list[2], "field");
+    TEST_ASSERT_EQUAL(list->list[3], NULL);
+    list_string_destroy(list);
+
+    /*  Test with internal empty fields  */
+
+    list = xsplit_string("missing&&&fields", '&');
+    TEST_ASSERT_EQUAL(list->size, 4);
+    TEST_ASSERT_STR_EQUAL(list->list[0], "missing");
+    TEST_ASSERT_STR_EQUAL(list->list[1], "");
+    TEST_ASSERT_STR_EQUAL(list->list[2], "");
+    TEST_ASSERT_STR_EQUAL(list->list[3], "fields");
+    TEST_ASSERT_EQUAL(list->list[4], NULL);
     list_string_destroy(list);
 }
 
 void test_string_util(void)
 {
-    test_trim_left();
-    test_trim_right();
-    test_trim();
-    test_pair_string();
-    test_pair_string_copy();
-    test_split_string();
+    RUN_CASE(test_trim_left);
+    RUN_CASE(test_trim_right);
+    RUN_CASE(test_trim);
+    RUN_CASE(test_pair_string);
+    RUN_CASE(test_pair_string_copy);
+    RUN_CASE(test_split_string);
 }
