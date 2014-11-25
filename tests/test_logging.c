@@ -51,19 +51,6 @@ void tests_assert_true(const bool success, const char * suitename,
     }
 }
 
-void tests_log_test(const bool success, const char * fmt, ...) {
-    tests_log_single_test(success);
-
-    if ( show_failures && !success ) {
-        fprintf(stderr, "Failure (%d): ", total_tests);
-        va_list ap;
-        va_start(ap, fmt);
-        vfprintf(stderr, fmt, ap);
-        va_end(ap);
-        fprintf(stderr, "\n");
-    }
-}
-
 void tests_initialize(void)
 {
     total_tests = 0;

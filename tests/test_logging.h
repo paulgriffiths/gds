@@ -125,14 +125,6 @@ void tests_assert_true(const bool success, const char * suitename,
                        const char * filename, const int linenum);
 
 /*!
- * \brief           Logs the result of a unit test.
- * \param success   `true` if the test succeeded, `false` otherwise.
- * \param fmt       Format string for failure message.
- * \param ...       Arguements to format string.
- */
-void tests_log_test(const bool success, const char * fmt, ...);
-
-/*!
  * \brief           Initializes the test runner.
  */
 
