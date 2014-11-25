@@ -7,7 +7,9 @@
 #include "test_dict.h"
 #include "test_logging.h"
 
-static void test_dict_insert_int(void)
+TEST_SUITE(test_dict);
+
+TEST_CASE(test_dict_insert_int)
 {
     Dict dict = dict_create(DATATYPE_INT, 0);
     if ( !dict ) {
@@ -15,73 +17,45 @@ static void test_dict_insert_int(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
     int n;
 
-    status = dict_insert(dict, "meaning", 42);
-    tests_log_test(status, "dict_insert() failed");
+    TEST_ASSERT_TRUE(dict_insert(dict, "meaning", 42));
+    TEST_ASSERT_TRUE(dict_insert(dict, "hastings", 1066));
+    TEST_ASSERT_TRUE(dict_insert(dict, "dwarves", 7));
     
-    status = dict_insert(dict, "hastings", 1066);
-    tests_log_test(status, "dict_insert() failed");
-    
-    status = dict_insert(dict, "dwarves", 7);
-    tests_log_test(status, "dict_insert() failed");
-    
-    status = dict_has_key(dict, "meaning");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "meaning", &n);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(n == 42, "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "meaning"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "meaning", &n));
+    TEST_ASSERT_EQUAL(n, 42);
 
-    status = dict_has_key(dict, "nonsense");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "nonsense", &n);
-    tests_log_test(!status, "dict_value_for_key() incorrectly succeeded");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "nonsense"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "nonsense", &n));
 
-    status = dict_has_key(dict, "hastings");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "hastings", &n);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(n == 1066, "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "hastings"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "hastings", &n));
+    TEST_ASSERT_EQUAL(n, 1066);
 
-    status = dict_has_key(dict, "absent");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "absent", &n);
-    tests_log_test(!status, "dict_value_for_key() incorrectly succeeded");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "absent"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "absent", &n));
 
-    status = dict_has_key(dict, "dwarves");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "dwarves", &n);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(n == 7, "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "dwarves"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "dwarves", &n));
+    TEST_ASSERT_EQUAL(n, 7);
 
-    status = dict_has_key(dict, "there's none");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "there's none", &n);
-    tests_log_test(!status, "dict_value_for_key() incorrectly succeeded");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "there's none"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "there's none", &n));
 
     /*  A dwarf died, so overwrite the value to check the old frees  */
 
-    status = dict_insert(dict, "dwarves", 6);
-    tests_log_test(status, "dict_insert() failed");
+    TEST_ASSERT_TRUE(dict_insert(dict, "dwarves", 6));
 
-    status = dict_has_key(dict, "dwarves");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "dwarves", &n);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(6, "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "dwarves"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "dwarves", &n));
+    TEST_ASSERT_EQUAL(n, 6);
 
     dict_destroy(dict);
 }
 
-static void test_dict_insert_string(void)
+TEST_CASE(test_dict_insert_string)
 {
     Dict dict = dict_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
     if ( !dict ) {
@@ -89,75 +63,46 @@ static void test_dict_insert_string(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
     char * pc;
 
-    status = dict_insert(dict, "meaning", strdup("42"));
-    tests_log_test(status, "dict_insert() failed");
+    TEST_ASSERT_TRUE(dict_insert(dict, "meaning", strdup("42")));
+    TEST_ASSERT_TRUE(dict_insert(dict, "hastings", strdup("1066")));
+    TEST_ASSERT_TRUE(dict_insert(dict, "dwarves", strdup("7")));
     
-    status = dict_insert(dict, "hastings", strdup("1066"));
-    tests_log_test(status, "dict_insert() failed");
-    
-    status = dict_insert(dict, "dwarves", strdup("7"));
-    tests_log_test(status, "dict_insert() failed");
-    
-    status = dict_has_key(dict, "meaning");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "meaning", &pc);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(!strcmp("42", pc), "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "meaning"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "meaning", &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "42");
 
-    status = dict_has_key(dict, "nonsense");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "nonsense", &pc);
-    tests_log_test(!status, "dict_value_for_key() failed");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "nonsense"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "nonsense", &pc));
 
-    status = dict_has_key(dict, "hastings");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "hastings", &pc);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(!strcmp("1066", pc),
-                   "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "hastings"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "hastings", &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "1066");
 
-    status = dict_has_key(dict, "absent");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "absent", &pc);
-    tests_log_test(!status, "dict_value_for_key() failed");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "absent"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "absent", &pc));
 
-    status = dict_has_key(dict, "dwarves");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "dwarves", &pc);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(!strcmp("7", pc), "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "dwarves"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "dwarves", &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "7");
 
-    status = dict_has_key(dict, "there's none");
-    tests_log_test(!status, "dict_has_key() incorrectly picked up key");
-    
-    status = dict_value_for_key(dict, "there's none", &pc);
-    tests_log_test(!status, "dict_value_for_key() failed");
+    TEST_ASSERT_FALSE(dict_has_key(dict, "there's none"));
+    TEST_ASSERT_FALSE(dict_value_for_key(dict, "there's none", &pc));
 
     /*  A dwarf died, so overwrite the value to check the old frees  */
 
-    status = dict_insert(dict, "dwarves", strdup("6"));
-    tests_log_test(status, "dict_insert() failed");
+    TEST_ASSERT_TRUE(dict_insert(dict, "dwarves", strdup("6")));
 
-    status = dict_has_key(dict, "dwarves");
-    tests_log_test(status, "dict_has_key() failed to pick up key");
-    
-    status = dict_value_for_key(dict, "dwarves", &pc);
-    tests_log_test(status, "dict_value_for_key() failed");
-    tests_log_test(!strcmp("6", pc), "dict_value_for_key() gave wrong value");
+    TEST_ASSERT_TRUE(dict_has_key(dict, "dwarves"));
+    TEST_ASSERT_TRUE(dict_value_for_key(dict, "dwarves", &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "6");
 
     dict_destroy(dict);
 }
 
 void test_dict(void)
 {
-    test_dict_insert_int();
-    test_dict_insert_string();
+    RUN_CASE(test_dict_insert_int);
+    RUN_CASE(test_dict_insert_string);
 }
