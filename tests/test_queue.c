@@ -1,3 +1,5 @@
+/*  Unit tests for generic queue data structure  */
+
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>

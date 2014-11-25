@@ -1,3 +1,5 @@
+/*  Unit tests for string manipulation routines  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

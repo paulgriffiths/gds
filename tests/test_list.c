@@ -1,3 +1,5 @@
+/*  Unit tests for generic list data structure  */
+
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
@@ -6,8 +8,13 @@
 #include "list.h"
 #include "test_list.h"
 #include "test_logging.h"
+#include "test_struct.h"
 
-static void test_list_basic(void)
+TEST_SUITE(test_list);
+
+/*  Test basic operations  */
+
+TEST_CASE(test_list_basic)
 {
     List list = list_create(DATATYPE_INT, 0);
     if ( !list ) {
@@ -16,171 +23,126 @@ static void test_list_basic(void)
     }
 
     int n;
-    size_t sz;
-    bool status;
         
-    sz = list_length(list);
-    tests_log_test(sz == 0, "list_length() gave wrong value");
+    /*  Test list attributes when empty  */
 
-    status = list_is_empty(list);
-    tests_log_test(status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 0);
+    TEST_ASSERT_TRUE(list_is_empty(list));
+
+    /*  Test out-of-range operations fail  */
+
+    TEST_ASSERT_FALSE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_FALSE(list_delete_index(list, 0));
+
+    /*  Test insertion at front  */
+
+    TEST_ASSERT_TRUE(list_insert(list, 0, 4));
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 4);
+
+    TEST_ASSERT_EQUAL(list_length(list), 1);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(!status, "list_element_at_index() didn't return false");
+    TEST_ASSERT_TRUE(list_insert(list, 0, 5));
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    status = list_delete_index(list, 0);
-    tests_log_test(!status, "list_delete_at_index() didn't return false");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &n));
+    TEST_ASSERT_EQUAL(n, 4);
 
-    status = list_insert(list, 0, 4);
-    tests_log_test(status, "list_insert_index() didn't return true");
-
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 4, "list_element_at_index() gave wrong value");
-
-    sz = list_length(list);
-    tests_log_test(sz == 1, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 2);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_insert(list, 0, 5);
-    tests_log_test(status, "list_insert_index() didn't return true");
+    /*  Test insertion at end  */
 
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 5, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_insert(list, 2, 7));
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &n));
+    TEST_ASSERT_EQUAL(n, 7);
 
-    sz = list_length(list);
-    tests_log_test(sz == 2, "list_length() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 5);
 
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &n));
+    TEST_ASSERT_EQUAL(n, 4);
+
+    TEST_ASSERT_EQUAL(list_length(list), 3);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_element_at_index(list, 1, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 4, "list_element_at_index() gave wrong value");
+    /*  Test index out-of-range fails  */
 
-    status = list_insert(list, 2, 7);
-    tests_log_test(status, "list_insert_index() didn't return true");
+    TEST_ASSERT_FALSE(list_element_at_index(list, 3, &n));
+    TEST_ASSERT_FALSE(list_delete_index(list, 3));
 
-    status = list_element_at_index(list, 2, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 7, "list_element_at_index() gave wrong value");
+    /*  Test deleting from front  */
 
-    sz = list_length(list);
-    tests_log_test(sz == 3, "list_length() gave wrong value");
+    TEST_ASSERT_TRUE(list_delete_front(list));
 
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 2);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 5, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 4);
 
-    status = list_element_at_index(list, 1, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 4, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &n));
+    TEST_ASSERT_EQUAL(n, 7);
 
-    status = list_element_at_index(list, 3, &n);
-    tests_log_test(!status, "list_element_at_index() didn't return false");
+    /*  Test deleting from back  */
 
-    status = list_delete_index(list, 3);
-    tests_log_test(!status, "list_delete_at_index() didn't return false");
+    TEST_ASSERT_TRUE(list_delete_back(list));
 
-    status = list_delete_front(list);
-    tests_log_test(status, "list_delete_front() didn't return true");
-
-    sz = list_length(list);
-    tests_log_test(sz == 2, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 1);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 4, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 4);
 
-    status = list_element_at_index(list, 1, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 7, "list_element_at_index() gave wrong value");
+    /*  Test deleting last element from back  */
 
-    status = list_delete_back(list);
-    tests_log_test(status, "list_delete_back() didn't return true");
+    TEST_ASSERT_TRUE(list_delete_back(list));
 
-    sz = list_length(list);
-    tests_log_test(sz == 1, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 0);
+    TEST_ASSERT_TRUE(list_is_empty(list));
     
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 4, "list_element_at_index() gave wrong value");
+    /*  Test appending and prepending items  */
 
-    status = list_delete_back(list);
-    tests_log_test(status, "list_delete_back() didn't return true");
+    TEST_ASSERT_TRUE(list_append(list, 11));
+    TEST_ASSERT_TRUE(list_append(list, 12));
+    TEST_ASSERT_TRUE(list_prepend(list, 10));
+    TEST_ASSERT_TRUE(list_prepend(list, 9));
 
-    sz = list_length(list);
-    tests_log_test(sz == 0, "list_length() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 4);
+    TEST_ASSERT_FALSE(list_is_empty(list));
 
-    status = list_is_empty(list);
-    tests_log_test(status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &n));
+    TEST_ASSERT_EQUAL(n, 9);
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &n));
+    TEST_ASSERT_EQUAL(n, 10);
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &n));
+    TEST_ASSERT_EQUAL(n, 11);
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &n));
+    TEST_ASSERT_EQUAL(n, 12);
 
-    status = list_append(list, 11);
-    tests_log_test(status, "list_append() didn't return true");
+    /*  Test out-of-range access fails  */
 
-    status = list_append(list, 12);
-    tests_log_test(status, "list_append() didn't return true");
+    TEST_ASSERT_FALSE(list_element_at_index(list, 4, &n));
 
-    status = list_prepend(list, 10);
-    tests_log_test(status, "list_prepend() didn't return true");
-
-    status = list_prepend(list, 9);
-    tests_log_test(status, "list_prepend() didn't return true");
-
-    sz = list_length(list);
-    tests_log_test(sz == 4, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
-
-    status = list_element_at_index(list, 0, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 9, "list_element_at_index() gave wrong value");
-
-    status = list_element_at_index(list, 1, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 10, "list_element_at_index() gave wrong value");
-
-    status = list_element_at_index(list, 2, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 11, "list_element_at_index() gave wrong value");
-
-    status = list_element_at_index(list, 3, &n);
-    tests_log_test(status, "list_element_at_index() didn't return true");
-    tests_log_test(n == 12, "list_element_at_index() gave wrong value");
-
-    status = list_element_at_index(list, 4, &n);
-    tests_log_test(!status, "list_element_at_index() didn't return false");
+    /*  Iteratively delete each item  */
 
     while ( !list_is_empty(list) ) {
-        status = list_delete_front(list);
-        tests_log_test(status, "list_delete_front() didn't return true");
+        TEST_ASSERT_TRUE(list_delete_front(list));
     }
 
-    sz = list_length(list);
-    tests_log_test(sz == 0, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(status, "list_is_empty() gave wrong value");
-
-
+    TEST_ASSERT_EQUAL(list_length(list), 0);
+    TEST_ASSERT_TRUE(list_is_empty(list));
     
     list_destroy(list);
 }
 
-static void test_list_free_strings(void)
+/*  Test that dynamically allocated strings are appropriately
+ *  freed when a list is destroyed. Run this test case through
+ *  Valgrind or a similar tool to check no memory leaks.        */
+
+TEST_CASE(test_list_free_strings)
 {
     List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
     if ( !list ) {
@@ -188,44 +150,34 @@ static void test_list_free_strings(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
-    size_t sz;
     char * pc;
 
-    status = list_append(list, strdup("First string"));
-    tests_log_test(status, "list_append() failed");
+    /*  Append some dynamically allocated strings  */
 
-    status = list_append(list, strdup("Second string"));
-    tests_log_test(status, "list_append() failed");
+    TEST_ASSERT_TRUE(list_append(list, strdup("First string")));
+    TEST_ASSERT_TRUE(list_append(list, strdup("Second string")));
+    TEST_ASSERT_TRUE(list_append(list, strdup("Third string")));
 
-    status = list_append(list, strdup("Third string"));
-    tests_log_test(status, "list_append() failed");
-
-    sz = list_length(list);
-    tests_log_test(sz == 3, "list_length() gave wrong value");
-
-    status = list_is_empty(list);
-    tests_log_test(!status, "list_is_empty() gave wrong value");
+    TEST_ASSERT_EQUAL(list_length(list), 3);
+    TEST_ASSERT_FALSE(list_is_empty(list));
     
-    status = list_element_at_index(list, 0, &pc);
-    tests_log_test(status, "list_element_index() failed");
-    tests_log_test(!strcmp(pc, "First string"),
-                   "list_element_at_index() gave wrong value");
+    /*  Check values are as expected  */
 
-    status = list_element_at_index(list, 1, &pc);
-    tests_log_test(status, "list_element_index() failed");
-    tests_log_test(!strcmp(pc, "Second string"),
-                   "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "First string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "Second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &pc));
+    TEST_ASSERT_STR_EQUAL(pc, "Third string");
 
-    status = list_element_at_index(list, 2, &pc);
-    tests_log_test(status, "list_element_index() failed");
-    tests_log_test(!strcmp(pc, "Third string"),
-                   "list_element_at_index() gave wrong value");
+    /*  Destroy list with dynamically allocated elements still present  */
 
     list_destroy(list);
 }
 
-static void test_list_set_element(void)
+/*  Test setting of specified element by index  */
+
+TEST_CASE(test_list_set_element)
 {
     List list = list_create(DATATYPE_UNSIGNED_LONG, 0);
     if ( !list ) {
@@ -233,63 +185,54 @@ static void test_list_set_element(void)
         exit(EXIT_FAILURE);
     }
 
-    bool status;
     unsigned long l;
 
-    status = list_append(list, 42UL);
-    tests_log_test(status, "list_append() failed");
+    /*  Append some values  */
 
-    status = list_append(list, 53UL);
-    tests_log_test(status, "list_append() failed");
+    TEST_ASSERT_TRUE(list_append(list, 42UL));
+    TEST_ASSERT_TRUE(list_append(list, 53UL));
+    TEST_ASSERT_TRUE(list_append(list, 65UL));
+    TEST_ASSERT_TRUE(list_append(list, 76UL));
 
-    status = list_append(list, 65UL);
-    tests_log_test(status, "list_append() failed");
+    /*  Check values are as expected  */
 
-    status = list_append(list, 76UL);
-    tests_log_test(status, "list_append() failed");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &l));
+    TEST_ASSERT_EQUAL(l, 42L);
 
-    status = list_element_at_index(list, 0, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 42, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &l));
+    TEST_ASSERT_EQUAL(l, 53L);
 
-    status = list_element_at_index(list, 1, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 53, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &l));
+    TEST_ASSERT_EQUAL(l, 65L);
 
-    status = list_element_at_index(list, 2, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 65, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &l));
+    TEST_ASSERT_EQUAL(l, 76L);
 
-    status = list_element_at_index(list, 3, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 76, "list_element_at_index() gave wrong value");
+    /*  Set a couple of values  */
 
-    status = list_set_element_at_index(list, 1, 87UL);
-    tests_log_test(status, "list_set_element_at_index() failed");
+    TEST_ASSERT_TRUE(list_set_element_at_index(list, 1, 87UL));
+    TEST_ASSERT_TRUE(list_set_element_at_index(list, 2, 98UL));
 
-    status = list_set_element_at_index(list, 2, 98UL);
-    tests_log_test(status, "list_set_element_at_index() failed");
+    /*  Check values are as expected after setting  */
 
-    status = list_element_at_index(list, 0, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 42, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &l));
+    TEST_ASSERT_EQUAL(l, 42L);
 
-    status = list_element_at_index(list, 1, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 87, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &l));
+    TEST_ASSERT_EQUAL(l, 87L);
 
-    status = list_element_at_index(list, 2, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 98, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &l));
+    TEST_ASSERT_EQUAL(l, 98L);
 
-    status = list_element_at_index(list, 3, &l);
-    tests_log_test(status, "list_element_at_index() failed");
-    tests_log_test(l == 76, "list_element_at_index() gave wrong value");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &l));
+    TEST_ASSERT_EQUAL(l, 76L);
 
     list_destroy(list);
 }
 
-static void test_list_find(void)
+/*  Test find function  */
+
+TEST_CASE(test_list_find)
 {
     List list = list_create(DATATYPE_SIGNED_CHAR, 0);
     if ( !list ) {
@@ -297,96 +240,39 @@ static void test_list_find(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some elements  */
+
     list_append(list, 'c');
     list_append(list, 'd');
     list_append(list, 'f');
     list_append(list, 'e');
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, 'c');
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 0, "list_find() gave wrong index");
+    /*  Check they're found at the expected indices  */
 
-    status = list_find(list, &index, 'd');
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 1, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, 'c'));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, 'f');
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 2, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, 'd'));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, 'e');
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 3, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, 'f'));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, 'g');
-    tests_log_test(!status, "list_find() failed to find element");
+    TEST_ASSERT_TRUE(list_find(list, &index, 'e'));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent value is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, 'g'));
 
     list_destroy(list);
 }
 
-struct hms {
-    int hour;
-    int minute;
-    int second;
-};
+/*  Test find function with struct members  */
 
-static int compare_hms(const void * s1, const void * s2)
-{
-    const struct hms * hms1 = *((const struct hms **) s1);
-    const struct hms * hms2 = *((const struct hms **) s2);
-
-    int hours_comp, minutes_comp, seconds_comp;
-
-    if ( hms1->hour < hms2->hour ) {
-        hours_comp = -1;
-    }
-    else if ( hms1->hour > hms2->hour ) {
-        hours_comp = 1;
-    }
-    else {
-        hours_comp = 0;
-    }
-
-    if ( hms1->minute < hms2->minute ) {
-        minutes_comp = -1;
-    }
-    else if ( hms1->minute > hms2->minute ) {
-        minutes_comp = 1;
-    }
-    else {
-        minutes_comp = 0;
-    }
-
-    if ( hms1->second < hms2->second ) {
-        seconds_comp = -1;
-    }
-    else if ( hms1->second > hms2->second ) {
-        seconds_comp = 1;
-    }
-    else {
-        seconds_comp = 0;
-    }
-
-    if ( !hours_comp && !minutes_comp && !seconds_comp ) {
-        return 0;
-    }
-    else {
-        if ( hours_comp ) {
-            return hours_comp;
-        }
-        else if ( minutes_comp ) {
-            return minutes_comp;
-        }
-        else {
-            return seconds_comp;
-        }
-    }
-}
-
-void test_list_find_struct(void)
+TEST_CASE(test_list_find_struct)
 {
     struct hms h1 = {1, 2, 3};
     struct hms h2 = {1, 2, 4};
@@ -400,37 +286,39 @@ void test_list_find_struct(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some elements  */
+
     list_append(list, (void *) &h1);
     list_append(list, (void *) &h2);
     list_append(list, (void *) &h3);
     list_append(list, (void *) &h4);
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, (void *) &h1);
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 0, "list_find() gave wrong index");
+    /*  Check they're found at the expected indices  */
 
-    status = list_find(list, &index, (void *) &h2);
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 1, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h1));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, (void *) &h3);
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 2, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h2));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, (void *) &h4);
-    tests_log_test(status, "list_find() failed to find element");
-    tests_log_test(index == 3, "list_find() gave wrong index");
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h3));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, (void *) &h5);
-    tests_log_test(!status, "list_find() failed to find element");
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h4));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Test absent element is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, (void *) &h5));
 
     list_destroy(list);
 }
 
-static void test_list_sort_sizet(void)
+/*  Test sort function with scalar elements  */
+
+TEST_CASE(test_list_sort_sizet)
 {
     List list = list_create(DATATYPE_SIZE_T, 0);
     if ( !list ) {
@@ -438,55 +326,55 @@ static void test_list_sort_sizet(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some values  */
+
     list_append(list, (size_t) 100);
     list_append(list, (size_t) 400);
     list_append(list, (size_t) 200);
     list_append(list, (size_t) 300);
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, (size_t) 100);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    /*  Check they're at the expected indices prior to sorting  */
 
-    status = list_find(list, &index, (size_t) 400);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 100));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, (size_t) 200);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 400));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, (size_t) 300);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 200));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, (size_t) 500);
-    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 300));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent element is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, (size_t) 500));
+
+    /*  Check they're at the expected indices after sorting  */
 
     list_sort(list);
 
-    status = list_find(list, &index, (size_t) 100);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 100));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, (size_t) 200);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 200));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, (size_t) 300);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 300));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, (size_t) 400);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (size_t) 400));
+    TEST_ASSERT_EQUAL(index, 3);
 
     list_destroy(list);
 }
 
-static void test_list_sort_strings(void)
+/*  Test sort function with strings  */
+
+TEST_CASE(test_list_sort_strings)
 {
     List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
     if ( !list ) {
@@ -494,55 +382,55 @@ static void test_list_sort_strings(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some elements  */
+
     list_append(list, strdup("Elephant"));
     list_append(list, strdup("Dog"));
     list_append(list, strdup("Giraffe"));
     list_append(list, strdup("Aardvark"));
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, "Elephant");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    /*  Check they're at the expected indices prior to sorting  */
 
-    status = list_find(list, &index, "Dog");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Elephant"));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, "Giraffe");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Dog"));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, "Aardvark");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Giraffe"));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, "Pelican");
-    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Aardvark"));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent value is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, "Pelican"));
+
+    /*  Check they're at the expect indices after sorting  */
 
     list_sort(list);
 
-    status = list_find(list, &index, "Aardvark");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Aardvark"));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, "Dog");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Dog"));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, "Elephant");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Elephant"));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, "Giraffe");
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, "Giraffe"));
+    TEST_ASSERT_EQUAL(index, 3);
 
     list_destroy(list);
 }
 
-static void test_list_sort_struct(void)
+/*  Test sort function with struct members  */
+
+TEST_CASE(test_list_sort_struct)
 {
     struct hms h1 = {1, 2, 3};
     struct hms h2 = {1, 2, 4};
@@ -556,55 +444,55 @@ static void test_list_sort_struct(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some elements  */
+
     list_append(list, (void *) &h3);
     list_append(list, (void *) &h2);
     list_append(list, (void *) &h1);
     list_append(list, (void *) &h4);
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, (void *) &h3);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    /*  Check they're at the expected indices prior to sorting  */
 
-    status = list_find(list, &index, (void *) &h2);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h3));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, (void *) &h1);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h2));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, (void *) &h4);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h1));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, (void *) &h5);
-    tests_log_test(!status, "list_find() incorrectly found element(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h4));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent value is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, (void *) &h5));
+
+    /*  Check they're at the expected indices after sorting  */
 
     list_sort(list);
 
-    status = list_find(list, &index, (void *) &h1);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h1));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, (void *) &h2);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h2));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, (void *) &h3);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h3));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, (void *) &h4);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, (void *) &h4));
+    TEST_ASSERT_EQUAL(index, 3);
 
     list_destroy(list);
 }
 
-void test_list_reverse_sort(void)
+/*  Test reverse sort function  */
+
+TEST_CASE(test_list_reverse_sort)
 {
     List list = list_create(DATATYPE_LONG, 0);
     if ( !list ) {
@@ -612,52 +500,55 @@ void test_list_reverse_sort(void)
         exit(EXIT_FAILURE);
     }
 
+    /*  Append some values  */
+
     list_append(list, 100L);
     list_append(list, 400L);
     list_append(list, 200L);
     list_append(list, 300L);
 
-    bool status;
     size_t index;
 
-    status = list_find(list, &index, 100L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    /*  Check they're at the expected indices prior to sorting  */
 
-    status = list_find(list, &index, 400L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 100L));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, 200L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 400L));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, 300L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 200L));
+    TEST_ASSERT_EQUAL(index, 2);
+
+    TEST_ASSERT_TRUE(list_find(list, &index, 300L));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent element is not found  */
+
+    TEST_ASSERT_FALSE(list_find(list, &index, 500L));
+
+    /*  Check they're at the expected indices after sorting  */
 
     list_reverse_sort(list);
 
-    status = list_find(list, &index, 400L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 0, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 400L));
+    TEST_ASSERT_EQUAL(index, 0);
 
-    status = list_find(list, &index, 300L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 1, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 300L));
+    TEST_ASSERT_EQUAL(index, 1);
 
-    status = list_find(list, &index, 200L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 2, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 200L));
+    TEST_ASSERT_EQUAL(index, 2);
 
-    status = list_find(list, &index, 100L);
-    tests_log_test(status, "list_find() failed to find element(%d)", __LINE__);
-    tests_log_test(index == 3, "list_find() gave wrong index(%d)", __LINE__);
+    TEST_ASSERT_TRUE(list_find(list, &index, 100L));
+    TEST_ASSERT_EQUAL(index, 3);
 
     list_destroy(list);
 }
 
-static void test_list_itr(void)
+/*  Test list traversal with forward iterator  */
+
+TEST_CASE(test_list_itr)
 {
     List list = list_create(DATATYPE_INT, 0);
     if ( !list ) {
@@ -667,24 +558,29 @@ static void test_list_itr(void)
 
     int some_ints[6] = {100, 400, 200, 300, 50, 22};
 
+    /*  Append some values  */
+
     for ( size_t i = 0; i < 6; ++i ) {
         list_append(list, some_ints[i]);
     }
+
+    /*  Iterate through and check them  */
 
     ListItr itr = list_itr_first(list);
     size_t j = 0;
     while ( itr ) {
         int n;
         list_get_value_itr(itr, &n);
-        tests_log_test(n == some_ints[j++],
-                       "list_get_value_itr() got wrong value");
+        TEST_ASSERT_EQUAL(n, some_ints[j++]);
         itr = list_itr_next(itr);
     }
 
     list_destroy(list);
 }
 
-static void test_list_itr_reverse(void)
+/*  Test list traversal with reverse iterator  */
+
+TEST_CASE(test_list_itr_reverse)
 {
     List list = list_create(DATATYPE_INT, 0);
     if ( !list ) {
@@ -694,24 +590,29 @@ static void test_list_itr_reverse(void)
 
     int some_ints[6] = {100, 400, 200, 300, 50, 22};
 
+    /*  Append some values  */
+
     for ( size_t i = 0; i < 6; ++i ) {
         list_prepend(list, some_ints[i]);
     }
+
+    /*  Iterate through in reverse and check them  */
 
     ListItr itr = list_itr_last(list);
     size_t j = 0;
     while ( itr ) {
         int n;
         list_get_value_itr(itr, &n);
-        tests_log_test(n == some_ints[j++],
-                       "list_get_value_itr() got wrong value");
+        TEST_ASSERT_EQUAL(n, some_ints[j++]);
         itr = list_itr_previous(itr);
     }
 
     list_destroy(list);
 }
 
-static void test_list_itr_find(void)
+/*  Test find with iterator function  */
+
+TEST_CASE(test_list_itr_find)
 {
     List list = list_create(DATATYPE_INT, 0);
     if ( !list ) {
@@ -719,6 +620,8 @@ static void test_list_itr_find(void)
         exit(EXIT_FAILURE);
     }
     
+    /*  Append some values  */
+
     list_append(list, 10);
     list_append(list, 11);
     list_append(list, 12);
@@ -726,51 +629,46 @@ static void test_list_itr_find(void)
 
     int n;
 
-    ListItr itr = list_find_itr(list, 10);
-    tests_log_test(itr, "list_find_itr() failed");
+    ListItr itr;
 
+    /*  Check correct iterator is returned for present values  */
+
+    TEST_ASSERT_TRUE(itr = list_find_itr(list, 10));
     list_get_value_itr(itr, &n);
-    tests_log_test(n == 10, "list_get_value_itr() gave wrong value");
+    TEST_ASSERT_EQUAL(n, 10);
 
-    itr = list_find_itr(list, 11);
-    tests_log_test(itr, "list_find_itr() failed");
-
+    TEST_ASSERT_TRUE(itr = list_find_itr(list, 11));
     list_get_value_itr(itr, &n);
-    tests_log_test(n == 11, "list_get_value_itr() gave wrong value");
+    TEST_ASSERT_EQUAL(n, 11);
 
-    itr = list_find_itr(list, 12);
-    tests_log_test(itr, "list_find_itr() failed");
-
+    TEST_ASSERT_TRUE(itr = list_find_itr(list, 12));
     list_get_value_itr(itr, &n);
-    tests_log_test(n == 12, "list_get_value_itr() gave wrong value");
+    TEST_ASSERT_EQUAL(n, 12);
 
-    itr = list_find_itr(list, 13);
-    tests_log_test(itr, "list_find_itr() failed");
-
+    TEST_ASSERT_TRUE(itr = list_find_itr(list, 13));
     list_get_value_itr(itr, &n);
-    tests_log_test(n == 13, "list_get_value_itr() gave wrong value");
+    TEST_ASSERT_EQUAL(n, 13);
 
-    itr = list_find_itr(list, 9);
-    tests_log_test(!itr, "list_find_itr() incorrectly succeeded");
+    /*  Check NULL iterator is returned for absent values  */
 
-    itr = list_find_itr(list, 14);
-    tests_log_test(!itr, "list_find_itr() incorrectly succeeded");
+    TEST_ASSERT_FALSE(itr = list_find_itr(list, 9));
+    TEST_ASSERT_FALSE(itr = list_find_itr(list, 14));
 
     list_destroy(list);
 }
 
 void test_list(void)
 {
-    test_list_basic();
-    test_list_free_strings();
-    test_list_set_element();
-    test_list_find();
-    test_list_find_struct();
-    test_list_sort_sizet();
-    test_list_sort_strings();
-    test_list_sort_struct();
-    test_list_reverse_sort();
-    test_list_itr();
-    test_list_itr_reverse();
-    test_list_itr_find();
+    RUN_CASE(test_list_basic);
+    RUN_CASE(test_list_free_strings);
+    RUN_CASE(test_list_set_element);
+    RUN_CASE(test_list_find);
+    RUN_CASE(test_list_find_struct);
+    RUN_CASE(test_list_sort_sizet);
+    RUN_CASE(test_list_sort_strings);
+    RUN_CASE(test_list_sort_struct);
+    RUN_CASE(test_list_reverse_sort);
+    RUN_CASE(test_list_itr);
+    RUN_CASE(test_list_itr_reverse);
+    RUN_CASE(test_list_itr_find);
 }

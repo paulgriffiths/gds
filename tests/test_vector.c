@@ -1,3 +1,5 @@
+/*  Unit tests for generic vector data structure  */
+
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
@@ -6,6 +8,7 @@
 #include "vector.h"
 #include "test_vector.h"
 #include "test_logging.h"
+#include "test_struct.h"
 
 TEST_SUITE(test_vector);
 
@@ -321,69 +324,6 @@ TEST_CASE(test_vector_find)
     TEST_ASSERT_FALSE(vector_find(vector, &index, 50ULL));
 
     vector_destroy(vector);
-}
-
-/*  Struct used for struct element finding  */
-
-struct hms {
-    int hour;
-    int minute;
-    int second;
-};
-
-/*  Comparison function used for struct element finding  */
-
-static int compare_hms(const void * s1, const void * s2)
-{
-    const struct hms * hms1 = *((const struct hms **) s1);
-    const struct hms * hms2 = *((const struct hms **) s2);
-
-    int hours_comp, minutes_comp, seconds_comp;
-
-    if ( hms1->hour < hms2->hour ) {
-        hours_comp = -1;
-    }
-    else if ( hms1->hour > hms2->hour ) {
-        hours_comp = 1;
-    }
-    else {
-        hours_comp = 0;
-    }
-
-    if ( hms1->minute < hms2->minute ) {
-        minutes_comp = -1;
-    }
-    else if ( hms1->minute > hms2->minute ) {
-        minutes_comp = 1;
-    }
-    else {
-        minutes_comp = 0;
-    }
-
-    if ( hms1->second < hms2->second ) {
-        seconds_comp = -1;
-    }
-    else if ( hms1->second > hms2->second ) {
-        seconds_comp = 1;
-    }
-    else {
-        seconds_comp = 0;
-    }
-
-    if ( !hours_comp && !minutes_comp && !seconds_comp ) {
-        return 0;
-    }
-    else {
-        if ( hours_comp ) {
-            return hours_comp;
-        }
-        else if ( minutes_comp ) {
-            return minutes_comp;
-        }
-        else {
-            return seconds_comp;
-        }
-    }
 }
 
 /*  Test find function with struct elements  */
