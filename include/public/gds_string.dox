@@ -1,0 +1,4 @@
+/**
+ *  \defgroup gds_string Public interface to string data structure
+ *  \details A string is an ordered collection of characters.
+ */

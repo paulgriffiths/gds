@@ -83,6 +83,25 @@
         __LINE__)
 
 /*!
+ * \brief           Macro to test two real numbers for fuzzy equality.
+ * \param a         The first number.
+ * \param b         The second number.
+ * \param e         The equality threshold. The first parameter
+ * will be multiplied by this quantity (unless (a) the first parameter is
+ * zero, in which case the second parameter will be multiplied by it; or
+ * (b) both parameters are zero, in which case the function will return
+ * true) and the function will be true if the absolute difference between
+ * the first two parameters is smaller than or equal to this value.
+ */
+#define TEST_ASSERT_ALMOST_EQUAL(a,b,e) tests_assert_true( \
+        tests_assert_almost_equal(a, b, e), \
+        izzywig_testsuitename, \
+        izzywig_testcasename, \
+        (#a " is not fuzzily equal to " #b), \
+        __FILE__, \
+        __LINE__)
+
+/*!
  * \brief           Macro to test if two strings are equal.
  * \param s1        The first string.
  * \param s2        The second string.
@@ -123,6 +142,23 @@
 void tests_assert_true(const bool success, const char * suitename,
                        const char * casename, const char * failmessage,
                        const char * filename, const int linenum);
+
+/*!
+ * \brief               Tests two real numbers for fuzzy equality.
+ * \param a             The first number.
+ * \param b             The second number.
+ * \param e             The equality threshold. The first parameter
+ * will be multiplied by this quantity (unless (a) the first parameter is
+ * zero, in which case the second parameter will be multiplied by it; or
+ * (b) both parameters are zero, in which case the function will return
+ * true) and the function will be true if the absolute difference between
+ * the first two parameters is smaller than or equal to this value.
+ * \retval true         The numbers are equal to the specified precision
+ * \retval false        The numbers are not equal to the specified precision
+ */
+bool tests_assert_almost_equal(const long double a,
+                               const long double b,
+                               const long double e);
 
 /*!
  * \brief           Initializes the test runner.

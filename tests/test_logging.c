@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include <stdarg.h>
 #include "test_logging.h"
 
@@ -49,6 +50,26 @@ void tests_assert_true(const bool success, const char * suitename,
         fprintf(stderr, "  Suite '%s', case '%s'\n", suitename, casename);
         fprintf(stderr, "  %s\n\n", failmessage);
     }
+}
+
+bool tests_assert_almost_equal(const long double a,
+                               const long double b,
+                               const long double e)
+{
+    long double denominator;
+
+    if ( a == 0.0L && b == 0.0L ) {
+        return true;
+    }
+    else if ( a == 0 ) {
+        denominator = b;
+    }
+    else {
+        denominator = a;
+    }
+
+    const long double eps = denominator * e;
+    return fabsl(a - b) <= fabsl(eps);
 }
 
 void tests_initialize(void)
