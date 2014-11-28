@@ -103,7 +103,7 @@ static void truncate_if_needed(GDSString str);
  * which is more efficient when we already know the length.
  * \param dst       The destination string.
  * \param src       The C-style string to concentate with `dst`.
- * \param length    The length of `src`, not including the terminating null.
+ * \param src_length  The length of `src`, not including the terminating null.
  * \returns         `dst` on success, `NULL` on failure.
  */
 static GDSString gds_str_concat_cstr_size(GDSString dst,

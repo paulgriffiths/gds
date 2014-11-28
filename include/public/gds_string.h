@@ -12,7 +12,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/*!  Opaque data type for string  */
+/*!
+ * \brief           Opaque data type for string.
+ * \ingroup         gds_string
+ */
 typedef struct GDSString * GDSString;
 
 /*!
