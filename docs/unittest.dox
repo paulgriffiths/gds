@@ -1,0 +1,4 @@
+/**
+ *  \defgroup unittest Public interface to unit testing functionality
+ *  \details Unit testing macros and functions.
+ */

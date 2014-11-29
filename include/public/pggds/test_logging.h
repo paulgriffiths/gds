@@ -14,6 +14,7 @@
 
 /*!
  * \brief           Macro for defining a test suite.
+ * \ingroup         unittest
  * \details         This macro should be called prior to defining any
  * test cases.
  * \param name      The name of the test suite.
@@ -23,6 +24,7 @@
 
 /*!
  * \brief           Macro for defining a test case.
+ * \ingroup         unittest
  * \param name      The name of the test case.
  */
 #define TEST_CASE(name) static const char * const \
@@ -31,6 +33,7 @@
 
 /*!
  * \brief           Macro to run a test case.
+ * \ingroup         unittest
  * \param name      The name of the test case, as previously defined by
  * a call to TEST_CASE().
  */
@@ -38,6 +41,7 @@
 
 /*!
  * \brief           Macro to test if a given condition is true.
+ * \ingroup         unittest
  * \param cond      The condition to test.
  */
 #define TEST_ASSERT_TRUE(cond) tests_assert_true((cond), \
@@ -49,6 +53,7 @@
 
 /*!
  * \brief           Macro to test if a given condition is false.
+ * \ingroup         unittest
  * \param cond      The condition to test.
  */
 #define TEST_ASSERT_FALSE(cond) tests_assert_true(!(cond), \
@@ -60,6 +65,7 @@
 
 /*!
  * \brief           Macro to test if two values are equal.
+ * \ingroup         unittest
  * \param a         The first value.
  * \param b         The second value.
  */
@@ -72,6 +78,7 @@
 
 /*!
  * \brief           Macro to test if two values are not equal.
+ * \ingroup         unittest
  * \param a         The first value.
  * \param b         The second value.
  */
@@ -84,6 +91,7 @@
 
 /*!
  * \brief           Macro to test two real numbers for fuzzy equality.
+ * \ingroup         unittest
  * \param a         The first number.
  * \param b         The second number.
  * \param e         The equality threshold. The first parameter
@@ -103,6 +111,7 @@
 
 /*!
  * \brief           Macro to test if two strings are equal.
+ * \ingroup         unittest
  * \param s1        The first string.
  * \param s2        The second string.
  */
@@ -115,6 +124,7 @@
 
 /*!
  * \brief           Macro to test if two strings are not equal.
+ * \ingroup         unittest
  * \param s1        The first string.
  * \param s2        The second string.
  */
@@ -132,8 +142,9 @@
  * of the test, and a message. This function is designed to be called
  * via one of the TEST_ macros, and in most cases should not be called
  * directly.
+ * \ingroup         unittest
  * \param success       The test condition.
- * \param suitname      The name of the test suite.
+ * \param suitename     The name of the test suite.
  * \param casename      The name of the test case.
  * \param failmessage   The message to print on test failure.
  * \param filename      The name of the file containing the test.
@@ -145,6 +156,7 @@ void tests_assert_true(const bool success, const char * suitename,
 
 /*!
  * \brief               Tests two real numbers for fuzzy equality.
+ * \ingroup         unittest
  * \param a             The first number.
  * \param b             The second number.
  * \param e             The equality threshold. The first parameter
@@ -162,30 +174,35 @@ bool tests_assert_almost_equal(const long double a,
 
 /*!
  * \brief           Initializes the test runner.
+ * \ingroup         unittest
  */
 
 void tests_initialize(void);
 
 /*!
  * \brief           Reports on the test results.
+ * \ingroup         unittest
  */
 
 void tests_report(void);
 
 /*!
  * \brief           Returns the total number of tests run.
+ * \ingroup         unittest
  * \returns         The total number of tests run.
  */
 int tests_get_total_tests(void);
 
 /*!
  * \brief           Returns the total number of successful tests.
+ * \ingroup         unittest
  * \returns         The total number of successful tests.
  */
 int tests_get_successes(void);
 
 /*!
  * \brief           Returns the total number of failed tests.
+ * \ingroup         unittest
  * \returns         The total number of failed tests.
  */
 int tests_get_failures(void);
