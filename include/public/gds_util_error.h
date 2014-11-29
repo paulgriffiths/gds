@@ -23,7 +23,7 @@
  * string suitable for passing to `vprintf()`, optionally followed by any
  * additional arguments specified by the format string.
  */
-#define quit_strerror(prog, ...) gds_strerror_line_quit(prog, \
+#define quit_strerror(prog, ...) gds_strerror_line_quit((prog), \
         __FILE__, __LINE__, __VA_ARGS__)
 
 /*!
@@ -34,8 +34,23 @@
  * string suitable for passing to `vprintf()`, optionally followed by any
  * additional arguments specified by the format string.
  */
-#define quit_error(prog, ...) gds_error_line_quit(prog, \
+#define quit_error(prog, ...) gds_error_line_quit((prog), \
         __FILE__, __LINE__, __VA_ARGS__)
+
+/*!
+ * \brief           Tests an assertion and aborts on failure.
+ * \ingroup         general
+ * \param prog      The program name to include in the error message.
+ * \param ...       Other arguments, the first of which should be a format
+ * string suitable for passing to `vprintf()`, optionally followed by any
+ * additional arguments specified by the format string.
+ */
+#ifndef NDEBUG
+#define gds_assert(cond, prog, ...) if ( !(cond) ) \
+    gds_assert_line_quit((prog), __FILE__, __LINE__, __VA_ARGS__)
+#else
+#define gds_assert(cond, prog, ...) ((void) 0)
+#endif
 
 /*!
  * \brief           Prints an error message with error number and exits.
@@ -76,15 +91,20 @@ void gds_error_line_quit(const char * progname,
                          const char * fmt, ...);
 
 /*!
- * \brief           Prints an error message exits via assert().
+ * \brief           Prints an error message and aborts.
  * \ingroup         general
- * \details         This function will do nothing if `NDEBUG` is defined.
- * Otherwise, it behaves in a manner identical to `gds_error_quit()`
- * except it terminates via `assert()`, rather than `exit()`.
- * \param msg       The format string for the message to print. Format
+ * \details         This function is intended to be called from the
+ * corresponding macro.
+ * \param progname  The program name to include in the message.
+ * \param filename  The name of the source file.
+ * \param linenum   The line number of the source file.
+ * \param fmt       The format string for the message to print. Format
  * specifiers are the same as the `printf()` family of functions.
  * \param ...       Any arguments to the format string.
  */
-void gds_assert_quit(const char * msg, ...);
+void gds_assert_line_quit(const char * progname,
+                          const char * filename,
+                          const int linenum,
+                          const char * fmt, ...);
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_ERROR_H  */

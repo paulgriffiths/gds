@@ -17,6 +17,8 @@ static void print_usage(void)
     printf("  s             Illustrate fixed argument strerror() macro\n");
     printf("  ve            Illustrate variable argument error macro\n");
     printf("  e             Illustrate fixed argument error macro\n");
+    printf("  va            Illustrate variable argument assert macro\n");
+    printf("  a             Illustrate fixed argument assert macro\n");
 }
 
 int main(int argc, char ** argv)
@@ -42,6 +44,14 @@ int main(int argc, char ** argv)
 
     if ( !strcmp(argv[1], "e") ) {
         quit_error("errormacros", "apples and oranges");
+    }
+
+    if ( !strcmp(argv[1], "va") ) {
+        gds_assert(0, "errormacros", "%d birds and %.2f bees", 42, 1.14);
+    }
+
+    if ( !strcmp(argv[1], "a") ) {
+        gds_assert(0, "errormacros", "hats and shoes");
     }
 
     print_usage();

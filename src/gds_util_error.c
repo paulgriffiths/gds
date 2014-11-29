@@ -56,23 +56,22 @@ void gds_error_line_quit(const char * progname,
     exit(EXIT_FAILURE);
 }
 
-void gds_assert_quit(const char * msg, ...)
+void gds_assert_line_quit(const char * progname,
+                          const char * filename,
+                          const int linenum,
+                          const char * fmt, ...)
 {
-
-#ifndef NDEBUG
-
-    fprintf(stderr, "gds library error: ");
+    fprintf(stderr, "%s: assertion failed: %s:%d: ",
+            progname, filename, linenum);
 
     va_list ap;
-    va_start(ap, msg);
-    vfprintf(stderr, msg, ap);
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
     va_end(ap);
 
-    if ( msg[strlen(msg) - 1] != '\n' ) {
+    if ( fmt[strlen(fmt) - 1] != '\n' ) {
         fputc('\n', stderr);
     }    
 
-#endif
-
-    assert(false);
+    abort();
 }
