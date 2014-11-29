@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdarg.h>
-#include "test_logging.h"
+#include <pggds/test_logging.h>
 
 /*!  Number of successful tests  */
 static int test_successes = 0;

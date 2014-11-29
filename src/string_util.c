@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include "string_util.h"
+#include <pggds/string_util.h>
 
 /*!
  * \brief           Helper function to resize a string list.

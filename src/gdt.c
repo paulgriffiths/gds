@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdarg.h>
-#include "gds_common.h"
+#include <pggds_internal/gds_common.h>
 
 /*!
  * \brief           Compare function for char

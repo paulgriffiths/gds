@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "gds_util.h"
+#include <pggds/gds_util.h>
 
 static void print_usage(void)
 {

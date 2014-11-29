@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "string_util.h"
+#include <pggds/string_util.h>
+#include <pggds/unittest.h>
 #include "test_string_util.h"
-#include "test_logging.h"
 
 /*  Helper functions  */
 

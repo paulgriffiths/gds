@@ -13,7 +13,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#include "gds_public_types.h"
+#include <pggds/gds_public_types.h>
 
 /*!
  * \brief           Generic datatype structure

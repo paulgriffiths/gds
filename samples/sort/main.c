@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <errno.h>
-#include "list.h"
+#include <pggds/list.h>
 
 #define BUFFER_SIZE 1024
 

@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "gds_common.h"
-#include "stack.h"
+#include <pggds_internal/gds_common.h>
+#include <pggds/stack.h>
 
 /*!  Growth factor for dynamic memory allocation  */
 static const size_t GROWTH = 2;

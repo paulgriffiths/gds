@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "gds_string.h"
+#include <pggds/gds_string.h>
+#include <pggds/unittest.h>
 #include "test_string.h"
-#include "test_logging.h"
 
 TEST_SUITE(test_string);
 

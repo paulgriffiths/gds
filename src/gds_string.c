@@ -14,7 +14,8 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#include "gds_string.h"
+#include <pggds/gds_string.h>
+#include <pggds/gds_util.h>
 
 /*!  Structure to contain string  */
 struct GDSString {
@@ -126,7 +127,8 @@ static void gds_str_remove_right(GDSString str, const size_t numchars);
 
 GDSString gds_str_create_direct(char * init_str, const size_t init_str_size)
 {
-    assert(init_str && init_str_size > 0);
+    gds_assert(init_str, "gds_library", "init_str parameter was NULL");
+    gds_assert(init_str_size > 0, "gds library", "size must be non-zero");
 
     GDSString new_str = malloc(sizeof *new_str);
     if ( !new_str ) {

@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "stack.h"
+#include <pggds/stack.h>
+#include <pggds/unittest.h>
 #include "test_stack.h"
-#include "test_logging.h"
 
 TEST_SUITE(test_stack);
 

@@ -13,7 +13,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <assert.h>
-#include "gds_util.h"
+#include <pggds/gds_util.h>
 
 void gds_strerror_line_quit(const char * progname,
                             const char * filename,

@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "vector.h"
+#include <pggds/vector.h>
+#include <pggds/unittest.h>
 #include "test_vector.h"
-#include "test_logging.h"
 #include "test_struct.h"
 
 TEST_SUITE(test_vector);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <pggds/unittest.h>
 #include "test_stack.h"
 #include "test_queue.h"
 #include "test_list.h"
@@ -8,7 +9,6 @@
 #include "test_dict.h"
 #include "test_string.h"
 #include "test_string_util.h"
-#include "test_logging.h"
 
 int main(int argc, char ** argv)
 {

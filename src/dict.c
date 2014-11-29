@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "gds_common.h"
-#include "dict.h"
-#include "list.h"
+#include <pggds_internal/gds_common.h>
+#include <pggds/dict.h>
+#include <pggds/list.h>
 
 /*!  Number of buckets  */
 static const size_t BUCKETS = 256;

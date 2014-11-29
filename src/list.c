@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "gds_common.h"
-#include "list.h"
+#include <pggds_internal/gds_common.h>
+#include <pggds/list.h>
 
 /*!  List node structure  */
 typedef struct list_node {

@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "queue.h"
+#include <pggds/queue.h>
+#include <pggds/unittest.h>
 #include "test_queue.h"
-#include "test_logging.h"
 
 TEST_SUITE(test_queue);
 

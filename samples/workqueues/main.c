@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "queue.h"
+#include <pggds/queue.h>
 
 /*  Total number of worker threads  */
 static const size_t num_threads = 4;

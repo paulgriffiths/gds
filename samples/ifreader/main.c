@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "string_util.h"
-#include "dict.h"
+#include <pggds/string_util.h>
+#include <pggds/dict.h>
 
 #define BUFFER_LEN 1024
 

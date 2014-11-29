@@ -9,8 +9,8 @@
 #ifndef PG_GENERIC_DATA_STRUCTURES_GDS_COMMON_H
 #define PG_GENERIC_DATA_STRUCTURES_GDS_COMMON_H
 
-#include "gds_public_types.h"
+#include <pggds/gds_public_types.h>
+#include <pggds/gds_util.h>
 #include "gdt.h"
-#include "gds_util.h"
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GDS_COMMON_H  */
