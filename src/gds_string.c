@@ -12,7 +12,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <assert.h>
 
 #include <pggds/gds_string.h>
 #include <pggds/gds_util.h>
@@ -127,8 +126,8 @@ static void gds_str_remove_right(GDSString str, const size_t numchars);
 
 GDSString gds_str_create_direct(char * init_str, const size_t init_str_size)
 {
-    gds_assert(init_str, "gds_library", "init_str parameter was NULL");
-    gds_assert(init_str_size > 0, "gds library", "size must be non-zero");
+    gds_assert(init_str, "gds library", "init_str parameter was NULL");
+    gds_assert(init_str_size > 0, "gds library", "size parameter was zero");
 
     GDSString new_str = malloc(sizeof *new_str);
     if ( !new_str ) {
@@ -145,6 +144,8 @@ GDSString gds_str_create_direct(char * init_str, const size_t init_str_size)
 
 GDSString gds_str_create(const char * init_str)
 {
+    gds_assert(init_str, "gds library", "init_str parameter was NULL");
+
     size_t length;
     char * new_data = duplicate_cstr(init_str, &length);
     if ( !new_data ) {
@@ -155,18 +156,20 @@ GDSString gds_str_create(const char * init_str)
 
 GDSString gds_str_dup(GDSString src)
 {
+    gds_assert(src, "gds library", "src parameter was NULL");
+
     return gds_str_create(src->data);
 }
 
 GDSString gds_str_create_sprintf(const char * format, ...)
 {
-    static char dummy_buffer[1];
+    static char dummy_buffer;
 
     /*  Determine amount of memory needed  */
 
     va_list ap;
     va_start(ap, format);
-    size_t num_written = vsnprintf(dummy_buffer, 1, format, ap);
+    size_t num_written = vsnprintf(&dummy_buffer, 1, format, ap);
     va_end(ap);
 
     /*  Allocate correct amount of memory  */
@@ -185,7 +188,8 @@ GDSString gds_str_create_sprintf(const char * format, ...)
 
     /*  Create and return new string  */
 
-    assert((num_written + 1) == required_alloc);
+    gds_assert((num_written + 1) == required_alloc, "gds library",
+               "incorrect number of characters written");
     return gds_str_create_direct(new_data, required_alloc);
 }
 
@@ -194,8 +198,17 @@ void gds_str_destroy(GDSString str)
     if ( str ) {
 
         /*  Debug sanity checks  */
-        assert(strlen(str->data) == str->length);
-        assert(str->capacity > str->length);
+
+        gds_assert(str->data, "gds library",
+                   "string data sanity check failed");
+        gds_assert(strlen(str->data) == str->length, "gds library",
+                   "string length sanity check failed, strlen(str->data)"
+                   " was %zu and str->length was %zu", strlen(str->data),
+                   str->length);
+        gds_assert(str->capacity > str->length, "gds library",
+                   "string capacity sanity check failed, str->capacity"
+                   "was %zu, and str->length was %zu", str->capacity,
+                   str->length);
 
         free(str->data);
         free(str);
@@ -209,26 +222,37 @@ void gds_str_destructor(void * str)
 
 GDSString gds_str_assign(GDSString dst, GDSString src)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+    gds_assert(src, "gds library", "src parameter was NULL");
+
     return gds_str_assign_cstr_length(dst, src->data, src->length);
 }
 
 GDSString gds_str_assign_cstr(GDSString dst, const char * src)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+
     return gds_str_assign_cstr_length(dst, src, strlen(src));
 }
 
 const char * gds_str_cstr(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     return str->data;
 }
 
 size_t gds_str_length(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     return str->length;
 }
 
 GDSString gds_str_size_to_fit(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     const size_t max_capacity = str->length + 1;
     if ( str->capacity > max_capacity ) {
         if ( !change_capacity(str, max_capacity) ) {
@@ -241,16 +265,23 @@ GDSString gds_str_size_to_fit(GDSString str)
 
 GDSString gds_str_concat(GDSString dst, GDSString src)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+    gds_assert(src, "gds library", "src parameter was NULL");
+
     return gds_str_concat_cstr_size(dst, src->data, src->length);
 }
 
 GDSString gds_str_concat_cstr(GDSString dst, const char * src)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+
     return gds_str_concat_cstr_size(dst, src, strlen(src));
 }
 
 GDSString gds_str_trunc(GDSString str, const size_t length)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     const size_t new_capacity = length + 1;
     if ( new_capacity < str->capacity ) {
         if ( !change_capacity(str, new_capacity) ) {
@@ -263,6 +294,8 @@ GDSString gds_str_trunc(GDSString str, const size_t length)
 
 unsigned long gds_str_hash(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     unsigned long hash = 5381;
     int c;
     const char * c_str = str->data;
@@ -276,6 +309,9 @@ unsigned long gds_str_hash(GDSString str)
 
 int gds_str_compare(GDSString s1, GDSString s2)
 {
+    gds_assert(s1, "gds library", "s1 parameter was NULL");
+    gds_assert(s2, "gds library", "s2 parameter was NULL");
+
     const int r = strcmp(gds_str_cstr(s1), gds_str_cstr(s2));
     if ( r < 0 ) {
         return -1;
@@ -290,6 +326,8 @@ int gds_str_compare(GDSString s1, GDSString s2)
 
 int gds_str_compare_cstr(GDSString s1, const char * s2)
 {
+    gds_assert(s1, "gds library", "s1 parameter was NULL");
+
     const int r = strcmp(gds_str_cstr(s1), s2);
     if ( r < 0 ) {
         return -1;
@@ -304,7 +342,10 @@ int gds_str_compare_cstr(GDSString s1, const char * s2)
 
 int gds_str_strchr(GDSString str, const char ch, const int start)
 {
-    assert(start < (int) str->length);
+    gds_assert(str, "gds library", "str parameter was NULL");
+    gds_assert(start < (int) str->length, "gds library",
+               "start index %zu out of range of length %zu",
+               start, str->length);
 
     int i = start;
     while ( str->data[i] && str->data[i] != ch ) {
@@ -315,14 +356,24 @@ int gds_str_strchr(GDSString str, const char ch, const int start)
 
 GDSString gds_str_substr_left(GDSString str, const size_t numchars)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     GDSString new_substr = gds_str_dup(str);
+    if ( !new_substr ) {
+        return NULL;
+    }
     gds_str_remove_right(new_substr, new_substr->length - numchars);
     return new_substr;
 }
 
 GDSString gds_str_substr_right(GDSString str, const size_t numchars)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     GDSString new_substr = gds_str_dup(str);
+    if ( !new_substr ) {
+        return NULL;
+    }
     gds_str_remove_left(new_substr, new_substr->length - numchars);
     return new_substr;
 }
@@ -330,6 +381,8 @@ GDSString gds_str_substr_right(GDSString str, const size_t numchars)
 void gds_str_split(GDSString src, GDSString * left,
                    GDSString * right, const char sc)
 {
+    gds_assert(src, "gds library", "src parameter was NULL");
+
     int idx = gds_str_length(src) ? gds_str_strchr(src, sc, 0) : -1;
     if ( idx == -1 ) {
         *left = gds_str_dup(src);
@@ -343,6 +396,8 @@ void gds_str_split(GDSString src, GDSString * left,
  
 void gds_str_trim_leading(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     size_t i = 0;
     while ( str->data[i] && isspace(str->data[i]) ) {
         ++i;
@@ -352,7 +407,7 @@ void gds_str_trim_leading(GDSString str)
 
 void gds_str_trim_trailing(GDSString str)
 {
-    assert(str);
+    gds_assert(str, "gds library", "str parameter was NULL");
 
     int i = str->length - 1;
     size_t num = 0;
@@ -372,17 +427,25 @@ void gds_str_trim(GDSString str)
 
 char gds_str_char_at_index(GDSString str, const size_t index)
 {
-    assert(index < str->length);
+    gds_assert(str, "gds library", "str parameter was NULL");
+    gds_assert(index < str->length, "gds library",
+               "index %zu out of range of length %zu", index,
+               str->length);
+
     return str->data[index];
 }
 
 bool gds_str_is_empty(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     return str->length == 0;
 }
 
 bool gds_str_is_alnum(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     if ( gds_str_is_empty(str) ) {
         return false;
     }
@@ -399,12 +462,18 @@ bool gds_str_is_alnum(GDSString str)
 
 void gds_str_clear(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     str->data[0] = '\0';
     str->length = 0;
 }
 
 bool gds_str_intval(GDSString str, const int base, int * value)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+    gds_assert(base >= 0 && base <= 36, "gds library",
+               "base of %d is out of range", base);
+
     char * endptr;
     const long n = strtol(str->data, &endptr, base);
     if ( *endptr ) {
@@ -423,6 +492,8 @@ bool gds_str_intval(GDSString str, const int base, int * value)
 
 bool gds_str_doubleval(GDSString str, double * value)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     char * endptr;
     const double n = strtod(str->data, &endptr);
     if ( *endptr ) {
@@ -483,7 +554,12 @@ static GDSString gds_str_assign_cstr_direct(GDSString dst,
                                             const size_t size,
                                             const size_t length)
 {
-    assert(size > 0 && length < size);
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+    gds_assert(size > 0, "gds library",
+               "size parameter was zero");
+    gds_assert(length < size, "gds library",
+               "length parameter (%zu) was not smaller than "
+               "size parameter (%zu)", length, size);
 
     free(dst->data);
     dst->data = src;
@@ -497,6 +573,8 @@ static GDSString gds_str_assign_cstr_length(GDSString dst,
                                             const char * src,
                                             const size_t length)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+
     const size_t req_cap = length + 1;
     if ( !change_capacity_if_needed(dst, req_cap) ) {
         return NULL;
@@ -525,7 +603,8 @@ static char * duplicate_cstr(const char * src, size_t * length)
 
 static bool change_capacity(GDSString str, const size_t new_capacity)
 {
-    assert(new_capacity > 0);
+    gds_assert(str, "gds library", "str parameter was NULL");
+    gds_assert(new_capacity > 0, "gds library", "new_capacity was zero");
 
     bool did_reallocate = true;
 
@@ -545,7 +624,9 @@ static bool change_capacity(GDSString str, const size_t new_capacity)
 static bool change_capacity_if_needed(GDSString str,
                                       const size_t required_capacity)
 {
-    assert(required_capacity > 0);
+    gds_assert(str, "gds library", "str parameter was NULL");
+    gds_assert(required_capacity > 0, "gds library",
+               "required_capacity was zero");
 
     if ( required_capacity > str->capacity ) {
         return change_capacity(str, required_capacity);
@@ -556,6 +637,8 @@ static bool change_capacity_if_needed(GDSString str,
 
 static void truncate_if_needed(GDSString str)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     if ( str->length >= str->capacity ) {
         str->length = str->capacity - 1;
         str->data[str->length] = '\0';
@@ -566,6 +649,11 @@ static GDSString gds_str_concat_cstr_size(GDSString dst,
                                           const char * src,
                                           const size_t src_length)
 {
+    gds_assert(dst, "gds library", "dst parameter was NULL");
+    gds_assert(strlen(src) == src_length, "gds library",
+               "src_length sanity check failed, strlen(src) was"
+               "%zu and src_length was %zu", strlen(src), src_length);
+
     const size_t req_cap = dst->length + src_length + 1;
     if ( !change_capacity_if_needed(dst, req_cap) ) {
         return NULL;
@@ -577,6 +665,8 @@ static GDSString gds_str_concat_cstr_size(GDSString dst,
 
 static void gds_str_remove_right(GDSString str, const size_t numchars)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     if ( numchars > 0 && numchars <= str->length ) {
         const size_t remaining = str->length - numchars;
         str->data[remaining] = '\0';
@@ -586,6 +676,8 @@ static void gds_str_remove_right(GDSString str, const size_t numchars)
 
 static void gds_str_remove_left(GDSString str, const size_t numchars)
 {
+    gds_assert(str, "gds library", "str parameter was NULL");
+
     if ( numchars > 0 && numchars <= str->length ) {
         const size_t remaining = str->length - numchars;
         memmove(str->data, str->data + numchars, remaining + 1);
