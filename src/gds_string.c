@@ -274,12 +274,30 @@ unsigned long gds_str_hash(GDSString str)
 
 int gds_str_compare(GDSString s1, GDSString s2)
 {
-    return strcmp(gds_str_cstr(s1), gds_str_cstr(s2));
+    const int r = strcmp(gds_str_cstr(s1), gds_str_cstr(s2));
+    if ( r < 0 ) {
+        return -1;
+    }
+    else if ( r > 0 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 int gds_str_compare_cstr(GDSString s1, const char * s2)
 {
-    return strcmp(gds_str_cstr(s1), s2);
+    const int r = strcmp(gds_str_cstr(s1), s2);
+    if ( r < 0 ) {
+        return -1;
+    }
+    else if ( r > 0 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 int gds_str_strchr(GDSString str, const char ch, const int start)
