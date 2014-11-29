@@ -12,37 +12,30 @@
 /*!
  * \brief           Prints an error message with error number and exits.
  * \ingroup         general
- * \details         This function can be called to print an error message
+ * \details         This macro can be called to print an error message
  * and quit following a function which has indicated failure and has set
  * `errno`. A message containing the error number and a text representation
  * of that error will be printed, following by the message supplied to
- * the function.
- * \param msg       The format string for the message to print. Format
- * specifiers are the same as the `printf()` family of functions.
- * \param ...       Any arguments to the format string.
+ * the function. This function is intended to be called from the corresponding
+ * macro.
+ * \param prog      The program name to include in the error message.
+ * \param ...       Other arguments, the first of which should be a format
+ * string suitable for passing to `vprintf()`, optionally followed by any
+ * additional arguments specified by the format string.
  */
-void gds_strerror_quit(const char * msg, ...);
+#define quit_strerror(prog, ...) gds_strerror_line_quit(prog, \
+        __FILE__, __LINE__, __VA_ARGS__)
 
 /*!
- * \brief           Prints an error message exits.
+ * \brief           Prints an error message and exits.
  * \ingroup         general
- * \param msg       The format string for the message to print. Format
- * specifiers are the same as the `printf()` family of functions.
- * \param ...       Any arguments to the format string.
+ * \param prog      The program name to include in the error message.
+ * \param ...       Other arguments, the first of which should be a format
+ * string suitable for passing to `vprintf()`, optionally followed by any
+ * additional arguments specified by the format string.
  */
-void gds_error_quit(const char * msg, ...);
-
-#define quit_vstrerror(prog, fmt, ...) gds_strerror_line_quit(prog, \
-        __FILE__, __LINE__, fmt, __VA_ARGS__)
-
-#define quit_strerror(prog, fmt) gds_strerror_line_quit(prog, \
-        __FILE__, __LINE__, fmt)
-
-#define quit_verror(prog, fmt, ...) gds_line_quit(prog, \
-        __FILE__, __LINE__, fmt, __VA_ARGS__)
-
-#define quit_error(prog, fmt) gds_line_quit(prog, \
-        __FILE__, __LINE__, fmt)
+#define quit_error(prog, ...) gds_error_line_quit(prog, \
+        __FILE__, __LINE__, __VA_ARGS__)
 
 /*!
  * \brief           Prints an error message with error number and exits.
@@ -77,10 +70,10 @@ void gds_strerror_line_quit(const char * progname,
  * specifiers are the same as the `printf()` family of functions.
  * \param ...       Any arguments to the format string.
  */
-void gds_line_quit(const char * progname,
-                   const char * filename,
-                   const int linenum,
-                   const char * fmt, ...);
+void gds_error_line_quit(const char * progname,
+                         const char * filename,
+                         const int linenum,
+                         const char * fmt, ...);
 
 /*!
  * \brief           Prints an error message exits via assert().

@@ -37,10 +37,10 @@ void gds_strerror_line_quit(const char * progname,
     exit(EXIT_FAILURE);
 }
 
-void gds_line_quit(const char * progname,
-                   const char * filename,
-                   const int linenum,
-                   const char * fmt, ...)
+void gds_error_line_quit(const char * progname,
+                         const char * filename,
+                         const int linenum,
+                         const char * fmt, ...)
 {
     fprintf(stderr, "%s: error: %s:%d: ", progname, filename, linenum);
 
@@ -50,39 +50,6 @@ void gds_line_quit(const char * progname,
     va_end(ap);
 
     if ( fmt[strlen(fmt) - 1] != '\n' ) {
-        fputc('\n', stderr);
-    }    
-
-    exit(EXIT_FAILURE);
-}
-
-void gds_strerror_quit(const char * msg, ...)
-{
-    fprintf(stderr, "gds library error: %s (%d)\n", strerror(errno), errno);
-    fprintf(stderr, "gds library error: ");
-
-    va_list ap;
-    va_start(ap, msg);
-    vfprintf(stderr, msg, ap);
-    va_end(ap);
-
-    if ( msg[strlen(msg) - 1] != '\n' ) {
-        fputc('\n', stderr);
-    }    
-
-    exit(EXIT_FAILURE);
-}
-
-void gds_error_quit(const char * msg, ...)
-{
-    fprintf(stderr, "gds library error: ");
-
-    va_list ap;
-    va_start(ap, msg);
-    vfprintf(stderr, msg, ap);
-    va_end(ap);
-
-    if ( msg[strlen(msg) - 1] != '\n' ) {
         fputc('\n', stderr);
     }    
 

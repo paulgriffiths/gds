@@ -79,8 +79,7 @@ List list_create(const enum gds_datatype type, const int opts, ...)
     struct list * new_list = malloc(sizeof *new_list);
     if ( !new_list ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -308,8 +307,7 @@ bool list_sort(List list)
     tempelem = malloc(list->length * sizeof *tempelem);
     if ( !tempelem ) {
         if ( list->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return false;
@@ -360,8 +358,7 @@ bool list_reverse_sort(List list)
     tempelem = malloc(list->length * sizeof *tempelem);
     if ( !tempelem ) {
         if ( list->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return false;
@@ -437,8 +434,7 @@ static ListNode list_node_create(List list, va_list ap)
     struct list_node * new_node = malloc(sizeof *new_node);
     if ( !new_node ) {
         if ( list->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -465,8 +461,7 @@ static ListNode list_node_at_index(List list, const size_t index)
 {
     if ( index >= list->length ) {
         if ( list->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             return NULL;
@@ -517,8 +512,7 @@ static bool list_insert_internal(List list, ListNode node, const size_t index)
     }
     else if ( index > list->length ) {
         if ( list->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             free(node);

@@ -106,8 +106,7 @@ Dict dict_create(const enum gds_datatype type, const int opts)
     struct dict * new_dict = malloc(sizeof *new_dict);
     if ( !new_dict ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -123,8 +122,7 @@ Dict dict_create(const enum gds_datatype type, const int opts)
                                new_dict->num_buckets);
     if ( !new_dict->buckets ) {
         if ( new_dict->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             free(new_dict);
@@ -208,8 +206,7 @@ static bool dict_buckets_create(Dict dict)
         dict->buckets[i] = list_create(DATATYPE_POINTER, 0, kvpair_compare);
         if ( !dict->buckets[i] ) {
             if ( dict->exit_on_error ) {
-                gds_strerror_quit("memory allocation failed "
-                                  "(%s, line %d)", __FILE__, __LINE__);
+                quit_strerror("gds library", "memory allocation failed");
             }
             else {
                 return false;

@@ -32,8 +32,7 @@ Stack stack_create(const size_t capacity, const enum gds_datatype type,
     struct stack * new_stack = malloc(sizeof *new_stack);
     if ( !new_stack ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -50,8 +49,7 @@ Stack stack_create(const size_t capacity, const enum gds_datatype type,
     new_stack->elements = malloc(sizeof *new_stack->elements * capacity);
     if ( !new_stack->elements ) {
         if ( new_stack->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             free(new_stack);
@@ -92,8 +90,7 @@ bool stack_push(Stack stack, ...)
                                    sizeof *stack->elements * new_capacity);
             if ( !new_elements ) {
                 if ( stack->exit_on_error ) {
-                    gds_strerror_quit("memory reallocation failed "
-                                      "(%s, %d)", __FILE__, __LINE__);
+                    quit_strerror("gds library", "memory allocation failed");
                 }
                 else {
                     return false;
@@ -104,7 +101,7 @@ bool stack_push(Stack stack, ...)
             stack->capacity = new_capacity;
         }
         else if ( stack->exit_on_error ) {
-            gds_error_quit("stack full (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "stack full");
         }
         else {
             return false;
@@ -123,7 +120,7 @@ bool stack_pop(Stack stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
         if ( stack->exit_on_error ) {
-            gds_error_quit("stack empty (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "stack empty");
         }
         else {
             return false;
@@ -139,7 +136,7 @@ bool stack_peek(Stack stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
         if ( stack->exit_on_error ) {
-            gds_error_quit("stack empty (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "stack empty");
         }
         else {
             return false;

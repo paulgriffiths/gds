@@ -28,7 +28,7 @@ int main(int argc, char ** argv)
 
     if ( !strcmp(argv[1], "vs") ) {
         errno = 14;
-        quit_vstrerror("errormacros", "%d apples and %.2f oranges", 5, 2.34);
+        quit_strerror("errormacros", "%d apples and %.2f oranges", 5, 2.34);
     }
 
     if ( !strcmp(argv[1], "s") ) {
@@ -37,7 +37,7 @@ int main(int argc, char ** argv)
     }
 
     if ( !strcmp(argv[1], "ve") ) {
-        quit_verror("errormacros", "%d dogs and %.2f cats", 100, 3.14);
+        quit_error("errormacros", "%d dogs and %.2f cats", 100, 3.14);
     }
 
     if ( !strcmp(argv[1], "e") ) {

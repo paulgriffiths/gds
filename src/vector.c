@@ -48,8 +48,7 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
     struct vector * new_vector = malloc(sizeof *new_vector);
     if ( !new_vector ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -79,8 +78,7 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
         new_vector->elements = calloc(capacity, sizeof *new_vector->elements);
         if ( !new_vector->elements ) {
             if ( new_vector->exit_on_error ) {
-                gds_strerror_quit("memory allocation failed "
-                                  "(%s, line %d)", __FILE__, __LINE__);
+                quit_strerror("gds library", "memory allocation failed");
             }
             else {
                 free(new_vector);
@@ -141,8 +139,7 @@ bool vector_delete_index(Vector vector, const size_t index)
 {
     if ( index >= vector->length ) {
         if ( vector->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             return false;
@@ -186,8 +183,7 @@ bool vector_element_at_index(Vector vector, const size_t index, void * p)
 {
     if ( index >= vector->length ) {
         if ( vector->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             return false;
@@ -203,8 +199,7 @@ bool vector_set_element_at_index(Vector vector, const size_t index, ...)
 {
     if ( index >= vector->length ) {
         if ( vector->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             return false;
@@ -274,8 +269,7 @@ static bool vector_insert_internal(Vector vector,
 {
     if ( index > vector->length ) {
         if ( vector->exit_on_error ) {
-            gds_error_quit("index %zu out of range (%s, line %d)",
-                           index, __FILE__, __LINE__);
+            quit_error("gds library", "index %zu out of range", index);
         }
         else {
             return false;

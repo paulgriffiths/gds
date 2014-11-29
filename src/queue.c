@@ -40,8 +40,7 @@ Queue queue_create(const size_t capacity, const enum gds_datatype type,
     struct queue * new_queue = malloc(sizeof *new_queue);
     if ( !new_queue ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             return NULL;
@@ -61,8 +60,7 @@ Queue queue_create(const size_t capacity, const enum gds_datatype type,
     new_queue->elements = malloc(sizeof *new_queue->elements * capacity);
     if ( !new_queue->elements ) {
         if ( new_queue->exit_on_error ) {
-            gds_strerror_quit("memory allocation failed "
-                              "(%s, line %d)", __FILE__, __LINE__);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
             free(new_queue);
@@ -111,8 +109,7 @@ bool queue_push(Queue queue, ...)
                                    sizeof *queue->elements * new_capacity);
             if ( !new_elements ) {
                 if ( queue->exit_on_error ) {
-                    gds_strerror_quit("memory reallocation failed "
-                                      "(%s, line %d)", __FILE__, __LINE__);
+                    quit_strerror("gds library", "memory allocation failed");
                 }
                 else {
                     return false;
@@ -153,7 +150,7 @@ bool queue_push(Queue queue, ...)
             queue->capacity = new_capacity;
         }
         else if ( queue->exit_on_error ) {
-            gds_error_quit("queue full (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "queue full");
         }
         else {
             return false;
@@ -178,7 +175,7 @@ bool queue_pop(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
         if ( queue->exit_on_error ) {
-            gds_error_quit("queue empty (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "queue empty");
         }
         else {
             return false;
@@ -200,7 +197,7 @@ bool queue_peek(Queue queue, void * p)
 {
     if ( queue_is_empty(queue) ) {
         if ( queue->exit_on_error ) {
-            gds_error_quit("queue empty (%s, line %d)", __FILE__, __LINE__);
+            quit_error("gds library", "queue empty");
         }
         else {
             return false;
