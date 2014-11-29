@@ -40,6 +40,7 @@
 /*!
  * \brief           Tests an assertion and aborts on failure.
  * \ingroup         general
+ * \param cond      The assertion to test.
  * \param prog      The program name to include in the error message.
  * \param ...       Other arguments, the first of which should be a format
  * string suitable for passing to `vprintf()`, optionally followed by any
