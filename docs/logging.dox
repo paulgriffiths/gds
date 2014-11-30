@@ -1,0 +1,5 @@
+/**
+ *  \defgroup logging Public interface to logging functionality
+ *  \details This module contains functionality for logging to standard
+ *  error or to a designated file, as well as macros for debug output.
+ */

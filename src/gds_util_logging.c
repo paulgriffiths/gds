@@ -7,14 +7,9 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdarg.h>
-#include <errno.h>
-#include <assert.h>
 #include <pggds/gds_util.h>
 
+/*!  File scope variable to hold current error file pointer  */
 static FILE * gds_error_file = NULL;
 
 FILE * gds_errlog(void)
