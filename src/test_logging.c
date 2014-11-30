@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdarg.h>
+#include <pggds/gds_util.h>
 #include <pggds/test_logging.h>
 
 /*!  Number of successful tests  */
@@ -46,9 +47,9 @@ void tests_assert_true(const bool success, const char * suitename,
     tests_log_single_test(success);
 
     if ( show_failures && !success ) {
-        fprintf(stderr, "Test failed at %s line %d\n", filename, linenum);
-        fprintf(stderr, "  Suite '%s', case '%s'\n", suitename, casename);
-        fprintf(stderr, "  %s\n\n", failmessage);
+        fprintf(gds_errlog(), "Test failed at %s line %d\n", filename, linenum);
+        fprintf(gds_errlog(), "  Suite '%s', case '%s'\n", suitename, casename);
+        fprintf(gds_errlog(), "  %s\n\n", failmessage);
     }
 }
 
@@ -81,7 +82,7 @@ void tests_initialize(void)
 
 void tests_report(void)
 {
-    fprintf(stderr, "%d successes and %d failures from %d tests.\n",
+    fprintf(gds_errlog(), "%d successes and %d failures from %d tests.\n",
             test_successes, test_failures, total_tests);
 }
 

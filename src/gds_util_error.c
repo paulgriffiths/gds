@@ -20,18 +20,18 @@ void gds_strerror_line_quit(const char * progname,
                             const int linenum,
                             const char * fmt, ...)
 {
-    fprintf(stderr, "%s: error: ", progname);
+    fprintf(gds_errlog(), "%s: error: ", progname);
 
     va_list ap;
     va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
+    vfprintf(gds_errlog(), fmt, ap);
     va_end(ap);
 
     if ( fmt[strlen(fmt) - 1] != '\n' ) {
-        fputc('\n', stderr);
+        fputc('\n', gds_errlog());
     }    
 
-    fprintf(stderr, "  %s:%d: %s (%d)\n", filename, linenum,
+    fprintf(gds_errlog(), "  %s:%d: %s (%d)\n", filename, linenum,
             strerror(errno), errno);
 
     exit(EXIT_FAILURE);
@@ -42,15 +42,15 @@ void gds_error_line_quit(const char * progname,
                          const int linenum,
                          const char * fmt, ...)
 {
-    fprintf(stderr, "%s: error: %s:%d: ", progname, filename, linenum);
+    fprintf(gds_errlog(), "%s: error: %s:%d: ", progname, filename, linenum);
 
     va_list ap;
     va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
+    vfprintf(gds_errlog(), fmt, ap);
     va_end(ap);
 
     if ( fmt[strlen(fmt) - 1] != '\n' ) {
-        fputc('\n', stderr);
+        fputc('\n', gds_errlog());
     }    
 
     exit(EXIT_FAILURE);
@@ -61,16 +61,16 @@ void gds_assert_line_quit(const char * progname,
                           const int linenum,
                           const char * fmt, ...)
 {
-    fprintf(stderr, "%s: assertion failed: %s:%d: ",
+    fprintf(gds_errlog(), "%s: assertion failed: %s:%d: ",
             progname, filename, linenum);
 
     va_list ap;
     va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
+    vfprintf(gds_errlog(), fmt, ap);
     va_end(ap);
 
     if ( fmt[strlen(fmt) - 1] != '\n' ) {
-        fputc('\n', stderr);
+        fputc('\n', gds_errlog());
     }    
 
     abort();

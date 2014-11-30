@@ -11,5 +11,7 @@
 
 #include "gds_util_error.h"
 #include "gds_util_string.h"
+#include "gds_util_std_wrappers.h"
+#include "gds_util_logging.h"
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_H  */

@@ -9,11 +9,13 @@
 #include "test_dict.h"
 #include "test_string.h"
 #include "test_string_util.h"
+#include "test_std_wrappers.h"
 
 int main(int argc, char ** argv)
 {
     bool stack = false, queue = false, list = false, vector = false;
     bool dict = false, string_util = false, gds_string = false;
+    bool stdwrap = false;
 
     if ( argc < 2 ) {
         stack = true;
@@ -23,6 +25,7 @@ int main(int argc, char ** argv)
         dict = true;
         string_util = true;
         gds_string = true;
+        stdwrap = true;
     }
     else {
         size_t i = 0;
@@ -48,6 +51,9 @@ int main(int argc, char ** argv)
             }
             else if ( !strcmp(argv[i], "string") ) {
                 gds_string = true;
+            }
+            else if ( !strcmp(argv[i], "stdwrap") ) {
+                stdwrap = true;
             }
         }
     }
@@ -87,6 +93,11 @@ int main(int argc, char ** argv)
     if ( string_util ) {
         printf("Running unit tests for string utilities...\n");
         test_string_util();
+    }
+
+    if ( stdwrap ) {
+        printf("Running unit tests for standard wrappers...\n");
+        test_std_wrappers();
     }
 
     tests_report();
