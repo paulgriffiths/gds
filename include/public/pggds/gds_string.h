@@ -303,6 +303,16 @@ bool gds_str_intval(GDSString str, const int base, int * value);
 bool gds_str_doubleval(GDSString str, double * value);
 
 /*!
+ * \brief           Gets a line from a file creates a new string.
+ * \details         Any trailing newline character is stripped.
+ * \ingroup         gds_string
+ * \param size      The maximum number of bytes to read, including the null.
+ * \param fp        The file pointer from which to read.
+ * \returns         `dst`
+ */
+GDSString gds_str_getline(const size_t size, FILE * fp);
+
+/*!
  * \brief           Gets a line from a file and assigns it to a string.
  * \details         Any trailing newline character is stripped.
  * \ingroup         gds_string
@@ -311,7 +321,7 @@ bool gds_str_doubleval(GDSString str, double * value);
  * \param fp        The file pointer from which to read.
  * \returns         `dst`
  */
-GDSString gds_str_getline(GDSString str, const size_t size, FILE * fp);
+GDSString gds_str_getline_assign(GDSString str, const size_t size, FILE * fp);
 
 /*!
  * \brief           Brackets a string with decoration strings.

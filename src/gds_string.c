@@ -510,7 +510,7 @@ bool gds_str_doubleval(GDSString str, double * value)
     }
 }
 
-GDSString gds_str_getline(GDSString str, const size_t size, FILE * fp)
+GDSString gds_str_getline_assign(GDSString str, const size_t size, FILE * fp)
 {
     char * buffer = malloc(size);
     if ( !buffer ) {
@@ -528,6 +528,21 @@ GDSString gds_str_getline(GDSString str, const size_t size, FILE * fp)
         --length;
     }
     return gds_str_assign_cstr_direct(str, buffer, size, length);
+}
+
+GDSString gds_str_getline(const size_t size, FILE * fp)
+{
+    GDSString new_str = gds_str_create("");
+    if ( !new_str ) {
+        return NULL;
+    }
+
+    if ( !gds_str_getline_assign(new_str, size, fp) ) {
+        gds_str_destroy(new_str);
+        return NULL;
+    }
+
+    return new_str;
 }
 
 GDSString gds_str_decorate(GDSString str,

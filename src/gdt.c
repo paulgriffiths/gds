@@ -133,6 +133,16 @@ static int gdt_compare_double(const void * p1, const void * p2);
  */
 static int gdt_compare_string(const void * p1, const void * p2);
 
+/*!
+ * \brief           Compare function for GDSString
+ * \param p1        Pointer to first value
+ * \param p2        Pointer to second value
+ * \retval 0        First value is equal to second value
+ * \retval -1       First value is less than second value
+ * \retval 1        First value is greater than second value
+ */
+static int gdt_compare_gds_str(const void * p1, const void * p2);
+
 void gdt_set_value(struct gdt_generic_datatype * data,
                    const enum gds_datatype type, gds_cfunc cfunc, va_list ap)
 {
@@ -199,6 +209,11 @@ void gdt_set_value(struct gdt_generic_datatype * data,
             data->data.pc = va_arg(ap, char *);
             break;
 
+        case DATATYPE_GDSSTRING:
+            data->compfunc = gdt_compare_gds_str;
+            data->data.gdsstr = va_arg(ap, GDSString);
+            break;
+
         case DATATYPE_POINTER:
             data->compfunc = cfunc;
             data->data.p = va_arg(ap, void *);
@@ -261,6 +276,10 @@ void gdt_get_value(const struct gdt_generic_datatype * data, void * p)
             *((char **) p) = data->data.pc;
             break;
 
+        case DATATYPE_GDSSTRING:
+            *((GDSString *) p) = data->data.gdsstr;
+            break;
+
         case DATATYPE_POINTER:
             *((void **) p) = data->data.p;
             break;
@@ -281,6 +300,10 @@ void gdt_free(struct gdt_generic_datatype * data)
     if ( data->type == DATATYPE_POINTER ) {
         free(data->data.p);
         data->data.p = NULL;
+    }
+    else if ( data->type == DATATYPE_GDSSTRING ) {
+        gds_str_destroy(data->data.gdsstr);
+        data->data.gdsstr = NULL;
     }
     else if ( data->type == DATATYPE_STRING ) {
         free(data->data.pc);
@@ -336,6 +359,9 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
     }
     else if ( d1->type == DATATYPE_STRING ) {
         return cfunc(&d1->data.pc, &d2->data.pc);
+    }
+    else if ( d1->type == DATATYPE_GDSSTRING ) {
+        return cfunc(&d1->data.gdsstr, &d2->data.gdsstr);
     }
     else if ( d1->type == DATATYPE_POINTER ) {
         return cfunc(&d1->data.p, &d2->data.p);
@@ -541,4 +567,12 @@ static int gdt_compare_string(const void * p1, const void * p2)
     const char * s2 = *((const char **) p2);
 
     return strcmp(s1, s2);
+}
+
+static int gdt_compare_gds_str(const void * p1, const void * p2)
+{
+    GDSString s1 = *((GDSString *) p1);
+    GDSString s2 = *((GDSString *) p2);
+
+    return gds_str_compare(s1, s2);
 }

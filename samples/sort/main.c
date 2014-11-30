@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <pggds/gds_util.h>
 #include <pggds/list.h>
+#include <pggds/gds_string.h>
 
 #define BUFFER_SIZE 1024
 
@@ -69,21 +70,12 @@ int main(int argc, char ** argv)
 
     /*  Read all available lines and store them in the list  */
 
-    List list = list_create(DATATYPE_STRING,
+    List list = list_create(DATATYPE_GDSSTRING,
                             GDS_FREE_ON_DESTROY | GDS_EXIT_ON_ERROR, 0);
 
-    char buffer[BUFFER_SIZE];
-    while ( fgets(buffer, sizeof buffer, fp) ) {
-        const size_t len = strlen(buffer);
-        if ( buffer[len - 1] == '\n' ) {
-
-            /*  Remove trailing newline  */
-
-            buffer[len - 1] = 0;
-        }
-
-        char * pc = xstrdup(buffer);
-        list_append(list, pc);
+    GDSString line;
+    while ( (line = gds_str_getline(BUFFER_SIZE, fp)) ) {
+        list_append(list, line);
     }
 
     /*  Sort list  */
@@ -100,9 +92,9 @@ int main(int argc, char ** argv)
     ListItr itr = list_itr_first(list);
     size_t i = 1;
     while ( itr ) {
-        char * str;
+        GDSString str;
         list_get_value_itr(itr, &str);
-        printf("%3zu: %s\n", i++, str);
+        printf("%3zu: %s\n", i++, gds_str_cstr(str));
         itr = list_itr_next(itr);
     }
 

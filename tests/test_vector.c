@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pggds/vector.h>
+#include <pggds/gds_string.h>
 #include <pggds/unittest.h>
 #include "test_vector.h"
 #include "test_struct.h"
@@ -287,6 +288,36 @@ TEST_CASE(test_vector_free_strings)
     vector_destroy(vector);
 }
 
+/*  Test that dynamically allocated GDSStrings are appropriately
+ *  freed when a vector is destroyed. Run this test case through
+ *  Valgrind or a similar tool to check no memory leaks.          */
+
+TEST_CASE(test_vector_free_gdsstrings)
+{
+    Vector vector = vector_create(0, DATATYPE_GDSSTRING, GDS_FREE_ON_DESTROY);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    GDSString pc;
+    TEST_ASSERT_TRUE(pc = gds_str_create("first string"));
+    TEST_ASSERT_TRUE(vector_append(vector, pc));
+
+    TEST_ASSERT_TRUE(pc = gds_str_create("second string"));
+    TEST_ASSERT_TRUE(vector_append(vector, pc));
+
+    TEST_ASSERT_TRUE(pc = gds_str_create("third string"));
+    TEST_ASSERT_TRUE(vector_append(vector, pc));
+
+    TEST_ASSERT_EQUAL(vector_length(vector), 3);
+    TEST_ASSERT_EQUAL(vector_capacity(vector), 4);
+    TEST_ASSERT_EQUAL(vector_free_space(vector), 1);
+    TEST_ASSERT_FALSE(vector_is_empty(vector));
+
+    vector_destroy(vector);
+}
+
 /*  Test find function  */
 
 TEST_CASE(test_vector_find)
@@ -420,6 +451,72 @@ TEST_CASE(test_vector_sort_strings)
 
     TEST_ASSERT_TRUE(vector_find(vector, &index, "Giraffe"));
     TEST_ASSERT_EQUAL(index, 3);
+
+    vector_destroy(vector);
+}
+
+/*  Test sort function with GDSStrings  */
+
+TEST_CASE(test_vector_sort_gdsstrings)
+{
+    Vector vector = vector_create(4, DATATYPE_GDSSTRING, GDS_FREE_ON_DESTROY);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, gds_str_create("Elephant"));
+    vector_set_element_at_index(vector, 1, gds_str_create("Dog"));
+    vector_set_element_at_index(vector, 2, gds_str_create("Giraffe"));
+    vector_set_element_at_index(vector, 3, gds_str_create("Aardvark"));
+
+    size_t index;
+
+    /*  Check elements are found at expected indices prior to sorting  */
+
+    GDSString ele = gds_str_create("Elephant");
+    GDSString dog = gds_str_create("Dog");
+    GDSString gir = gds_str_create("Giraffe");
+    GDSString aar = gds_str_create("Aardvark");
+    GDSString pel = gds_str_create("Pelican");
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, ele));
+    TEST_ASSERT_EQUAL(index, 0);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, dog));
+    TEST_ASSERT_EQUAL(index, 1);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, gir));
+    TEST_ASSERT_EQUAL(index, 2);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, aar));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    /*  Check absent element is not found  */
+
+    TEST_ASSERT_FALSE(vector_find(vector, &index, pel));
+
+    /*  Check elements are found at expected indices after sorting  */
+
+    vector_sort(vector);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, aar));
+    TEST_ASSERT_EQUAL(index, 0);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, dog));
+    TEST_ASSERT_EQUAL(index, 1);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, ele));
+    TEST_ASSERT_EQUAL(index, 2);
+
+    TEST_ASSERT_TRUE(vector_find(vector, &index, gir));
+    TEST_ASSERT_EQUAL(index, 3);
+
+    gds_str_destroy(aar);
+    gds_str_destroy(dog);
+    gds_str_destroy(ele);
+    gds_str_destroy(gir);
+    gds_str_destroy(pel);
 
     vector_destroy(vector);
 }
@@ -594,9 +691,11 @@ void test_vector(void)
     RUN_CASE(test_vector_zero_destroy);
     RUN_CASE(test_vector_basic);
     RUN_CASE(test_vector_free_strings);
+    RUN_CASE(test_vector_free_gdsstrings);
     RUN_CASE(test_vector_find);
     RUN_CASE(test_vector_find_struct);
     RUN_CASE(test_vector_sort_strings);
+    RUN_CASE(test_vector_sort_gdsstrings);
     RUN_CASE(test_vector_sort_sizet);
     RUN_CASE(test_vector_sort_struct);
     RUN_CASE(test_vector_reverse_sort);

@@ -45,6 +45,7 @@ enum gds_datatype {
     DATATYPE_SIZE_T,                /*!<  size_t              */
     DATATYPE_DOUBLE,                /*!<  double              */
     DATATYPE_STRING,                /*!<  char *, string      */
+    DATATYPE_GDSSTRING,            /*!<  GDSString           */
     DATATYPE_POINTER                /*!<  void *              */
 };
 

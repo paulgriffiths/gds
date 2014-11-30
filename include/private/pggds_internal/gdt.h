@@ -14,6 +14,7 @@
 #include <stdarg.h>
 
 #include <pggds/gds_public_types.h>
+#include <pggds/gds_string.h>
 
 /*!
  * \brief           Generic datatype structure
@@ -35,6 +36,7 @@ struct gdt_generic_datatype {
         size_t st;                          /*!<  size_t                    */
         double d;                           /*!<  double                    */
         char * pc;                          /*!<  char *, string            */
+        GDSString gdsstr;                   /*!<  GDSString                 */
         void * p;                           /*!<  void *                    */
     } data;                             /*!<  Data union                */
 };
