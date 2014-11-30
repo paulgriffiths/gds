@@ -11,17 +11,13 @@
 #include <string.h>
 #include <stdarg.h>
 #include <pggds_internal/gds_common.h>
+#include <pggds/gds_util.h>
 #include <pggds/dict.h>
 #include <pggds/list.h>
+#include <pggds/kvpair.h>
 
 /*!  Number of buckets  */
 static const size_t BUCKETS = 256;
-
-/*!  Key-Value pair structure  */
-typedef struct kvpair {
-    char * key;                               /*!<  String key              */
-    struct gdt_generic_datatype value;        /*!<  Generic datatype value  */
-} * KVPair;
 
 /*!  Dict structure  */
 struct dict {
@@ -31,39 +27,6 @@ struct dict {
     bool free_on_destroy;   /*!<  Free pointer elements on destroy if true  */
     bool exit_on_error;     /*!<  Exit on error if true                     */
 };
-
-/*!
- * \brief           Creates a new key-value pair.
- * \param key       The key for the new pair.
- * \param type      The datatype for the new pair
- * \param ap        A `va_list` containing the data value for the pair.
- * This should be of a type appropriate to the type set when creating
- * the list.
- * \retval NULL     Failure, dynamic memory allocation failed
- * \retval non-NULL Success
- */
-static KVPair kvpair_create(const char * key, const enum gds_datatype type,
-                            va_list ap);
-
-/*!
- * \brief               Destroys a key-value pair.
- * \param pair          A pointer to the pair to destroy.
- * \param free_value    If true, the data will be passed to gdt_free()
- */ 
-static void kvpair_destroy(KVPair pair, const bool free_value);
-
-/*!
- * \brief               Compares two key-value pairs by key.
- * \details             This function is suitable for passing to qsort().
- * \param p1            A pointer to the first pair.
- * \param p2            A pointer to the second pair.
- * \retval 0            The keys of the two pairs are equal
- * \retval -1           The key of the first pair is less than the key
- * of the second pair
- * \retval 1            The key of the first pair is greater than the key
- * of the second pair
- */
-static int kvpair_compare(const void * p1, const void * p2);
 
 /*!
  * \brief               Internal function to check for the existence of a key.
@@ -109,6 +72,7 @@ Dict dict_create(const enum gds_datatype type, const int opts)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return NULL;
         }
     }
@@ -125,6 +89,7 @@ Dict dict_create(const enum gds_datatype type, const int opts)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             free(new_dict);
             return NULL;
         }
@@ -154,7 +119,7 @@ bool dict_has_key(Dict dict, const char * key)
 
 bool dict_insert(Dict dict, const char * key, ...)
 {
-    struct kvpair * pair;
+    struct gds_kvpair * pair;
     if ( dict_has_key_internal(dict, key, &pair) ) {
         if ( dict->free_on_destroy ) {
 
@@ -171,7 +136,7 @@ bool dict_insert(Dict dict, const char * key, ...)
     else {
         va_list ap;
         va_start(ap, key);
-        struct kvpair * new_pair = kvpair_create(key, dict->type, ap);
+        struct gds_kvpair * new_pair = gds_kvpair_create(key, dict->type, ap);
         va_end(ap);
 
         if ( !new_pair ) {
@@ -180,7 +145,7 @@ bool dict_insert(Dict dict, const char * key, ...)
 
         const size_t hash = djb2hash(key) % dict->num_buckets;
         if ( !list_append(dict->buckets[hash], (void *) new_pair) ) {
-            kvpair_destroy(new_pair, dict->free_on_destroy);
+            gds_kvpair_destroy(new_pair, dict->free_on_destroy);
             return false;
         }
     }
@@ -190,7 +155,7 @@ bool dict_insert(Dict dict, const char * key, ...)
 
 bool dict_value_for_key(Dict dict, const char * key, void * p)
 {
-    struct kvpair * pair;
+    struct gds_kvpair * pair;
     if ( !dict_has_key_internal(dict, key, &pair) ) {
         return false;
     }
@@ -203,12 +168,13 @@ bool dict_value_for_key(Dict dict, const char * key, void * p)
 static bool dict_buckets_create(Dict dict)
 {
     for ( size_t i = 0; i < dict->num_buckets; ++i ) {
-        dict->buckets[i] = list_create(DATATYPE_POINTER, 0, kvpair_compare);
+        dict->buckets[i] = list_create(DATATYPE_POINTER, 0, gds_kvpair_compare);
         if ( !dict->buckets[i] ) {
             if ( dict->exit_on_error ) {
                 quit_strerror("gds library", "memory allocation failed");
             }
             else {
+                log_strerror("gds library", "memory allocation failed");
                 return false;
             }
         }
@@ -228,9 +194,9 @@ static void dict_buckets_destroy(Dict dict)
     for ( size_t i = 0; i < dict->num_buckets && dict->buckets[i]; ++i ) {
         ListItr itr = list_itr_first(dict->buckets[i]);
         while ( itr ) {
-            struct kvpair * pair;
+            struct gds_kvpair * pair;
             list_get_value_itr(itr, &pair);
-            kvpair_destroy(pair, dict->free_on_destroy);
+            gds_kvpair_destroy(pair, dict->free_on_destroy);
             itr = list_itr_next(itr);
         }
         list_destroy(dict->buckets[i]);
@@ -239,7 +205,7 @@ static void dict_buckets_destroy(Dict dict)
 
 static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
 {
-    struct kvpair needle = { .key = (char *) key };
+    struct gds_kvpair needle = { .key = (char *) key };
     const size_t hash = djb2hash(key) % dict->num_buckets;
     List list = dict->buckets[hash];
     ListItr itr;
@@ -256,41 +222,6 @@ static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
         }
         return false;
     }
-}
-
-static KVPair kvpair_create(const char * key, const enum gds_datatype type,
-                            va_list ap)
-{
-    struct kvpair * new_pair = malloc(sizeof *new_pair);
-    if ( !new_pair ) {
-        return NULL;
-    }
-
-    new_pair->key = gds_strdup(key);
-    if ( !new_pair->key ) {
-        free(new_pair);
-        return NULL;
-    }
-
-    gdt_set_value(&new_pair->value, type, NULL, ap);
-
-    return new_pair;
-}
-
-static int kvpair_compare(const void * p1, const void * p2)
-{
-    const struct kvpair * kv1 = *((const void **) p1);
-    const struct kvpair * kv2 = *((const void **) p2);
-    return strcmp(kv1->key, kv2->key);
-}
-
-static void kvpair_destroy(KVPair pair, const bool free_value)
-{
-    free(pair->key);
-    if ( free_value ) {
-        gdt_free(&pair->value);
-    }
-    free(pair);
 }
 
 static size_t djb2hash(const char * str)
