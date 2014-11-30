@@ -43,6 +43,7 @@ Queue queue_create(const size_t capacity, const enum gds_datatype type,
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return NULL;
         }
     }
@@ -63,6 +64,7 @@ Queue queue_create(const size_t capacity, const enum gds_datatype type,
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             free(new_queue);
             return NULL;
         }
@@ -112,6 +114,7 @@ bool queue_push(Queue queue, ...)
                     quit_strerror("gds library", "memory allocation failed");
                 }
                 else {
+                    log_strerror("gds library", "memory allocation failed");
                     return false;
                 }
             }
@@ -153,6 +156,7 @@ bool queue_push(Queue queue, ...)
             quit_error("gds library", "queue full");
         }
         else {
+            log_error("gds library", "queue full");
             return false;
         }
     }
@@ -178,6 +182,7 @@ bool queue_pop(Queue queue, void * p)
             quit_error("gds library", "queue empty");
         }
         else {
+            log_error("gds library", "queue empty");
             return false;
         }
     }
@@ -200,6 +205,7 @@ bool queue_peek(Queue queue, void * p)
             quit_error("gds library", "queue empty");
         }
         else {
+            log_error("gds library", "queue empty");
             return false;
         }
     }

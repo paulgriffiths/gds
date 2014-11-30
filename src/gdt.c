@@ -220,7 +220,7 @@ void gdt_set_value(struct gdt_generic_datatype * data,
             break;
 
         default:
-            quit_error("gds library", "unrecognized datatype");
+            abort_error("gds library", "unrecognized datatype");
             break;
     }
 }
@@ -285,7 +285,7 @@ void gdt_get_value(const struct gdt_generic_datatype * data, void * p)
             break;
 
         default:
-            quit_error("gds library", "unrecognized datatype");
+            abort_error("gds library", "unrecognized datatype");
             break;
     }
 }
@@ -319,7 +319,7 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
         /*  Disallow comparing different types, for simplicity,
          *  and because each data structure contains a single type.  */
 
-        quit_error("gds library", "types are not compatible");
+        abort_error("gds library", "types are not compatible");
     }
 
     gds_cfunc cfunc = d1->compfunc;
@@ -367,7 +367,7 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
         return cfunc(&d1->data.p, &d2->data.p);
     }
     else {
-        quit_error("gds library", "unrecognized type");
+        abort_error("gds library", "unrecognized type");
     }
 
     return 0;

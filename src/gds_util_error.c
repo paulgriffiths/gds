@@ -49,6 +49,7 @@ void gds_logerror_line(const char * progname,
             exit(EXIT_FAILURE);
             break;
 
+        case GDS_ERROR_ABORT:
         case GDS_ERROR_ASSERT:
             abort();
             break;

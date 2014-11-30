@@ -82,6 +82,7 @@ List list_create(const enum gds_datatype type, const int opts, ...)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return NULL;
         }
     }
@@ -310,6 +311,7 @@ bool list_sort(List list)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return false;
         }
     }
@@ -361,6 +363,7 @@ bool list_reverse_sort(List list)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return false;
         }
     }
@@ -437,6 +440,7 @@ static ListNode list_node_create(List list, va_list ap)
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return NULL;
         }
     }
@@ -464,6 +468,7 @@ static ListNode list_node_at_index(List list, const size_t index)
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             return NULL;
         }
     }
@@ -515,6 +520,7 @@ static bool list_insert_internal(List list, ListNode node, const size_t index)
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             free(node);
             return false;
         }

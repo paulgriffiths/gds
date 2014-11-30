@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <pggds/gds_util.h>
 #include <pggds/string_util.h>
 
 /*!
@@ -84,6 +85,7 @@ char * gds_strndup(const char * str, const size_t n)
 
     char * new_str = malloc(ncopy + 1);
     if ( !new_str ) {
+        log_error("gds library", "memory allocation failed");
         return NULL;
     }
 
@@ -97,6 +99,7 @@ struct pair_string * pair_string_create(const char * str, const char delim)
 {
     struct pair_string * new_pair = malloc(sizeof *new_pair);
     if ( !new_pair ) {
+        log_error("gds library", "memory allocation failed");
         return NULL;
     }
 
@@ -135,6 +138,7 @@ struct pair_string * pair_string_copy(const struct pair_string * pair)
 {
     struct pair_string * new_pair = malloc(sizeof *new_pair);
     if ( !new_pair ) {
+        log_error("gds library", "memory allocation failed");
         return NULL;
     }
 
@@ -165,11 +169,13 @@ struct list_string * list_string_create(const size_t n)
 {
     struct list_string * new_list = malloc(sizeof *new_list);
     if ( !new_list ) {
+        log_error("gds library", "memory allocation failed");
         return NULL;
     }
 
     new_list->list = malloc(n * sizeof *new_list->list);
     if ( !new_list->list ) {
+        log_error("gds library", "memory allocation failed");
         free(new_list);
         return NULL;
     }
@@ -194,6 +200,7 @@ static bool list_string_resize(struct list_string * list, const size_t capacity)
 {
     char ** temp_list = realloc(list->list, capacity * sizeof *temp_list);
     if ( !temp_list ) {
+        log_error("gds library", "memory reallocation failed");
         return false;
     }
     else {

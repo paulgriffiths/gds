@@ -51,6 +51,7 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
             quit_strerror("gds library", "memory allocation failed");
         }
         else {
+            log_strerror("gds library", "memory allocation failed");
             return NULL;
         }
     }
@@ -81,6 +82,7 @@ Vector vector_create(const size_t capacity, const enum gds_datatype type,
                 quit_strerror("gds library", "memory allocation failed");
             }
             else {
+                log_strerror("gds library", "memory allocation failed");
                 free(new_vector);
                 return NULL;
             }
@@ -142,6 +144,7 @@ bool vector_delete_index(Vector vector, const size_t index)
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             return false;
         }
     }
@@ -186,6 +189,7 @@ bool vector_element_at_index(Vector vector, const size_t index, void * p)
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             return false;
         }
     }
@@ -202,6 +206,7 @@ bool vector_set_element_at_index(Vector vector, const size_t index, ...)
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             return false;
         }
     }
@@ -272,6 +277,7 @@ static bool vector_insert_internal(Vector vector,
             quit_error("gds library", "index %zu out of range", index);
         }
         else {
+            log_error("gds library", "index %zu out of range", index);
             return false;
         }
     }
@@ -284,6 +290,7 @@ static bool vector_insert_internal(Vector vector,
         new_elements = realloc(vector->elements,
                                new_capacity * sizeof *new_elements);
         if ( !new_elements ) {
+            log_strerror("gds library", "memory allocation failed");
             return false;
         }
         vector->elements = new_elements;

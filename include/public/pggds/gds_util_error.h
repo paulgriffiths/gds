@@ -14,6 +14,7 @@
 enum gds_error_quit_type {
     GDS_ERROR_NOQUIT,
     GDS_ERROR_EXIT,
+    GDS_ERROR_ABORT,
     GDS_ERROR_ASSERT
 };
 
@@ -72,6 +73,17 @@ enum gds_error_quit_type {
  */
 #define quit_error(prog, ...) gds_logerror_line((prog), \
         __FILE__, __LINE__, false, GDS_ERROR_EXIT, __VA_ARGS__)
+
+/*!
+ * \brief           Prints an error message and aborts.
+ * \ingroup         general
+ * \param prog      The program name to include in the error message.
+ * \param ...       Other arguments, the first of which should be a format
+ * string suitable for passing to `vprintf()`, optionally followed by any
+ * additional arguments specified by the format string.
+ */
+#define abort_error(prog, ...) gds_logerror_line((prog), \
+        __FILE__, __LINE__, false, GDS_ERROR_ABORT, __VA_ARGS__)
 
 /*!
  * \brief           Tests an assertion and aborts on failure.
