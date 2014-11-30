@@ -12,6 +12,16 @@
 #include <stdio.h>
 
 /*!
+ * \brief           Debug printf macro.
+ * \param ...       Arguments suitable for passing to printf()
+ */
+#ifdef GDSDEBUG
+#define DPRINTF(...) fprintf(gds_errlog(), __VA_ARGS__)
+#else
+#define DPRINTF(...)
+#endif
+
+/*!
  * \brief           Returns a pointer to the current log file.
  * \ingroup         logging
  * \returns         A pointer to the current log file.
