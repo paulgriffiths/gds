@@ -9,6 +9,14 @@
 #ifndef PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_ERROR_H
 #define PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_ERROR_H
 
+#include <stdbool.h>
+
+enum gds_error_quit_type {
+    GDS_ERROR_NOQUIT,
+    GDS_ERROR_EXIT,
+    GDS_ERROR_ASSERT
+};
+
 /*!
  * \brief           Prints an error message with error number.
  * \ingroup         general
@@ -23,8 +31,19 @@
  * string suitable for passing to `vprintf()`, optionally followed by any
  * additional arguments specified by the format string.
  */
-#define show_strerror(prog, ...) gds_strerror_line((prog), \
-        __FILE__, __LINE__, __VA_ARGS__)
+#define log_strerror(prog, ...) gds_logerror_line((prog), \
+        __FILE__, __LINE__, true, GDS_ERROR_NOQUIT, __VA_ARGS__)
+
+/*!
+ * \brief           Prints an error message.
+ * \ingroup         general
+ * \param prog      The program name to include in the error message.
+ * \param ...       Other arguments, the first of which should be a format
+ * string suitable for passing to `vprintf()`, optionally followed by any
+ * additional arguments specified by the format string.
+ */
+#define log_error(prog, ...) gds_logerror_line((prog), \
+        __FILE__, __LINE__, false, GDS_ERROR_NOQUIT, __VA_ARGS__)
 
 /*!
  * \brief           Prints an error message with error number and exits.
@@ -40,8 +59,8 @@
  * string suitable for passing to `vprintf()`, optionally followed by any
  * additional arguments specified by the format string.
  */
-#define quit_strerror(prog, ...) gds_strerror_line_quit((prog), \
-        __FILE__, __LINE__, __VA_ARGS__)
+#define quit_strerror(prog, ...) gds_logerror_line((prog), \
+        __FILE__, __LINE__, true, GDS_ERROR_EXIT, __VA_ARGS__)
 
 /*!
  * \brief           Prints an error message and exits.
@@ -51,8 +70,8 @@
  * string suitable for passing to `vprintf()`, optionally followed by any
  * additional arguments specified by the format string.
  */
-#define quit_error(prog, ...) gds_error_line_quit((prog), \
-        __FILE__, __LINE__, __VA_ARGS__)
+#define quit_error(prog, ...) gds_logerror_line((prog), \
+        __FILE__, __LINE__, false, GDS_ERROR_EXIT, __VA_ARGS__)
 
 /*!
  * \brief           Tests an assertion and aborts on failure.
@@ -65,85 +84,32 @@
  */
 #ifndef NDEBUG
 #define gds_assert(cond, prog, ...) if ( !(cond) ) \
-    gds_assert_line_quit((prog), __FILE__, __LINE__, __VA_ARGS__)
+    gds_logerror_line((prog), __FILE__, __LINE__, \
+           false, GDS_ERROR_ASSERT, __VA_ARGS__)
 #else
-#define gds_assert(cond, prog, ...) ((void) 0)
+#define gds_assert(cond, prog, ...)
 #endif
 
 /*!
- * \brief           Prints an error message with error number.
+ * \brief           Logs an error message.
+ * \details         This function is intended to be called via the
+ * accompanying macros.
  * \ingroup         general
- * \details         This function can be called to print an error message
- * and quit following a function which has indicated failure and has set
- * `errno`. A message containing the error number and a text representation
- * of that error will be printed, following by the message supplied to
- * the function. This function is intended to be called from the corresponding
- * macro.
  * \param progname  The program name to include in the message.
  * \param filename  The name of the source file.
  * \param linenum   The line number of the source file.
+ * \param log_errno Set to `true` to include the current value of `errno`
+ * and the string representation of that error in the message.
+ * \param quit_type Info on how to quit the function.
  * \param fmt       The format string for the message to print. Format
  * specifiers are the same as the `printf()` family of functions.
  * \param ...       Any arguments to the format string.
  */
-void gds_strerror_line(const char * progname,
+void gds_logerror_line(const char * progname,
                        const char * filename,
                        const int linenum,
+                       const bool log_errno,
+                       const enum gds_error_quit_type quit_type,
                        const char * fmt, ...);
-
-/*!
- * \brief           Prints an error message with error number and exits.
- * \ingroup         general
- * \details         This function can be called to print an error message
- * and quit following a function which has indicated failure and has set
- * `errno`. A message containing the error number and a text representation
- * of that error will be printed, following by the message supplied to
- * the function. This function is intended to be called from the corresponding
- * macro.
- * \param progname  The program name to include in the message.
- * \param filename  The name of the source file.
- * \param linenum   The line number of the source file.
- * \param fmt       The format string for the message to print. Format
- * specifiers are the same as the `printf()` family of functions.
- * \param ...       Any arguments to the format string.
- */
-void gds_strerror_line_quit(const char * progname,
-                            const char * filename,
-                            const int linenum,
-                            const char * fmt, ...);
-
-/*!
- * \brief           Prints an error message and exits.
- * \ingroup         general
- * \details         This function is intended to be called from the
- * corresponding macro.
- * \param progname  The program name to include in the message.
- * \param filename  The name of the source file.
- * \param linenum   The line number of the source file.
- * \param fmt       The format string for the message to print. Format
- * specifiers are the same as the `printf()` family of functions.
- * \param ...       Any arguments to the format string.
- */
-void gds_error_line_quit(const char * progname,
-                         const char * filename,
-                         const int linenum,
-                         const char * fmt, ...);
-
-/*!
- * \brief           Prints an error message and aborts.
- * \ingroup         general
- * \details         This function is intended to be called from the
- * corresponding macro.
- * \param progname  The program name to include in the message.
- * \param filename  The name of the source file.
- * \param linenum   The line number of the source file.
- * \param fmt       The format string for the message to print. Format
- * specifiers are the same as the `printf()` family of functions.
- * \param ...       Any arguments to the format string.
- */
-void gds_assert_line_quit(const char * progname,
-                          const char * filename,
-                          const int linenum,
-                          const char * fmt, ...);
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_ERROR_H  */

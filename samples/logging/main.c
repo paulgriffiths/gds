@@ -44,7 +44,7 @@ int main(int argc, char ** argv)
     gds_log_msg("This should not be logged");
     gds_log_msg("This should not be logged with %d number", 1);
     errno = 4;
-    show_strerror("logging", "This should always be %s", "logged");
+    log_strerror("logging", "This should always be %s", "logged");
 
     if ( !gds_logging_on(logfilename, true) ) {
         quit_error("logging", "couldn't start logging");
@@ -65,14 +65,14 @@ int main(int argc, char ** argv)
     gds_log_msg("This should be logged");
     gds_log_msg("This should be logged with %.2f number", 3.14);
     errno = 5;
-    show_strerror("logging", "This should always be %s", "logged");
+    log_strerror("logging", "This should always be %s", "logged");
 
     gds_logging_off();
 
     gds_log_msg("This should not be logged");
     gds_log_msg("This should not be logged with %d number", 1);
     errno = 6;
-    show_strerror("logging", "This should always be %s", "logged");
+    log_strerror("logging", "This should always be %s", "logged");
 
     return 0;
 }

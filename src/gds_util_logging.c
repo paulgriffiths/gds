@@ -65,11 +65,11 @@ bool gds_logging_off(void)
             gds_error_file = NULL;
 
             if ( gds_error_file_name ) {
-                show_strerror("gds library", "couldn't close log file %s",
-                              gds_error_file_name);
+                log_strerror("gds library", "couldn't close log file %s",
+                             gds_error_file_name);
             }
             else {
-                show_strerror("gds library", "couldn't close log file");
+                log_strerror("gds library", "couldn't close log file");
             }
         }
         else {
