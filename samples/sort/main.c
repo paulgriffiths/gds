@@ -7,13 +7,11 @@
  * Sorts lines from a file, or from standard input.
  */
 
-#define _POSIX_C_SOURCE 200809L
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <errno.h>
+#include <pggds/gds_util.h>
 #include <pggds/list.h>
 
 #define BUFFER_SIZE 1024
@@ -57,12 +55,7 @@ int main(int argc, char ** argv)
                 reverse = true;
             }
             else {
-                if ( !(fp = fopen(argv[index], "r")) ) {
-                    fprintf(stderr, "Couldn't open file %s for reading - "
-                            "%s (%d)\n", argv[index], strerror(errno),
-                            errno);
-                    return EXIT_FAILURE;
-                }
+                fp = xfopen(argv[index], "r");
                 fromfile = true;
             }
         }
@@ -89,13 +82,7 @@ int main(int argc, char ** argv)
             buffer[len - 1] = 0;
         }
 
-        char * pc = strdup(buffer);
-        if ( !pc ) {
-            fprintf(stderr, "Couldn't allocate memory - %s (%d)\n",
-                    strerror(errno), errno);
-            return EXIT_FAILURE;
-        }
-
+        char * pc = xstrdup(buffer);
         list_append(list, pc);
     }
 

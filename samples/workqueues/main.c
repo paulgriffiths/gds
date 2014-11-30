@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <pggds/queue.h>
+#include <pggds/gds_util.h>
 
 /*  Total number of worker threads  */
 static const size_t num_threads = 4;
@@ -38,11 +39,7 @@ struct thread_info {
 
 struct job_queue * job_queue_create(const enum gds_datatype type)
 {
-    struct job_queue * new_queue = malloc(sizeof *new_queue);
-    if ( !new_queue ) {
-        perror("couldn't create queue");
-        exit(EXIT_FAILURE);
-    }
+    struct job_queue * new_queue = xmalloc(sizeof *new_queue);
 
     /*  Queue could conceivably need more than num_jobs elements,
      *  since each thread will send an additional report when it's
@@ -92,11 +89,7 @@ struct job_report * job_report_create(const int sleep_time,
                                       const int worker_id,
                                       const bool done)
 {
-    struct job_report * new_report = malloc(sizeof *new_report);
-    if ( !new_report ) {
-        perror("couldn't allocate memory for job report");
-        exit(EXIT_FAILURE);
-    }
+    struct job_report * new_report = xmalloc(sizeof *new_report);
 
     new_report->sleep_time = sleep_time;
     new_report->worker_id = worker_id;
@@ -111,11 +104,7 @@ struct thread_info * thread_info_create(const int worker_id,
                                         struct job_queue * in_queue,
                                         struct job_queue * out_queue)
 {
-    struct thread_info * tinfo = malloc(sizeof *tinfo);
-    if ( !tinfo ) {
-        perror("couldn't allocate thread info struct");
-        exit(EXIT_FAILURE);
-    }
+    struct thread_info * tinfo = xmalloc(sizeof *tinfo);
 
     tinfo->worker_id = worker_id;
     tinfo->in_queue = in_queue;

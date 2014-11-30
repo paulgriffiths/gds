@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pggds/string_util.h>
 #include <pggds/dict.h>
+#include <pggds/gds_util.h>
 
 #define BUFFER_LEN 1024
 
@@ -23,11 +24,7 @@ int main(int argc, char ** argv)
         return EXIT_SUCCESS;
     }
 
-    FILE * fp = fopen(argv[1], "r");
-    if ( !fp ) {
-        perror("couldn't open file for reading");
-        return EXIT_FAILURE;
-    }
+    FILE * fp = xfopen(argv[1], "r");
 
     Dict keys = dict_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
     char buffer[BUFFER_LEN];

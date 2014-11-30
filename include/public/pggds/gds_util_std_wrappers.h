@@ -9,6 +9,8 @@
 #ifndef PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_STD_WRAPPERS_H
 #define PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_STD_WRAPPERS_H
 
+#include <stdio.h>
+
 /*!
  * \brief           Macro to call malloc() and abort on failure.
  * \ingroup general
@@ -38,6 +40,14 @@
  * \param str       The string to duplicate.
  */
 #define xstrdup(str) gds_xstrdup((str), __FILE__, __LINE__)
+
+/*!
+ * \brief           Macro to call strdup() and abort on failure.
+ * \ingroup general
+ * \param path      The path of the file to open.
+ * \param mode      The mode under which to open the file.
+ */
+#define xfopen(path, mode) gds_xfopen((path), (mode), __FILE__, __LINE__)
 
 /*!
  * \brief           Wraps malloc() and aborts on failure.
@@ -88,5 +98,18 @@ void * gds_xrealloc(void * ptr, const size_t size,
  */
 char * gds_xstrdup(const char * str,
                    const char * filename, const int linenum);
+
+/*!
+ * \brief           Wraps fopen() and exits on failure.
+ * \details         This is designed to be called from the corresponding
+ * macro.
+ * \param path      The path of the file to open.
+ * \param mode      The mode under which to open the file.
+ * \param filename  The name of the calling file.
+ * \param linenum   The line number in the calling file.
+ * \returns         A pointer to the allocated memory.
+ */
+FILE * gds_xfopen(const char * path, const char * mode,
+                  const char * filename, const int linenum);
 
 #endif      /*  PG_GENERIC_DATA_STRUCTURES_GDS_UTIL_STD_WRAPPERS_H  */

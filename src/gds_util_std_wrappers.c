@@ -60,3 +60,16 @@ char * gds_xstrdup(const char * str,
     }
     return new_str;
 }
+
+FILE * gds_xfopen(const char * path, const char * mode,
+                  const char * filename, const int linenum)
+{
+    FILE * fp = fopen(path, mode);
+    if ( !fp ) {
+        fprintf(gds_errlog(), "Couldn't open file %s with mode \"%s\" at "
+                "%s:%d: %s (%d)\n", path, mode, filename, linenum,
+                strerror(errno), errno);
+        exit(EXIT_FAILURE);
+    }
+    return fp;
+}
