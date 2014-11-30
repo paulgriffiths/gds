@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <assert.h>
 #include <pggds/gds_util.h>
 
 void gds_logerror_line(const char * progname,
@@ -40,6 +39,8 @@ void gds_logerror_line(const char * progname,
         fputc('\n', log);
     }    
 
+    fflush(log);        /*  Just to be sure  */
+
     switch ( quit_type ) {
         case GDS_ERROR_NOQUIT:
             break;
@@ -53,7 +54,7 @@ void gds_logerror_line(const char * progname,
             break;
 
         default:
-            assert(false);
+            abort();
             break;
     }
 }
