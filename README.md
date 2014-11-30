@@ -4,7 +4,33 @@ gds
 What is it?
 -----------
 
-**gds** is a C lanaguage generic data structure library.
+**gds** is a C language type-generic data structure library, including:
+
+* stack
+
+* queue
+
+* vector
+
+* list
+
+* dictionary
+
+* string
+
+**gds** also includes other general purpose functionality, including:
+
+* unit testing facilities
+
+* logging facilities
+
+* error reporting functions and macros
+
+* string manipulation functions
+
+* standard function wrappers
+
+* debug print macros
 
 Who maintains it?
 -----------------
