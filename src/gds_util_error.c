@@ -15,6 +15,26 @@
 #include <assert.h>
 #include <pggds/gds_util.h>
 
+void gds_strerror_line(const char * progname,
+                       const char * filename,
+                       const int linenum,
+                       const char * fmt, ...)
+{
+    fprintf(gds_errlog(), "%s: error: ", progname);
+
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(gds_errlog(), fmt, ap);
+    va_end(ap);
+
+    if ( fmt[strlen(fmt) - 1] != '\n' ) {
+        fputc('\n', gds_errlog());
+    }    
+
+    fprintf(gds_errlog(), "  %s:%d: %s (%d)\n", filename, linenum,
+            strerror(errno), errno);
+}
+
 void gds_strerror_line_quit(const char * progname,
                             const char * filename,
                             const int linenum,
