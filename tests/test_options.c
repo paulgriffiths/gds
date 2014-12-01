@@ -158,6 +158,16 @@ TEST_CASE(test_options_nonopts)
     gds_free_options();
 }
 
+TEST_CASE(test_options_superfluous_argument)
+{
+    char * argv[] = {"dummy", "-a99", "-b42", "-c", NULL};
+
+    /*  Test with empty string  */
+
+    TEST_ASSERT_FALSE(gds_parse_options("ab:c:h", argv));
+}
+
+
 void test_options(void)
 {
     RUN_CASE(test_options_allowed);
@@ -167,4 +177,5 @@ void test_options(void)
     RUN_CASE(test_options_progname);
     RUN_CASE(test_options_nonopts_number);
     RUN_CASE(test_options_nonopts);
+    RUN_CASE(test_options_superfluous_argument);
 }
