@@ -162,11 +162,8 @@ TEST_CASE(test_options_superfluous_argument)
 {
     char * argv[] = {"dummy", "-a99", "-b42", "-c", NULL};
 
-    /*  Test with empty string  */
-
     TEST_ASSERT_FALSE(gds_parse_options("ab:c:h", argv));
 }
-
 
 void test_options(void)
 {
