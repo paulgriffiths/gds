@@ -1,0 +1,6 @@
+/**
+ *  \defgroup cmdline Public interface to command line parsing functionality
+ *  \details This module contains functionality for parsing a command line
+ *  and retrieving options, arguments to those options, and non-option
+ *  command line arguments.
+ */

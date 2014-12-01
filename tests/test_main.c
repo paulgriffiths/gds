@@ -10,12 +10,13 @@
 #include "test_string.h"
 #include "test_string_util.h"
 #include "test_std_wrappers.h"
+#include "test_options.h"
 
 int main(int argc, char ** argv)
 {
     bool stack = false, queue = false, list = false, vector = false;
     bool dict = false, string_util = false, gds_string = false;
-    bool stdwrap = false;
+    bool stdwrap = false, options = false;
 
     if ( argc < 2 ) {
         stack = true;
@@ -26,6 +27,7 @@ int main(int argc, char ** argv)
         string_util = true;
         gds_string = true;
         stdwrap = true;
+        options = true;
     }
     else {
         size_t i = 0;
@@ -54,6 +56,9 @@ int main(int argc, char ** argv)
             }
             else if ( !strcmp(argv[i], "stdwrap") ) {
                 stdwrap = true;
+            }
+            else if ( !strcmp(argv[i], "options") ) {
+                options = true;
             }
         }
     }
@@ -98,6 +103,11 @@ int main(int argc, char ** argv)
     if ( stdwrap ) {
         printf("Running unit tests for standard wrappers...\n");
         test_std_wrappers();
+    }
+
+    if ( options ) {
+        printf("Running unit tests for command line options...\n");
+        test_options();
     }
 
     tests_report();

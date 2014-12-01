@@ -9,101 +9,134 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include <pggds/gds_util.h>
 #include <pggds/list.h>
 #include <pggds/gds_string.h>
+#include <pggds/gds_opt.h>
 
-#define BUFFER_SIZE 1024
+/*  Holds main program parameters  */
 
-void print_help_message(void)
+struct params {
+    bool reverse;
+    bool fromfile;
+    FILE * fp;
+};
+
+/*  Prints a help/usage message  */
+
+static void print_help_message(void)
 {
     printf("Usage: sort [FILE]\n\n");
     printf("Options:\n");
-    printf("  -r, --reverse    sort in reverse\n");
-    printf("  -h, --help       show this help message.\n\n");
+    printf("  -r    sort in reverse\n");
+    printf("  -h    show this help message.\n\n");
     printf("With no FILE, read standard input.\n");
 }
 
-int main(int argc, char ** argv)
+/*  Parses the command line - returns false if program should exit  */
+
+static bool parse_command_line(struct params * params, char ** argv)
 {
-    bool reverse = false;
-    bool fromfile = false;
-    FILE * fp = NULL;
+    bool cont = true;
 
-    /*  Read command line options, if any  */
+    if ( !gds_parse_options("hr", argv) ) {
+        quit_error("sort", "couldn't parse command line");
+    }
 
-    if ( argc > 1 ) {
-        size_t index = 0;
-        while ( argv[++index] ) {
-            if ( !strcmp(argv[index], "-h") ||
-                 !strcmp(argv[index], "--help") ) {
-                print_help_message();
+    if ( gds_option_present("h") ) {
+        print_help_message();
+        cont = false;
+    }
+    else {
+        if ( gds_option_present("r") ) {
+            params->reverse = true;
+        }
+        else {
+            params->reverse = false;
+        }
 
-                if ( fp ) {
-
-                    /*  In case a filename was specified
-                     *  before -h on the command line.    */
-
-                    fclose(fp);
-                }
-
-                return EXIT_SUCCESS;
-            }
-            else if ( !strcmp(argv[index], "-r") ||
-                      !strcmp(argv[index], "--reverse") ) {
-                reverse = true;
-            }
-            else {
-                fp = xfopen(argv[index], "r");
-                fromfile = true;
-            }
+        if ( gds_option_nonopts_number() > 0 ) {
+            params->fp = xfopen(gds_option_nonopt(0), "r");
+            params->fromfile = true;
+        }
+        else {
+            params->fp = stdin;
+            params->fromfile = false;
         }
     }
 
-    /*  Set input to standard input if no file was specified  */
+    gds_free_options();
+    return cont;
+}
 
-    if ( !fp ) {
-        fp = stdin;
-    }
+/*  Reads lines from a file and creates a list from them  */
 
-    /*  Read all available lines and store them in the list  */
-
+static List read_lines_from_file(FILE * fp)
+{
     List list = list_create(DATATYPE_GDSSTRING,
                             GDS_FREE_ON_DESTROY | GDS_EXIT_ON_ERROR, 0);
+    if ( !list ) {
+        quit_error("sort", "couldn't create list");
+    }
 
     GDSString line;
-    while ( (line = gds_str_getline(BUFFER_SIZE, fp)) ) {
+    while ( (line = gds_str_getline(128, fp)) ) {
         list_append(list, line);
     }
 
-    /*  Sort list  */
+    return list;
+}
 
-    if ( reverse ) {
-        list_reverse_sort(list);
-    }
-    else {
-        list_sort(list);
-    }
+/*  Prints a list of strings with numbered lines  */
 
-    /*  Output sorted lines  */
-
+static void print_list(List list)
+{
     ListItr itr = list_itr_first(list);
     size_t i = 1;
+
     while ( itr ) {
         GDSString str;
         list_get_value_itr(itr, &str);
         printf("%3zu: %s\n", i++, gds_str_cstr(str));
         itr = list_itr_next(itr);
     }
+}
 
-    /*  Clean up and exit  */
+/*  Sorts a list, optionally in reverse  */
 
+static void sort_list(List list, const bool reverse)
+{
+    if ( reverse ) {
+        if ( !list_reverse_sort(list) ) {
+            quit_error("sort", "couldn't sort list");
+        }
+    }
+    else {
+        if ( !list_sort(list) ) {
+            quit_error("sort", "couldn't sort list");
+        }
+    }
+}
+
+/*  Main function  */
+
+int main(int argc, char ** argv)
+{
+    (void) argc;            /*  Ignore unused argument  */
+
+    struct params params;
+    if ( !parse_command_line(&params, argv) ) {
+        return EXIT_SUCCESS;
+    }
+
+    List list = read_lines_from_file(params.fp);
+    sort_list(list, params.reverse);
+    print_list(list);
     list_destroy(list);
 
-    if ( fromfile ) {
-        fclose(fp);
+    if ( params.fromfile ) {
+        fclose(params.fp);
     }
 
     return 0;
