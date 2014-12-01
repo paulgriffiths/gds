@@ -26,6 +26,8 @@ What is it?
 
 * error reporting functions and macros
 
+* command line option parsing
+
 * string manipulation functions
 
 * standard function wrappers
