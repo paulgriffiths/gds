@@ -149,7 +149,9 @@ bool vector_set_element_at_index(Vector vector, const size_t index, ...);
  * \param vector    A pointer to the vector.
  * \param index     A pointer to a `size_t` object which, if the value
  * is contained within the vector, will be modified to contain the index
- * of the first occurrence of that value in the vector.
+ * of the first occurrence of that value in the vector. If set to `NULL`,
+ * the function does not store the value, and merely reports whether or
+ * not it was found.
  * \param ...       The value for which to search. This should be of a
  * type appropriate to the type set when creating the vector.
  * \retval true     The value was found in the vector

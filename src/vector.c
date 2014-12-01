@@ -229,7 +229,9 @@ bool vector_find(Vector vector, size_t * index, ...)
 
     for ( size_t i = 0; i < vector->length; ++i ) {
         if ( !gdt_compare(&needle, &vector->elements[i]) ) {
-            *index = i;
+            if ( index ) {
+                *index = i;
+            }
             return true;
         }
     }
