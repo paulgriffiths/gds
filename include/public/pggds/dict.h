@@ -4,6 +4,7 @@
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ * \todo            Implement key deletion.
  */
 
 #ifndef PG_GENERIC_DATA_STRUCTURES_GENERIC_DICTIONARY_H
