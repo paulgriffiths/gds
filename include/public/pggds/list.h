@@ -236,6 +236,37 @@ ListItr list_itr_previous(ListItr itr);
 void list_get_value_itr(ListItr itr, void * p);
 
 /*!
+ * \brief           Deletes an element pointed to by an iterator.
+ * \ingroup         list
+ * \param itr       The iterator.
+ * \returns         An iterator pointing to the next element, `NULL` if
+ * the last element was deleted.
+ */
+ListItr list_delete_itr(ListItr itr);
+
+/*!
+ * \brief           Inserts an element before an iterator.
+ * \ingroup list
+ * \param itr       The iterator.
+ * \param ...       The value of the element to insert. This should be
+ * of a type appropriate to the type set when creating the list.
+ * \retval true     Success
+ * \retval false    Failure, memory allocation failed.
+ */
+bool list_insert_before_itr(ListItr itr, ...);
+
+/*!
+ * \brief           Inserts an element after an iterator.
+ * \ingroup list
+ * \param itr       The iterator.
+ * \param ...       The value of the element to insert. This should be
+ * of a type appropriate to the type set when creating the list.
+ * \retval true     Success
+ * \retval false    Failure, memory allocation failed.
+ */
+bool list_insert_after_itr(ListItr itr, ...);
+
+/*!
  * \brief           Tests if a list is empty.
  * \ingroup         list
  * \param list      A pointer to the list.

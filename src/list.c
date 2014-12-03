@@ -20,6 +20,7 @@ typedef struct list_node {
     struct gdt_generic_datatype element;    /*!<  Data element              */
     struct list_node * prev;                /*!<  Pointer to previous node  */
     struct list_node * next;                /*!<  Pointer to next node      */
+    struct list * list;                     /*!<  Pointer to owning list    */
 } * ListNode;
 
 /*!  List structure  */
@@ -65,14 +66,36 @@ static void list_node_destroy(List list, ListNode node);
 static ListNode list_node_at_index(List list, const size_t index);
 
 /*!
- * \brief           Private function to insert a node into a list.
+ * \brief           Private function to insert a node before another.
  * \param list      A pointer to the list.
- * \param node      A pointer to the node to insert.
- * \param index     The index at which to insert.
- * \retval true     Success
- * \retval false    Failure, index out of range
+ * \param itr       The node before which to insert.
+ * \param new_node  The node to insert.
  */
-static bool list_insert_internal(List list, ListNode node, const size_t index);
+static void list_insert_before_itr_internal(List list,
+                                            ListItr itr,
+                                            ListItr new_node);
+
+/*!
+ * \brief           Private function to insert a node after another.
+ * \param list      A pointer to the list.
+ * \param itr       The node after which to insert.
+ * \param new_node  The node to insert.
+ */
+static void list_insert_after_itr_internal(List list,
+                                           ListItr itr,
+                                           ListItr new_node);
+
+/*!
+ * \brief           Private function to insert a list with compare function.
+ * \details         The sort and reverse sort function differ only in the
+ * compare function used. This private function packages up all the other
+ * logic into a single function for reuse.
+ * \param list      A pointer to the list.
+ * \param compfunc  A pointer to the compare function to use.
+ * \retval true     Success
+ * \retval false    Failure, memory allocation failed.
+ */
+static bool list_sort_internal(List list, gds_cfunc compfunc);
 
 List list_create(const enum gds_datatype type, const int opts, ...)
 {
@@ -112,10 +135,7 @@ List list_create(const enum gds_datatype type, const int opts, ...)
 
 void list_destroy(List list)
 {
-    while ( !list_is_empty(list) ) {
-        list_delete_front(list);
-    }
-
+    while ( list_delete_itr(list->head) ) {  /*  Empty  */  }
     free(list);
 }
 
@@ -126,7 +146,12 @@ bool list_append(List list, ...)
     struct list_node * new_node = list_node_create(list, ap);
     va_end(ap);
 
-    return list_insert_internal(list, new_node, list->length);
+    if ( new_node ) {
+        list_insert_after_itr_internal(list, list->tail, new_node);
+        return true;
+    }
+
+    return false;
 }
 
 bool list_prepend(List list, ...)
@@ -136,7 +161,12 @@ bool list_prepend(List list, ...)
     struct list_node * new_node = list_node_create(list, ap);
     va_end(ap);
 
-    return list_insert_internal(list, new_node, 0);
+    if ( new_node ) {
+        list_insert_before_itr_internal(list, list->head, new_node);
+        return true;
+    }
+
+    return false;
 }
 
 bool list_insert(List list, const size_t index, ...)
@@ -146,7 +176,22 @@ bool list_insert(List list, const size_t index, ...)
     struct list_node * new_node = list_node_create(list, ap);
     va_end(ap);
 
-    return list_insert_internal(list, new_node, index);
+    if ( new_node ) {
+        if ( index == 0 ) {
+            list_insert_before_itr_internal(list, list->head, new_node);
+        }
+        else if ( index == list->length ) {
+            list_insert_after_itr_internal(list, list->tail, new_node);
+        }
+        else {
+            struct list_node * dead = list_node_at_index(list, index);
+            list_insert_before_itr_internal(list, dead, new_node);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 bool list_delete_index(List list, const size_t index)
@@ -159,63 +204,30 @@ bool list_delete_index(List list, const size_t index)
         return false;
     }
 
-    if ( list->length == 1 ) {
-
-        /*  List will be empty after this deletion  */
-
-        list->head = NULL;
-        list->tail = NULL;
-    }
-    else if ( index == 0 ) {
-
-        /*  Delete head, we know there's a next node
-         *  since the list will not be empty after this.  */
-
-        struct list_node * new_head = list->head->next;
-        new_head->prev = NULL;
-        list->head = new_head;
-    }
-    else if ( index == list->length - 1 ) {
-
-        /*  Delete tail, we know there's a previous node
-         *  since the list will not be empty after this.   */
-
-        struct list_node * new_tail = list->tail->prev;
-        new_tail->next = NULL;
-        list->tail = new_tail;
-    }
-    else {
-
-        /*  Delete inner node, we know there's a next and
-         *  previous node since this is neither the head
-         *  nor the tail.                                  */
-
-        struct list_node * before = dead->prev;
-        struct list_node * after = dead->next;
-        before->next = after;
-        after->prev = before;
-    }
-
-    list->length -= 1;
-    list_node_destroy(list, dead);
-
+    list_delete_itr(dead);
     return true;
 }
 
 bool list_delete_front(List list)
 {
-    return list_delete_index(list, 0);
+    if ( list->head ) {
+        list_delete_itr(list->head);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 bool list_delete_back(List list)
 {
-    /*  This can "underflow" if list is empty, but
-     *  that's defined behavior for unsigned types.
-     *  If list is empty, the index will underflow to
-     *  a very large amount, and still be obviously
-     *  out of range.                                  */
-
-    return list_delete_index(list, list->length - 1);
+    if ( list->tail ) {
+        list_delete_itr(list->tail);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 bool list_element_at_index(List list, const size_t index, void * p)
@@ -295,106 +307,12 @@ ListItr list_find_itr(List list, ...)
 
 bool list_sort(List list)
 {
-    if ( list->length < 2 ) {
-
-        /*  No point sorting an empty or one-element list.  */
-
-        return true;
-    }
-
-    /*  Create temporary array  */
-
-    struct gdt_generic_datatype * tempelem;
-    tempelem = malloc(list->length * sizeof *tempelem);
-    if ( !tempelem ) {
-        if ( list->exit_on_error ) {
-            quit_strerror("gds library", "memory allocation failed");
-        }
-        else {
-            log_strerror("gds library", "memory allocation failed");
-            return false;
-        }
-    }
-
-    /*  Copy list elements to array  */
-
-    struct list_node * node = list->head;
-    size_t index = 0;
-    while ( node ) {
-        memcpy(tempelem + index, &node->element, sizeof *tempelem);
-        node = node->next;
-        ++index;
-    }
-
-    /*  Sort array  */
-
-    qsort(tempelem, list->length, sizeof *tempelem, gdt_compare_void);
-
-    /*  Copy array elements back to list  */
-
-    index = 0;
-    node = list->head;
-    while ( node ) {
-        memcpy(&node->element, tempelem + index, sizeof *tempelem);
-        node = node->next;
-        ++index;
-    }
-
-    free(tempelem);
-
-    return true;
+    return list_sort_internal(list, gdt_compare_void);
 }
 
 bool list_reverse_sort(List list)
 {
-    if ( list->length < 2 ) {
-
-        /*  No point sorting an empty or one-element list.  */
-
-        return true;
-    }
-
-    /*  Create temporary array  */
-
-    struct gdt_generic_datatype * tempelem;
-    tempelem = malloc(list->length * sizeof *tempelem);
-    if ( !tempelem ) {
-        if ( list->exit_on_error ) {
-            quit_strerror("gds library", "memory allocation failed");
-        }
-        else {
-            log_strerror("gds library", "memory allocation failed");
-            return false;
-        }
-    }
-
-    /*  Copy list elements to array  */
-
-    struct list_node * node = list->head;
-    size_t index = 0;
-    while ( node ) {
-        memcpy(tempelem + index, &node->element, sizeof *tempelem);
-        node = node->next;
-        ++index;
-    }
-
-    /*  Sort array  */
-
-    qsort(tempelem, list->length, sizeof *tempelem, gdt_reverse_compare_void);
-
-    /*  Copy array elements back to list  */
-
-    index = 0;
-    node = list->head;
-    while ( node ) {
-        memcpy(&node->element, tempelem + index, sizeof *tempelem);
-        node = node->next;
-        ++index;
-    }
-
-    free(tempelem);
-
-    return true;
+    return list_sort_internal(list, gdt_reverse_compare_void);
 }
 
 ListItr list_itr_first(List list)
@@ -422,6 +340,73 @@ void list_get_value_itr(ListItr itr, void * p)
     gdt_get_value(&itr->element, p);
 }
 
+bool list_insert_before_itr(ListItr itr, ...)
+{
+    if ( itr ) {
+        va_list ap;
+        va_start(ap, itr);
+        struct list_node * new_node = list_node_create(itr->list, ap);
+        va_end(ap);
+
+        if ( new_node ) {
+            list_insert_before_itr_internal(itr->list, itr, new_node);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool list_insert_after_itr(ListItr itr, ...)
+{
+    if ( itr ) {
+        va_list ap;
+        va_start(ap, itr);
+        struct list_node * new_node = list_node_create(itr->list, ap);
+        va_end(ap);
+
+        if ( new_node ) {
+            list_insert_after_itr_internal(itr->list, itr, new_node);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+ListItr list_delete_itr(ListItr itr)
+{
+    if ( itr ) {
+        ListItr next = itr->next;
+        ListItr prev = itr->prev;
+        List list = itr->list;
+
+        if ( itr == list->head && itr == list->tail ) {
+            list->head = NULL;
+            list->tail = NULL;
+        }
+        else if ( itr == list->head ) {
+            list->head = next;
+            next->prev = NULL;
+        }
+        else if ( itr == list->tail ) {
+            list->tail = prev;
+            prev->next = NULL;
+        }
+        else {
+            prev->next = next;
+            next->prev = prev;
+        }
+
+        list->length -= 1;
+        list_node_destroy(list, itr);
+        return next;
+    }
+    else {
+        return NULL;
+    }
+}
+
 bool list_is_empty(List list)
 {
     return list->length == 0;
@@ -447,6 +432,7 @@ static ListNode list_node_create(List list, va_list ap)
 
     new_node->prev = NULL;
     new_node->next = NULL;
+    new_node->list = list;
     gdt_set_value(&new_node->element, list->type, list->compfunc, ap);
 
     return new_node;
@@ -505,69 +491,106 @@ static ListNode list_node_at_index(List list, const size_t index)
     return node;
 }
 
-static bool list_insert_internal(List list, ListNode node, const size_t index)
+static void list_insert_before_itr_internal(List list,
+                                            ListItr itr,
+                                            ListItr new_node)
 {
-    if ( !node ) {
+    gds_assert(new_node, "gds library", "new_node parameter was NULL");
 
-        /*  The return from list_node_create() can be passed
-         *  to this function without checking for NULL, so
-         *  we must check it here.                            */
-
-        return false;
+    if ( !itr ) {
+        gds_assert(list->length == 0, "gds library",
+                                      "list length was not zero");
+        list->head = list->tail = new_node;
     }
-    else if ( index > list->length ) {
+    else if ( itr == list->head ) {
+        new_node->next = list->head;
+        list->head->prev = new_node;
+        list->head = new_node;
+    }
+    else {
+        new_node->prev = itr->prev;
+        new_node->next = itr;
+        itr->prev->next = new_node;
+        itr->prev = new_node;
+    }
+
+    list->length += 1;
+}
+
+static void list_insert_after_itr_internal(List list,
+                                           ListItr itr,
+                                           ListItr new_node)
+{
+    gds_assert(new_node, "gds library", "new_node parameter was NULL");
+
+    if ( !itr ) {
+        gds_assert(list->length == 0, "gds library",
+                                      "list length was not zero");
+        list->head = list->tail = new_node;
+    }
+    else if ( itr == list->tail ) {
+        new_node->prev = list->tail;
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
+    else {
+        new_node->prev = itr;
+        new_node->next = itr->next;
+        itr->next->prev = new_node;
+        itr->next = new_node;
+    }
+
+    list->length += 1;
+}
+
+static bool list_sort_internal(List list, gds_cfunc compfunc)
+{
+    if ( list->length < 2 ) {
+
+        /*  No point sorting an empty or one-element list.  */
+
+        return true;
+    }
+
+    /*  Create temporary array  */
+
+    struct gdt_generic_datatype * tempelem;
+    tempelem = malloc(list->length * sizeof *tempelem);
+    if ( !tempelem ) {
         if ( list->exit_on_error ) {
-            quit_error("gds library", "index %zu out of range", index);
+            quit_strerror("gds library", "memory allocation failed");
         }
         else {
-            log_error("gds library", "index %zu out of range", index);
-            free(node);
+            log_strerror("gds library", "memory allocation failed");
             return false;
         }
     }
 
-    if ( !list->head ) {
+    /*  Copy list elements to array  */
 
-        /*  List is empty  */
-
-        list->head = node;
-        list->tail = node;
-    }
-    else if ( index == 0 ) {
-
-        /*  Insert new head, we know there's an
-         *  existing one since the list is not empty  */
-
-        struct list_node * old_head = list->head;
-        node->next = old_head;
-        old_head->prev = node;
-        list->head = node;
-    }
-    else if ( index == list->length ) {
-
-        /*  Insert new tail, we know there's an
-         *  existing one since the list is not empty  */
-
-        struct list_node * old_tail = list->tail;
-        node->prev = old_tail;
-        old_tail->next = node;
-        list->tail = node;
-    }
-    else {
-        
-        /*  Insert inner node, we know there are next and
-         *  previous nodes since the list is not empty, and
-         *  the selected node is neither the head nor the tail.  */
-
-        struct list_node * after = list_node_at_index(list, index);
-        struct list_node * before = after->prev;
-        node->prev = before;
-        node->next = after;
-        before->next = node;
-        after->prev = node;
+    struct list_node * node = list->head;
+    size_t index = 0;
+    while ( node ) {
+        memcpy(tempelem + index, &node->element, sizeof *tempelem);
+        node = node->next;
+        ++index;
     }
 
-    list->length += 1;
+    /*  Sort array  */
+
+    qsort(tempelem, list->length, sizeof *tempelem, compfunc);
+
+    /*  Copy array elements back to list  */
+
+    index = 0;
+    node = list->head;
+    while ( node ) {
+        memcpy(&node->element, tempelem + index, sizeof *tempelem);
+        node = node->next;
+        ++index;
+    }
+
+    free(tempelem);
 
     return true;
 }

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <pggds/list.h>
 #include <pggds/unittest.h>
+#include <pggds/string_util.h>
 #include "test_list.h"
 #include "test_struct.h"
 
@@ -154,9 +155,9 @@ TEST_CASE(test_list_free_strings)
 
     /*  Append some dynamically allocated strings  */
 
-    TEST_ASSERT_TRUE(list_append(list, strdup("First string")));
-    TEST_ASSERT_TRUE(list_append(list, strdup("Second string")));
-    TEST_ASSERT_TRUE(list_append(list, strdup("Third string")));
+    TEST_ASSERT_TRUE(list_append(list, gds_strdup("First string")));
+    TEST_ASSERT_TRUE(list_append(list, gds_strdup("Second string")));
+    TEST_ASSERT_TRUE(list_append(list, gds_strdup("Third string")));
 
     TEST_ASSERT_EQUAL(list_length(list), 3);
     TEST_ASSERT_FALSE(list_is_empty(list));
@@ -384,10 +385,10 @@ TEST_CASE(test_list_sort_strings)
 
     /*  Append some elements  */
 
-    list_append(list, strdup("Elephant"));
-    list_append(list, strdup("Dog"));
-    list_append(list, strdup("Giraffe"));
-    list_append(list, strdup("Aardvark"));
+    list_append(list, gds_strdup("Elephant"));
+    list_append(list, gds_strdup("Dog"));
+    list_append(list, gds_strdup("Giraffe"));
+    list_append(list, gds_strdup("Aardvark"));
 
     size_t index;
 
@@ -657,6 +658,175 @@ TEST_CASE(test_list_itr_find)
     list_destroy(list);
 }
 
+/*  Test deletion via iterator  */
+
+TEST_CASE(test_list_delete_itr)
+{
+    List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    list_append(list, gds_strdup("first string"));
+    list_append(list, gds_strdup("second string"));
+    list_append(list, gds_strdup("third string"));
+    list_append(list, gds_strdup("fourth string"));
+    list_append(list, gds_strdup("fifth string"));
+
+    TEST_ASSERT_EQUAL(list_length(list), 5);
+    
+    char * c;
+
+    /*  Get first itr, test, delete, and check list  */
+
+    ListItr itr = list_itr_first(list);
+    list_get_value_itr(itr, &c);
+    TEST_ASSERT_STR_EQUAL(c, "first string");
+
+    list_delete_itr(itr);
+    TEST_ASSERT_EQUAL(list_length(list), 4);
+
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &c));
+    TEST_ASSERT_STR_EQUAL(c, "second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &c));
+    TEST_ASSERT_STR_EQUAL(c, "third string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fourth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fifth string");
+
+    /*  Get last itr, test, delete, and check list  */
+
+    itr = list_itr_last(list);
+    list_get_value_itr(itr, &c);
+    TEST_ASSERT_STR_EQUAL(c, "fifth string");
+
+    list_delete_itr(itr);
+    TEST_ASSERT_EQUAL(list_length(list), 3);
+
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &c));
+    TEST_ASSERT_STR_EQUAL(c, "second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &c));
+    TEST_ASSERT_STR_EQUAL(c, "third string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fourth string");
+
+    /*  Get middle itr, test, delete, and check list  */
+
+    itr = list_itr_last(list);
+    itr = list_itr_previous(itr);
+    list_get_value_itr(itr, &c);
+    TEST_ASSERT_STR_EQUAL(c, "third string");
+
+    list_delete_itr(itr);
+    TEST_ASSERT_EQUAL(list_length(list), 2);
+
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &c));
+    TEST_ASSERT_STR_EQUAL(c, "second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fourth string");
+
+    /*  Check no more elements  */
+
+    TEST_ASSERT_FALSE(list_element_at_index(list, 2, &c));
+
+    list_destroy(list);
+
+    /*  Test iterative delete  */
+
+    list = list_create(DATATYPE_INT, 0);
+    list_append(list, 1);
+    list_append(list, 2);
+    list_append(list, 3);
+    list_append(list, 4);
+    list_append(list, 5);
+
+    TEST_ASSERT_EQUAL(list_length(list), 5);
+    TEST_ASSERT_FALSE(list_is_empty(list));
+
+    itr = list_itr_first(list);
+    while ( (itr = list_delete_itr(itr) ) ) {}
+
+    TEST_ASSERT_EQUAL(list_length(list), 0);
+    TEST_ASSERT_TRUE(list_is_empty(list));
+
+    list_destroy(list);
+}
+
+/*  Test insertion before iterator  */
+
+TEST_CASE(test_list_insert_before_itr)
+{
+    List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+
+    list_append(list, gds_strdup("first string"));
+    list_append(list, gds_strdup("second string"));
+    list_append(list, gds_strdup("third string"));
+
+    ListItr itr = list_itr_first(list);
+    TEST_ASSERT_TRUE(list_insert_before_itr(itr, gds_strdup("fourth string")));
+    itr = list_itr_next(itr);
+    TEST_ASSERT_TRUE(list_insert_before_itr(itr, gds_strdup("fifth string")));
+    itr = list_itr_next(itr);
+    TEST_ASSERT_TRUE(list_insert_before_itr(itr, gds_strdup("sixth string")));
+
+    TEST_ASSERT_EQUAL(list_length(list), 6);
+
+    char * c;
+
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fourth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &c));
+    TEST_ASSERT_STR_EQUAL(c, "first string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fifth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &c));
+    TEST_ASSERT_STR_EQUAL(c, "second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 4, &c));
+    TEST_ASSERT_STR_EQUAL(c, "sixth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 5, &c));
+    TEST_ASSERT_STR_EQUAL(c, "third string");
+    TEST_ASSERT_FALSE(list_element_at_index(list, 6, &c));
+
+    list_destroy(list);
+}
+
+/*  Test insertion after iterator  */
+
+TEST_CASE(test_list_insert_after_itr)
+{
+    List list = list_create(DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+
+    list_append(list, gds_strdup("first string"));
+    list_append(list, gds_strdup("second string"));
+    list_append(list, gds_strdup("third string"));
+
+    ListItr itr = list_itr_first(list);
+    TEST_ASSERT_TRUE(list_insert_after_itr(itr, gds_strdup("fourth string")));
+    itr = list_itr_next(itr);
+    itr = list_itr_next(itr);
+    TEST_ASSERT_TRUE(list_insert_after_itr(itr, gds_strdup("fifth string")));
+    itr = list_itr_next(itr);
+    itr = list_itr_next(itr);
+    TEST_ASSERT_TRUE(list_insert_after_itr(itr, gds_strdup("sixth string")));
+
+    TEST_ASSERT_EQUAL(list_length(list), 6);
+
+    char * c;
+
+    TEST_ASSERT_TRUE(list_element_at_index(list, 0, &c));
+    TEST_ASSERT_STR_EQUAL(c, "first string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 1, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fourth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 2, &c));
+    TEST_ASSERT_STR_EQUAL(c, "second string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 3, &c));
+    TEST_ASSERT_STR_EQUAL(c, "fifth string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 4, &c));
+    TEST_ASSERT_STR_EQUAL(c, "third string");
+    TEST_ASSERT_TRUE(list_element_at_index(list, 5, &c));
+    TEST_ASSERT_STR_EQUAL(c, "sixth string");
+    TEST_ASSERT_FALSE(list_element_at_index(list, 6, &c));
+
+    list_destroy(list);
+}
+
 void test_list(void)
 {
     RUN_CASE(test_list_basic);
@@ -671,4 +841,7 @@ void test_list(void)
     RUN_CASE(test_list_itr);
     RUN_CASE(test_list_itr_reverse);
     RUN_CASE(test_list_itr_find);
+    RUN_CASE(test_list_delete_itr);
+    RUN_CASE(test_list_insert_before_itr);
+    RUN_CASE(test_list_insert_after_itr);
 }
