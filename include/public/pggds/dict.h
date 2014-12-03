@@ -63,6 +63,16 @@ void dict_destroy(Dict dict);
 bool dict_insert(Dict dict, const char * key, ...);
 
 /*!
+ * \brief           Deletes a key from a dictionary.
+ * \ingroup         dict
+ * \param dict      A pointer to the dictionary.
+ * \param key       The key to delete.
+ * \retval true     The key was deleted
+ * \retval false    The key was not found in the dictionary
+ */
+bool dict_delete(Dict dict, const char * key);
+
+/*!
  * \brief           Checks whether a key exists in a dictionary.
  * \ingroup         dict
  * \param dict      A pointer to the dictionary.

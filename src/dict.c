@@ -34,13 +34,13 @@ struct dict {
  * contain the address of the key-value pair containing it.
  * \param dict          A pointer to the dictionary.
  * \param key           The key for which to search.
- * \param pair          A pointer to a key-value pair pointer. If the key
- * is found, the pointer at this address will be modified to contain the
- * address of the pair containing the key.
+ * \param pitr          A pointer to a list iterator. If the key is found,
+ * the iterator at this address will be modified to point to the list
+ * element containing the corresponding key-value pair.
  * \retval true         Key was found
  * \retval false        Key was not found
  */
-static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair);
+static bool dict_has_key_internal(Dict dict, const char * key, ListItr * pitr);
 
 /*!
  * \brief               Helper function to create the dictionary buckets.
@@ -119,8 +119,11 @@ bool dict_has_key(Dict dict, const char * key)
 
 bool dict_insert(Dict dict, const char * key, ...)
 {
-    struct gds_kvpair * pair;
-    if ( dict_has_key_internal(dict, key, &pair) ) {
+    ListItr itr;
+    if ( dict_has_key_internal(dict, key, &itr) ) {
+        struct gds_kvpair * pair;
+        list_get_value_itr(itr, &pair);
+
         if ( dict->free_on_destroy ) {
 
             /*  Free existing item if necessary  */
@@ -156,13 +159,28 @@ bool dict_insert(Dict dict, const char * key, ...)
 bool dict_value_for_key(Dict dict, const char * key, void * p)
 {
     struct gds_kvpair * pair;
-    if ( !dict_has_key_internal(dict, key, &pair) ) {
+    ListItr itr;
+    if ( !dict_has_key_internal(dict, key, &itr) ) {
         return false;
     }
 
+    list_get_value_itr(itr, &pair);
     gdt_get_value(&pair->value, p);
 
     return true;
+}
+
+bool dict_delete(Dict dict, const char * key)
+{
+    ListItr itr;
+    if ( dict_has_key_internal(dict, key, &itr) ) {
+        KVPair pair;
+        list_get_value_itr(itr, &pair);
+        gds_kvpair_destroy(pair, dict->free_on_destroy);
+        list_delete_itr(itr);
+        return true;
+    }
+    return false;
 }
 
 static bool dict_buckets_create(Dict dict)
@@ -203,7 +221,7 @@ static void dict_buckets_destroy(Dict dict)
     }
 }
 
-static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
+static bool dict_has_key_internal(Dict dict, const char * key, ListItr * pitr)
 {
     struct gds_kvpair needle = { .key = (char *) key };
     const size_t hash = djb2hash(key) % dict->num_buckets;
@@ -211,14 +229,14 @@ static bool dict_has_key_internal(Dict dict, const char * key, KVPair * pair)
     ListItr itr;
 
     if ( (itr = list_find_itr(list, (void *) &needle)) ) {
-        if ( pair ) {
-            list_get_value_itr(itr, (void *) pair);
+        if ( pitr ) {
+            *pitr = itr;
         }
         return true;
     }
     else {
-        if ( pair ) {
-            *pair = NULL;
+        if ( pitr ) {
+            *pitr = NULL;
         }
         return false;
     }
